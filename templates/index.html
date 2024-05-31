@@ -641,14 +641,53 @@
 </body>
 
 <script>
-    async function getInfo(county){
+    async function getInfo(county) {
+        const url = `http://localhost:5000/${county}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data);
 
+            const ethanol = data.ethanol;
+            const price = data.price;
+            const gwp = data.gwp;
 
-        const url = `http://localhost:5000/${county}`
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data);
+            document.getElementById("info").innerHTML = `Annual Ethanol ($ gal/year): ${ethanol} <br> Price ($/kg): ${price} <br> GWP (kg CO2 eq/kg): ${gwp}`;
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
     }
+
+    document.querySelectorAll('.allPaths').forEach(e => {
+        e.setAttribute("class", `allPaths ${e.id}`);
+        e.addEventListener("mouseover", function () {
+            window.onmousemove = function (j) {
+                const x = j.clientX;
+                const y = j.clientY;
+                document.getElementById("name").style.left = (x + 10) + "px";
+                document.getElementById("name").style.top = (y - 60) + "px";
+            }
+            const classes = e.className.baseVal.replace(/ /g, ".");
+            document.querySelectorAll(`.${classes}`).forEach(county => {
+                county.style.fill = "#FF9D00";
+            });
+        });
+        e.addEventListener("mouseleave", function () {
+            const classes = e.className.baseVal.replace(/ /g, ".");
+            document.querySelectorAll(`.${classes}`).forEach(county => {
+                county.style.fill = "#ececec";
+            });
+            document.getElementById("name").style.opacity = 0;
+        });
+
+        e.addEventListener("click", function () {
+            getInfo(e.id);
+        });
+    });
 </script>
+
 
 </html>

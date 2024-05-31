@@ -3,6 +3,7 @@ from backend import county
 
 # Imports from flask
 from flask import Flask, render_template, request, redirect, jsonify, session
+from flask_cors import CORS
 
 # For client ID and client secret
 # from dotenv import load_dotenv
@@ -10,6 +11,7 @@ import secrets
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
+CORS(app)
 
 @app.route('/atlantic')
 def index():
