@@ -100,7 +100,7 @@ def calculate_annual_ethanol_price_GWP(mass, cornstover_price=0.2, GWP_CFs=GWP_C
     print(f'price: ${get_MESP():.2f}/gal')
     print(f'GWP: {get_GWP():.2f} kg CO2e/gal')
     
-    return get_ethanol(), get_MESP(), get_GWP()
+    return round(get_ethanol(), 3), round(get_MESP(), 2), round(get_GWP(), 2)
     
 # Due to a lack of accurate data on the mass of lignocellulosic waste produced in New Jersey, we will look at the number of farmers who surveyed in New Jersey and the average farm size in New Jersey to use biomass in their renewable energy production.
 # Data from 2017: https://www.nass.usda.gov/Publications/AgCensus/2017/Full_Report/Volume_1,_Chapter_2_County_Level/New_Jersey/st34_2_0043_0043.pdf
@@ -141,56 +141,9 @@ def county(name, state_data=STATE_DATA):
 
     ethanol, price, gwp = calculate_annual_ethanol_price_GWP(kg_per_hr)
 
-    return ethanol, price, gwp
+    return name_final, ethanol, price, gwp
     
 
 if __name__ == '__main__':
-
-    # print("All of New Jersey")
-    # print("Number of farms: 116")
-    # n_nj = 116
-    # mass_nj = 116*100 # kg/yr
-    # calculate_annual_ethanol_price_GWP(mass_nj)
-
-    # print("\nAtlantic County")
-    # print("Number of farms: 4")
-    # calculate_annual_ethanol_price_GWP(4*100)
-
-    # print("\nBergen County")
-
-    # print("\nBurlington County")
-    # calculate_annual_ethanol_price_GWP(1*100)
-
-    # print("\nCamden County")    
-
-    # print("\nCape May County")    
-
-    # print("\nCumberland County")
-    # calculate_annual_ethanol_price_GWP(2*100)
-
-    # print("\nEssex County")
-
-    # print("\nGloucester County")
-    # calculate_annual_ethanol_price_GWP(3*100)
-
-    # print("\nHudson County")
-
-    # print("\nHunterdon County")
-    # calculate_annual_ethanol_price_GWP(19*100)
-
-    # print("\nMercer County")
-    # calculate_annual_ethanol_price_GWP(3*100)
-
-    # print("\nMiddlesex County")
-    # calculate_annual_ethanol_price_GWP(6*100)
-
-    # print("\nMonmouth County")
-    # calculate_annual_ethanol_price_GWP(10*100)
-
-    # print("\nMorris County")
-    # calculate_annual_ethanol_price_GWP(13*100)
-
-    # print("\nOcean County")
-    # calculate_annual_ethanol_price_GWP(2*100)
     
     print(county('cape may'))

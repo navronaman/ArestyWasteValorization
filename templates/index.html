@@ -18,6 +18,14 @@
         overflow-x: hidden;
     }
 
+    h1{
+        text-align: center;
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        background-color: rgb(116, 177, 201);
+        color: white;
+    }
+
     #name{
         position: absolute;
         width: fit-content;
@@ -26,9 +34,12 @@
         font-family: Arial, sans-serif;
         padding: 5px;
         border-radius: 5px;
+        left: 50%;
+        transform: translateX(-50%);
     }
-
+    
     #info{
+        text-align: center;
         width: fit-content;
         opacity: 1;
         background-color: rgb(116, 177, 201);
@@ -38,16 +49,14 @@
         border-radius: 5px;
     }
 
+    svg {
+        display: block;
+        margin: 0 auto;        
+    }
+
     svg path{
         cursor: pointer;
     }
-
-    <!-- svg path:hover{
-        fill: rgb(255, 157, 0);
-    } -->
-
-
-
 
 </style>
 
@@ -55,15 +64,20 @@
 
 <body>
 
+    <h1>
+        Lignocellulosic Ethanol Production in New Jersey Counties
+    </h1>
+
     <div id="name">
         <p id="namep">County</p>
     </div>
 
     <div id="info">
         <p id="info">
+            <b>County <br>
             Annual Ethanol ($ gal/year): <br>
             Price ($/kg): <br>
-            GWP (kg CO2 eq/kg): <br>
+            GWP (kg CO2 eq/kg): </b><br>
         </p>
 
     </div>
@@ -651,11 +665,15 @@
             const data = await response.json();
             console.log(data);
 
+            const countyname = data.name;
             const ethanol = data.ethanol;
             const price = data.price;
             const gwp = data.gwp;
 
-            document.getElementById("info").innerHTML = `Annual Ethanol ($ gal/year): ${ethanol} <br> Price ($/kg): ${price} <br> GWP (kg CO2 eq/kg): ${gwp}`;
+            document.getElementById("info").innerHTML = `<b> ${countyname} County <br>
+             Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
+             <b> Price ($/kg): </b> ${price} <br>
+             <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
         }
