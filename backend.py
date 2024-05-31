@@ -125,15 +125,23 @@ def calculate_annual_ethanol_price_GWP(mass, cornstover_price=0.2, GWP_CFs=GWP_C
 
 def county(name, state_data=STATE_DATA):
     # check if the name inputted in county exists in the first column of state_data
-    if name not in state_data['County'].values:
+    
+    name_final = None
+    
+    for item in state_data['County']:
+        if item.lower() == name.lower():
+            name_final = item
+            break
+        
+    if name_final is None:
         return None
 
     # locate the 'Kilogram/hr' value for the specific county
-    kg_per_hr = state_data.loc[state_data['County'] == name, 'Kilogram/hr'].values[0]
+    kg_per_hr = state_data.loc[state_data['County'] == name_final, 'Kilogram/hr'].values[0]
 
     ethanol, price, gwp = calculate_annual_ethanol_price_GWP(kg_per_hr)
 
-    return ethanol, price, gwp    
+    return ethanol, price, gwp
     
 
 if __name__ == '__main__':
@@ -185,4 +193,4 @@ if __name__ == '__main__':
     # print("\nOcean County")
     # calculate_annual_ethanol_price_GWP(2*100)
     
-    print(county('Atlantic'))
+    print(county('cape may'))
