@@ -14,8 +14,7 @@
 
     body{
         background-color: rgb(116, 177, 201);
-        overflow-y: hidden;
-        overflow-x: hidden;
+        font-family: Arial, sans-serif;
     }
 
     h1{
@@ -25,6 +24,23 @@
         background-color: rgb(116, 177, 201);
         color: white;
     }
+
+    h2{
+        text-align: center;
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        background-color: rgb(116, 177, 201);
+        color: white;
+    }
+
+    h3{
+        text-align: center;
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        background-color: rgb(116, 177, 201);
+        color: white;
+    }
+
 
     #name{
         position: absolute;
@@ -37,6 +53,13 @@
         left: 50%;
         transform: translateX(-50%);
     }
+
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh-50px);
+    }
     
     #info{
         text-align: center;
@@ -47,6 +70,7 @@
         font-family: Arial, sans-serif;
         padding: 5px;
         border-radius: 5px;
+        
     }
 
     svg {
@@ -56,6 +80,17 @@
 
     svg path{
         cursor: pointer;
+    }
+
+    #infoOutput{
+        display: none;
+        background-color: white;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .error{
+        color: red;
     }
 
 </style>
@@ -72,14 +107,16 @@
         <p id="namep">County</p>
     </div>
 
-    <div id="info">
-        <p id="info">
-            <b>County <br>
-            Annual Ethanol ($ gal/year): <br>
-            Price ($/kg): <br>
-            GWP (kg CO2 eq/kg): </b><br>
-        </p>
+    <div class="container">
+        <div id="info">
+            <p id="info">
+                <b>County <br>
+                Annual Ethanol ($ gal/year): <br>
+                Price ($/kg): <br>
+                GWP (kg CO2 eq/kg): </b><br>
+            </p>
 
+        </div>
     </div>
     
     <?xml version="1.0" encoding="iso-8859-1"?>
@@ -652,11 +689,22 @@
             c0.05,0.38,0.27,1.92,0.31,2.12L261.83,252.46z"/>
     </svg>
 
+    <h2> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h2>
+    <label for="massInput">Enter the biomass produced per hour (kg/hr) to be processed:</label>
+    <input type="number" id="massInput" name="massInput" placeholder="100-100000" min="100" max="100000" required>
+    <button onclick="getMassInfo()">Submit</button>
+    <div id="infoOutput">
+        Annual Ethanol ($ gal/year): <br>
+        Price ($/kg): <br>
+        GWP (kg CO2 eq/kg): <br>
+    </div>
+    
+
 </body>
 
 <script>
     async function getInfo(county) {
-        const url = `http://localhost:5000/${county}`;
+        const url = `http://localhost:5000/county/${county}`;
         try {
             const response = await fetch(url);
             if (!response.ok) {
@@ -705,6 +753,45 @@
             getInfo(e.id);
         });
     });
+
+    function getMassInfo() {
+        const massInput = document.getElementById("massInput").value;
+        const mass = Number(massInput)
+
+        if (isNaN(mass) || mass < 100 || mass > 100000 || mass === 0 || !Number.isInteger(mass)){
+            document.getElementById("infoOutput").innerHTML = "<span class='error'> Please enter a valid number </span>";
+            return;
+        }
+
+        const url = `http://localhost:5000/mass/${mass}`;
+        fetch(url)
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                const sucesss = data.success;
+                console.log(data);
+
+                if (!sucesss) {
+                    document.getElementById("infoOutput").innerHTML = "<span class='error'> There was an error with the request </span>";
+                    return;
+                }
+
+                const countyname = data.name;
+                const ethanol = data.ethanol;
+                const price = data.price;
+                const gwp = data.gwp;
+
+                document.getElementById("infoOutput").innerHTML = `
+             Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
+             <b> Price ($/kg): </b> ${price} <br>
+             <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
 </script>
 
 
