@@ -1,5 +1,5 @@
 # Imports from backend file
-from backend import county
+from backend import county, calculate_annual_ethanol_price_GWP
 
 # Imports from flask
 from flask import Flask, render_template, request, redirect, jsonify, session
@@ -22,7 +22,7 @@ def index():
         "gwp": gwp
     })
     
-@app.route('/<string:countyname>')
+@app.route('/county/<string:countyname>')
 def county_data(countyname):
     countyname = countyname.replace("_", " ")
     result = county(countyname)
@@ -38,6 +38,37 @@ def county_data(countyname):
             "price": price,
             "gwp": gwp
         })
+        
+@app.route('/mass')
+def mass():
+    return jsonify({
+        "error": "No mass provided"
+    })
+        
+@app.route('/mass/<int:mass>')
+def mass_data(mass):
+    try:
+        result = calculate_annual_ethanol_price_GWP(mass)
+        if result is None:
+            return jsonify({
+                "success": "false",
+                "error": "Mass incorrect"
+            })
+        else:
+            ethanol, price, gwp = result
+            return jsonify({
+                "success": "true",
+                "mass": mass,
+                "ethanol": ethanol,
+                "price": price,
+                "gwp": gwp
+            })
+    except Exception as e:
+        return jsonify({
+            "success": "false",
+            "error": str(e)
+        })
+    
     
 if __name__ == '__main__':
     app.run(debug=True)
