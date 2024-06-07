@@ -4,116 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="main.css">
 </head>
-
-<style>
-    *{
-        margin: 0;
-        padding: 0;
-    }
-
-    body{
-        background-color: rgb(116, 177, 201);
-        font-family: Arial, sans-serif;
-    }
-
-    h1, h2, h3{
-        text-align: center;
-        font-family: Arial, sans-serif;
-        padding: 10px;
-        background-color: rgb(116, 177, 201);
-        color: white;
-    }
-
-    #name{
-        position: absolute;
-        width: fit-content;
-        opacity: 0;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        padding: 5px;
-        border-radius: 5px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .container{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: calc(100vh-50px);
-    }
-    
-    #info{
-        text-align: center;
-        width: fit-content;
-        opacity: 1;
-        background-color: rgb(116, 177, 201);
-        text-align: center;
-        font-family: Arial, sans-serif;
-        padding: 5px;
-        border-radius: 5px;
-        
-    }
-
-    svg {
-        display: block;
-        margin: 0 auto;        
-    }
-
-    svg path{
-        cursor: pointer;
-    }
-
-    .form-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    label {
-        margin-bottom: 10px;
-    }
-
-    input {
-        margin-bottom: 10px;
-        padding: 5px;
-        width: 300px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        color: white;
-        background-color: #007BFF;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-
-
-    #infoOutput{
-        display: block;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 20px;
-    }
-
-    .error{
-        color: red;
-    }
-
-</style>
-
 
 
 <body>
@@ -708,6 +600,11 @@
             c0.05,0.38,0.27,1.92,0.31,2.12L261.83,252.46z"/>
     </svg>
 
+    <div class="export-container">
+        <button onclick="exportToCsv('data.csv')" id="export">Export County Data to CSV</button>
+        <button onclick="exportToCsv('data.csv')" id="export">Export NJ Data to CSV</button>
+    </div>
+
     <div class="form-container">
 
         <h2> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h2>
@@ -721,101 +618,11 @@
         </div>
 
     </div>
+
+    <script src="script.js"></script>
     
 
 </body>
-
-<script>
-    async function getInfo(county) {
-        const url = `http://localhost:5000/county/${county}`;
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            console.log(data);
-
-            const countyname = data.name;
-            const ethanol = data.ethanol;
-            const price = data.price;
-            const gwp = data.gwp;
-
-            document.getElementById("info").innerHTML = `<b> ${countyname} County <br>
-             Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
-             <b> Price ($/kg): </b> ${price} <br>
-             <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
-        }
-    }
-
-    document.querySelectorAll('.allPaths').forEach(e => {
-        e.setAttribute("class", `allPaths ${e.id}`);
-        e.addEventListener("mouseover", function () {
-            window.onmousemove = function (j) {
-                const x = j.clientX;
-                const y = j.clientY;
-                document.getElementById("name").style.left = (x + 10) + "px";
-                document.getElementById("name").style.top = (y - 60) + "px";
-            }
-            const classes = e.className.baseVal.replace(/ /g, ".");
-            document.querySelectorAll(`.${classes}`).forEach(county => {
-                county.style.fill = "#FF9D00";
-            });
-        });
-        e.addEventListener("mouseleave", function () {
-            const classes = e.className.baseVal.replace(/ /g, ".");
-            document.querySelectorAll(`.${classes}`).forEach(county => {
-                county.style.fill = "#ececec";
-            });
-            document.getElementById("name").style.opacity = 0;
-        });
-
-        e.addEventListener("click", function () {
-            getInfo(e.id);
-        });
-    });
-
-    function getMassInfo() {
-        const massInput = document.getElementById("massInput").value;
-        const mass = Number(massInput)
-
-        if (isNaN(mass) || mass < 100 || mass > 100000 || mass === 0 || !Number.isInteger(mass)){
-            document.getElementById("infoOutput").innerHTML = "<span class='error'> Please enter a valid number </span>";
-            return;
-        }
-
-        const url = `http://localhost:5000/mass/${mass}`;
-        fetch(url)
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                const sucesss = data.success;
-                console.log(data);
-
-                if (!sucesss) {
-                    document.getElementById("infoOutput").innerHTML = "<span class='error'> There was an error with the request </span>";
-                    return;
-                }
-
-                const countyname = data.name;
-                const ethanol = data.ethanol;
-                const price = data.price;
-                const gwp = data.gwp;
-
-                document.getElementById("infoOutput").innerHTML = `
-             <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
-             <b> Price ($/kg): </b> ${price} <br>
-             <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-    }
-
-</script>
 
 
 </html>
