@@ -601,8 +601,11 @@
     </svg>
 
     <div class="export-container">
-        <button onclick="exportToCsv()" id="export">Export County Data to CSV</button>
+        <button onclick="exportToCsv2()" id="export">Export County Data to CSV</button>
         <button onclick="exportToCsv()" id="export">Export NJ Data to CSV</button>
+        <div id="errorExport">
+            <b> </b>
+        </div>
     </div>
 
     <div class="form-container">
@@ -615,6 +618,9 @@
             <b>Annual Ethanol ($ gal/year): <br>
             Price ($/kg): <br>
             GWP (kg CO2 eq/kg): <br> </b>
+        </div>
+        <div id="errorMass">
+            <b> </b>
         </div>
 
     </div>

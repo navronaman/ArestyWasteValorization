@@ -10,7 +10,6 @@
 
     h1, h2, h3{
         text-align: center;
-        font-family: Arial, sans-serif;
         padding: 10px;
         color: white;
     }
@@ -20,7 +19,6 @@
         width: fit-content;
         opacity: 0;
         text-align: center;
-        font-family: Arial, sans-serif;
         padding: 5px;
         border-radius: 5px;
         left: 50%;
@@ -40,7 +38,6 @@
         width: fit-content;
         opacity: 1;
         text-align: center;
-        font-family: Arial, sans-serif;
         padding: 5px;
         border-radius: 5px;
         
@@ -121,6 +118,24 @@
         color: white;
     }
 
-    .error{
-        color: red;
+    .error {
+        color: rgb(231, 21, 21);
+        background-color: rgb(255, 228, 228);
+        border: 1px solid rgb(231, 21, 21);
+        border-radius: 4px;
+        padding: 10px;
+        margin: 20px 0;
+        text-align: center;
+        font-size: 16px;
+        display: inline-block;
+        width: fit-content;
+        max-width: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .error-icon {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 8px;
+        font-size: 18px;
     }

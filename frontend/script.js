@@ -22,6 +22,13 @@ async function getInfo(county) {
     }
 }
 
+// What does the following code do?
+// It changes the color of the county when the mouse hovers over it
+// It also displays the county name when the mouse hovers over it
+// It displays the county information when the county is clicked
+
+let countyIDClickedOnRightNow = null;
+
 document.querySelectorAll('.allPaths').forEach(e => {
     e.setAttribute("class", `allPaths ${e.id}`);
     e.addEventListener("mouseover", function () {
@@ -46,6 +53,9 @@ document.querySelectorAll('.allPaths').forEach(e => {
 
     e.addEventListener("click", function () {
         getInfo(e.id);
+        document.getElementById("errorMass").innerHTML = "<b></b>";
+        document.getElementById("errorExport").innerHTML = "<b></b>";
+        countyIDClickedOnRightNow = e.id;
     });
 });
 
@@ -54,7 +64,7 @@ function getMassInfo() {
     const mass = Number(massInput)
 
     if (isNaN(mass) || mass < 100 || mass > 100000 || mass === 0 || !Number.isInteger(mass)){
-        document.getElementById("infoOutput").innerHTML = "<span class='error'> Please enter a valid number </span>";
+        document.getElementById("errorMass").innerHTML = "<span class='error'> Please enter a valid number between 100 and 100000 </span>";
         return;
     }
 
@@ -68,7 +78,7 @@ function getMassInfo() {
             console.log(data);
 
             if (!sucesss) {
-                document.getElementById("infoOutput").innerHTML = "<span class='error'> There was an error with the request </span>";
+                document.getElementById("errorMass").innerHTML = "<span class='error'> There was an error with the request </span>";
                 return;
             }
 
@@ -81,6 +91,10 @@ function getMassInfo() {
          <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
          <b> Price ($/kg): </b> ${price} <br>
          <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
+
+         document.getElementById("errorMass").innerHTML = "<b></b>";
+         document.getElementById("errorExport").innerHTML = "<b></b>";
+
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -105,6 +119,34 @@ async function exportToCsv() {
     catch (error) {
         console.error('There was a problem with the fetch operation:', error);
     }
+}
+
+async function exportToCsv2() {
+    if (countyIDClickedOnRightNow === null) {
+        document.getElementById("errorExport").innerHTML = "<span class='error'> Please click on a county first </span>";
+        return;
+    }
+    try {
+        const response = await fetch(`http://localhost:5000/csv/${countyIDClickedOnRightNow}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${countyIDClickedOnRightNow.toLowerCase()}_county_export.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.bodu.removeChild(a);
+        document.getElementById("errorMass").innerHTML = "<b></b>";
+        document.getElementById("errorExport").innerHTML = "<b></b>";
+
+    }
+    catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+
 }
 
 
