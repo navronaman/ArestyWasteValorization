@@ -86,6 +86,25 @@ function getMassInfo() {
             console.error('There was a problem with the fetch operation:', error);
         });
 
-    // export to csv button
+    async function exportToCsv() {
+        try {
+            const response = await fetch('http://localhost:5000/csv');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'export.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.bodu.removeChild(a);
+        }
+        catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+
     
 }

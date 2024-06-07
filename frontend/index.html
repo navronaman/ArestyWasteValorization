@@ -601,8 +601,8 @@
     </svg>
 
     <div class="export-container">
-        <button onclick="exportToCsv('data.csv')" id="export">Export County Data to CSV</button>
-        <button onclick="exportToCsv('data.csv')" id="export">Export NJ Data to CSV</button>
+        <button onclick="exportToCsv()" id="export">Export County Data to CSV</button>
+        <button onclick="exportToCsv()" id="export">Export NJ Data to CSV</button>
     </div>
 
     <div class="form-container">
@@ -610,7 +610,7 @@
         <h2> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h2>
         <label for="massInput">Enter the biomass produced per hour (kg/hr) to be processed:</label>
         <input type="number" id="massInput" name="massInput" placeholder="100-100000" min="100" max="100000" required>
-        <button onclick="getMassInfo()">Submit</button>
+        <button onclick="getMassInfo()" id="massBox">Submit</button>
         <div id="infoOutput">
             <b>Annual Ethanol ($ gal/year): <br>
             Price ($/kg): <br>
