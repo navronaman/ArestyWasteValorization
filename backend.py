@@ -36,6 +36,8 @@ STATE_DATA["Annual Ethanol ($ gal/yr)"] = None
 STATE_DATA["Price ($/kg)"] = None
 STATE_DATA["GWP (kg CO2e/gal)"] = None
 
+NEW_DATA = pd.read_csv('new_data.csv')
+
 
 def calculate_annual_ethanol_price_GWP(mass, cornstover_price=0.2, GWP_CFs=GWP_CFs, characterization_factors=(1., 1.,), power_utility_price=0.07):
     """
@@ -143,7 +145,22 @@ def county(name, state_data=STATE_DATA):
 
     return name_final, ethanol, price, gwp
     
+def county_data_export_csv(name, new_data=NEW_DATA):
+    
+    name_final = None
+    
+    for item in new_data['County']:
+        if item.lower() == name.lower():
+            name_final = item
+            break
+        
+    if name_final is None:
+        return None
+
+    # Return the data for the specific county in a pandas dataframe
+    return new_data.loc[new_data['County'] == name_final]
 
 if __name__ == '__main__':
     
     print(county('cape may'))
+    print(county_data_export_csv('cape may'))

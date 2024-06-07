@@ -1,5 +1,5 @@
 # Imports from backend file
-from backend import county, calculate_annual_ethanol_price_GWP
+from backend import county, calculate_annual_ethanol_price_GWP, county_data_export_csv
 
 # Imports from flask
 from flask import Flask, jsonify, make_response
@@ -10,6 +10,7 @@ from flask_cors import CORS
 import secrets
 
 # Additional imports for CSV file sendings
+import pandas as pd
 from io import StringIO
 
 app = Flask(__name__)
@@ -62,10 +63,40 @@ def mass_data(mass):
 @app.route('/csv')
 def export_csv(file_path=FILE_PATH):
     
-    output = make_response(file_path)
+    df = pd.read_csv(file_path)
+    csv_string = df.to_csv(index=False)
+    
+    output = make_response(csv_string)
     output.headers["Content-Disposition"] = "attachment; filename=export.csv"
     output.headers["Content-type"] = "text/csv"
     return output
+
+@app.route('/csv/atlantic')
+def county_data_export_csv0(df=FILE_PATH):
+    df = pd.read_csv(df)
+    df = df.loc[df['County'] == 'Atlantic']
+    csv_string = df.to_csv(index=False)
+    print(type(csv_string))
+    
+    output = make_response(csv_string)
+    output.headers["Content-Disposition"] = "attachment; filename=atlantic_data.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
+
+
+@app.route('/csv/<string:countyname>')
+def county_data_export_csv(countyname, file_path=FILE_PATH):
+    county = countyname.replace("_", " ").title()
+    print(county)
+    df = pd.read_csv(file_path)
+    df = df.loc[df['County'] == county]
+    csv_string = df.to_csv(index=False)
+    
+    output = make_response(csv_string)
+    output.headers["Content-Disposition"] = f"attachment; filename={countyname}_data.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
+
     
     
 if __name__ == '__main__':
