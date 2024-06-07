@@ -9,12 +9,14 @@ async function getInfo(county) {
         console.log(data);
 
         const countyname = data.name;
+        const dry_tonnes = data.tonnes;
         const ethanol = data.ethanol;
         const price = data.price;
         const gwp = data.gwp;
 
         document.getElementById("info").innerHTML = `<b> ${countyname} County <br>
-         Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
+         Lignocellulosic Biomass: </b> ${dry_tonnes} dry tonnes <br>
+         <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
          <b> Price ($/kg): </b> ${price} <br>
          <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
     } catch (error) {

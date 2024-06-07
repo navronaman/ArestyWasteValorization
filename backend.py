@@ -139,11 +139,12 @@ def county(name, state_data=STATE_DATA):
         return None
 
     # locate the 'Kilogram/hr' value for the specific county
+    dry_tonnes = int(state_data.loc[state_data['County'] == name_final, 'Lignocellulose (dry tons)'].values[0])
     kg_per_hr = state_data.loc[state_data['County'] == name_final, 'Kilogram/hr'].values[0]
 
     ethanol, price, gwp = calculate_annual_ethanol_price_GWP(kg_per_hr)
 
-    return name_final, ethanol, price, gwp
+    return name_final, dry_tonnes, ethanol, price, gwp
     
 def county_data_export_csv(name, new_data=NEW_DATA):
     

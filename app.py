@@ -28,9 +28,10 @@ def county_data(countyname):
             "error": "County not found"
         })
     else :
-        name, ethanol, price, gwp = result
+        name, tonnes, ethanol, price, gwp = result
         return jsonify({
             "name": name,
+            "tonnes": tonnes,
             "ethanol": ethanol,
             "price": price,
             "gwp": gwp
