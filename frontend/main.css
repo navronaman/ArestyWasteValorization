@@ -14,15 +14,46 @@
         color: white;
     }
 
-    #name{
-        position: absolute;
-        width: fit-content;
+    .head-container{
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .hambuger{
+        position: relative;
+        display: block;
+        width: 35px;
+        cursor: pointer;
+
+        appearance: none;
+        background: none;
+        outline: none;
+        border: none;
+    }
+
+    .hambuger .bar, .hambuger:after, .hambuger:before{
+        content: '';
+        display: block;
+        width: 100%;
+        height: 5px;
+        background-color: #FFF;
+        margin: 6dvi 0;
+        transition: 0.4s;
+    }
+
+    .hambuger.is-active:before{
+        transform: rotate(-45deg) translate(-8px, 6px);
+    }
+
+    .hambuger.is-active:after{
+        transform: rotate(45deg) translate(-9px, -8px);
+    }
+
+    .hambuger.is-active .bar{
         opacity: 0;
-        text-align: center;
-        padding: 5px;
-        border-radius: 5px;
-        left: 50%;
-        transform: translateX(-50%);
     }
 
     .container{
@@ -61,6 +92,8 @@
 
 
     label {
+        margin-left: 10px;
+        margin-right: 10px;
         margin-bottom: 10px;
         color: white;
     }
