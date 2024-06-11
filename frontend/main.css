@@ -1,183 +1,257 @@
-    *{
-        margin: 0;
-        padding: 0;
-    }
+*{
+    margin: 0;
+    padding: 0;
+}
 
-    body{
-        background-color: rgb(116, 177, 201);
-        font-family: Arial, sans-serif;
-    }
+/* header css */
+body{
+    background-color: rgb(116, 177, 201);
+    font-family: Arial, sans-serif;
+}
 
-    h1, h2, h3{
-        text-align: center;
-        padding: 10px;
-        color: white;
-    }
+h1, h2, h3{
+    text-align: center;
+    padding: 10px;
+    color: white;
+}
 
-    .head-container{
-        width: 100%;
-        max-width: 1600px;
-        margin: 0 auto;
-    }
+/* nav bar */
+.head-container{
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
 
-    .hambuger{
-        position: relative;
-        display: block;
-        width: 35px;
-        cursor: pointer;
+.hambuger{
+    position: relative;
+    display: block;
+    width: 35px;
+    cursor: pointer;
 
-        appearance: none;
-        background: none;
-        outline: none;
-        border: none;
-    }
+    appearance: none;
+    background: none;
+    outline: none;
+    border: none;
+}
 
-    .hambuger .bar, .hambuger:after, .hambuger:before{
-        content: '';
-        display: block;
-        width: 100%;
-        height: 5px;
-        background-color: #FFF;
-        margin: 6dvi 0;
-        transition: 0.4s;
-    }
+.hambuger .bar, .hambuger:after, .hambuger:before{
+    content: '';
+    display: block;
+    width: 100%;
+    height: 5px;
+    background-color: #FFF;
+    margin: 6dvi 0;
+    transition: 0.4s;
+}
 
-    .hambuger.is-active:before{
-        transform: rotate(-45deg) translate(-8px, 6px);
-    }
+.hambuger.is-active:before{
+    transform: rotate(-45deg) translate(-8px, 6px);
+}
 
-    .hambuger.is-active:after{
-        transform: rotate(45deg) translate(-9px, -8px);
-    }
+.hambuger.is-active:after{
+    transform: rotate(45deg) translate(-9px, -8px);
+}
 
-    .hambuger.is-active .bar{
-        opacity: 0;
-    }
+.hambuger.is-active .bar{
+    opacity: 0;
+}
 
-    .container{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: calc(100vh-50px);
-    }
+/* container for information about the county data */
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh-50px);
+}
+
+.info-div{
+    color: white;
+    text-align: center;
+    width: fit-content;
+    opacity: 1;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
     
-    #info{
-        color: white;
-        text-align: center;
-        width: fit-content;
-        opacity: 1;
-        text-align: center;
-        padding: 5px;
-        border-radius: 5px;
-        
-    }
-    #info2{
-        color: white;
-        text-align: center;
-        width: fit-content;
-        opacity: 1;
-        text-align: center;
-        padding: 5px;
-        border-radius: 5px;
-        
-    }
+}
 
+/* map */
+svg {
+    display: block;
+    margin: 0 auto;        
+}
 
-    svg {
-        display: block;
-        margin: 0 auto;        
-    }
+svg path{
+    cursor: pointer;
+}
 
-    svg path{
-        cursor: pointer;
-    }
-
-    .form-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-
-    label {
-        margin-left: 0.5px;
-        margin-right: 0.5px;
-        margin-bottom: 10px;
-        color: white;
-    }
-
-    input {
-        margin-bottom: 10px;
-        padding: 5px;
-        width: 300px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    #massBox{
-        background-color: #007BFF;
-    }
-
-    #massBox:hover{
-        background-color: #0056b3;
-    }
-
-    .export-container {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
-    }
-
-
-    #export{
-        background-color: rgb(117, 117, 117);
-        margin-bottom: 20px;
-    }
-
-    #export:hover{
-        background-color: rgb(90, 90, 90);
-    }
-
-
-    #infoOutput{
-        display: block;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 20px;
-        color: white;
-    }
-
-    .error {
-        color: rgb(231, 21, 21);
-        background-color: rgb(255, 228, 228);
-        border: 1px solid rgb(231, 21, 21);
-        border-radius: 4px;
-        padding: 10px;
-        margin: 20px 0;
-        text-align: center;
-        font-size: 16px;
-        display: inline-block;
-        width: fit-content;
-        max-width: 100%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+/* collapsible section css */
+.collapsible-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     
-    .error-icon {
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 8px;
-        font-size: 18px;
-    }
+}
+
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.collapsible-header:hover .arrow {
+    color: #007BFF;
+}
+
+.arrow {
+    transition: transform 0.3s ease;
+}
+
+.collapsible-content {
+    display: none;
+    padding: 10px;
+}
+
+
+.collapsible-container.active .collapsible-content {
+    display: block;
+}
+
+.collapsible-container.active .arrow {
+    transform: rotate(180deg);
+}
+
+/* table in collapsible content */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+tbody th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.f-col{
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* export and other buttons */
+
+.btn-class {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+/* mass calculator */
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+label {
+    margin-left: 0.5px;
+    margin-right: 0.5px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 300px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+
+#massBox{
+    background-color: #007BFF;
+}
+
+#massBox:hover{
+    background-color: #0056b3;
+}
+
+#infoOutput{
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    color: white;
+}
+
+/* export buttons */
+
+.export-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+
+#export{
+    background-color: rgb(117, 117, 117);
+    margin-bottom: 20px;
+}
+
+#export:hover{
+    background-color: rgb(90, 90, 90);
+}
+
+/* mass error and other error buttons */
+
+.error {
+    color: rgb(231, 21, 21);
+    background-color: rgb(255, 228, 228);
+    border: 1px solid rgb(231, 21, 21);
+    border-radius: 4px;
+    padding: 10px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 16px;
+    display: inline-block;
+    width: fit-content;
+    max-width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.error-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    font-size: 18px;
+}

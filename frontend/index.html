@@ -10,6 +10,8 @@
 
 <body>
 
+    <!-- Header and NavBar -->
+
     <header>
         <div class="head-container">
             <h2><span>
@@ -18,10 +20,10 @@
         </div>
     </header>
 
-
+    <!-- Holds content for the information of the counties -->
     <div class="container">
-        <div id="info">
-            <p id="info">
+        <div id="info" class="info-div">
+            <p id="info" class="info-div">
                 <b>County <br>
                 Lignocellulosic Biomass: <br>
                 Annual Ethanol ($ gal/year): <br>
@@ -30,21 +32,10 @@
             </p>
 
         </div>
-        <div id="info2">
-            <p id="info2">
-                <b>County <br>
-                Lignocellulosic Biomass: <br>
-                Annual Ethanol ($ gal/year): <br>
-                Price ($/kg): <br>
-                GWP (kg CO2 eq/kg): </b><br>
-            </p>
-
-        </div>
-
     </div>
     
+    <!-- Map -->
     <?xml version="1.0" encoding="iso-8859-1"?>
-    <!-- Generator: Adobe Illustrator 12.0.1, SVG Export Plug-In  -->
     <svg  version="1.1" xmlns="&ns_svg;" xmlns:xlink="&ns_xlink;" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
         width="315" height="560" viewBox="-0.03 -0.43 315 560" enable-background="new -0.03 -0.43 315 560" xml:space="preserve">
     <defs>
@@ -613,20 +604,60 @@
             c0.05,0.38,0.27,1.92,0.31,2.12L261.83,252.46z"/>
     </svg>
 
+    <!-- Export Options -->
     <div class="export-container">
-        <button onclick="exportToCsvCounty()" id="export">Export County Data to CSV</button>
-        <button onclick="exportToCsvMain()" id="export">Export NJ Data to CSV</button>
+        <button class="btn-class" onclick="exportToCsvCounty()" id="export">Export County Data to CSV</button>
+        <button class="btn-class" onclick="exportToCsvMain()" id="export">Export NJ Data to CSV</button>
         <div id="errorExport">
             <b> </b>
         </div>
     </div>
 
+    <!-- Compare Two Counties -->
+    <div class="collapsible-container">
+        <h3 class="collapsible-header"> 
+            <span>Compare Two Counties </span>
+            <span class="arrow">&#9660;</span>
+        </h3>
+        <div class="collapsible-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Biomass</th>
+                        <th>Annual Ethanol ($ gal/year)</th>
+                        <th>Price ($/kg)</th>
+                        <th>GWP (kg CO2 eq/kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="f-col" id="r1-name"> County 1</td>
+                        <td id="r1-biomass">0 tonnes</td>
+                        <td id="r1-ethanol">0</td>
+                        <td id="r1-price">0</td>
+                        <td id="r1-gwp">0</td>
+                    </tr>
+                    <tr>
+                        <td class="f-col" id="r2-name">County 2</td>
+                        <td id="r2-biomass">0 tonnes</td>
+                        <td id="r2-ethanol">0</td>
+                        <td id="r2-price">0</td>
+                        <td id="r2-gwp">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Manual Mass Input Calculator -->
     <div class="form-container">
 
         <h3> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h3>
         <label for="massInput">Enter the biomass produced per hour (kg/hr) to be processed:</label>
         <input type="number" id="massInput" name="massInput" placeholder="100-100000" min="100" max="100000" required>
-        <button onclick="getMassInfo()" id="massBox">Submit</button>
+        <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
         <div id="infoOutput">
             <b>Annual Ethanol ($ gal/year): <br>
             Price ($/kg): <br>
