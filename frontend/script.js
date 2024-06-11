@@ -1,4 +1,4 @@
-async function getInfo(county) {
+async function getInfo(county, info) {
     const url = `http://localhost:5000/county/${county}`;
     try {
         const response = await fetch(url);
@@ -14,12 +14,40 @@ async function getInfo(county) {
         const price = data.price;
         const gwp = data.gwp;
 
-        document.getElementById("info").innerHTML = `<b> ${countyname} County <br>
+        document.getElementById(`${info}`).innerHTML = `<b> ${countyname} County <br>
          Lignocellulosic Biomass: </b> ${dry_tonnes} dry tonnes <br>
          <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
          <b> Price ($/kg): </b> ${price} <br>
          <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
-    } catch (error) {
+    } 
+    catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+}
+
+async function getInfo2(county){
+    const url = `http://localhost:5000/county/${county}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log(data);
+
+        const countyname = data.name;
+        const dry_tonnes = data.tonnes;
+        const ethanol = data.ethanol;
+        const price = data.price;
+        const gwp = data.gwp;
+
+        document.getElementById("info2").innerHTML = `<b> ${countyname} County <br>
+         Lignocellulosic Biomass: </b> ${dry_tonnes} dry tonnes <br>
+         <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
+         <b> Price ($/kg): </b> ${price} <br>
+         <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
+    } 
+    catch (error) {
         console.error('There was a problem with the fetch operation:', error);
     }
 }
@@ -29,7 +57,8 @@ async function getInfo(county) {
 // It also displays the county name when the mouse hovers over it
 // It displays the county information when the county is clicked
 
-let countyIDClickedOnRightNow = null;
+let firstCounty = null;
+let secondCounty = null;
 
 document.querySelectorAll('.allPaths').forEach(e => {
     e.setAttribute("class", `allPaths ${e.id}`);
@@ -37,8 +66,6 @@ document.querySelectorAll('.allPaths').forEach(e => {
         window.onmousemove = function (j) {
             const x = j.clientX;
             const y = j.clientY;
-            document.getElementById("name").style.left = (x + 10) + "px";
-            document.getElementById("name").style.top = (y - 60) + "px";
         }
         const classes = e.className.baseVal.replace(/ /g, ".");
         document.querySelectorAll(`.${classes}`).forEach(county => {
@@ -50,16 +77,48 @@ document.querySelectorAll('.allPaths').forEach(e => {
         document.querySelectorAll(`.${classes}`).forEach(county => {
             county.style.fill = "#ececec";
         });
-        document.getElementById("name").style.opacity = 0;
     });
 
     e.addEventListener("click", function () {
-        getInfo(e.id);
+        if (firstCounty == null){
+            console.log("I'm here at one!")
+
+            firstCounty = e.id;
+
+            console.log(firstCounty)
+            getInfo(firstCounty, "info");
+        }
+        else if (secondCounty == null && e.id !== firstCounty){
+            console.log("I'm here at two!")
+
+            secondCounty = e.id;
+
+            console.log(secondCounty)
+            getInfo(secondCounty, "info2");
+        }
+        else {
+            console.log("I'm here at three!")
+
+            firstCounty = e.id;
+
+            console.log(firstCounty)
+
+            secondCounty = null;
+            getInfo(firstCounty, "info")
+            document.getElementById("info2").innerHTML = `
+                <b>County <br>
+                Lignocellulosic Biomass: <br>
+                Annual Ethanol ($ gal/year): <br>
+                Price ($/kg): <br>
+                GWP (kg CO2 eq/kg): </b><br>`;
+        }
         document.getElementById("errorMass").innerHTML = "<b></b>";
         document.getElementById("errorExport").innerHTML = "<b></b>";
-        countyIDClickedOnRightNow = e.id;
     });
+    
 });
+
+// if firstCounty is not null 
 
 function getMassInfo() {
     const massInput = document.getElementById("massInput").value;
@@ -103,7 +162,7 @@ function getMassInfo() {
         });
     }
 
-async function exportToCsv() {
+async function exportToCsvMain() {
     try {
         const response = await fetch('http://localhost:5000/csv');
         if (!response.ok) {
@@ -116,20 +175,20 @@ async function exportToCsv() {
         a.download = 'export.csv';
         document.body.appendChild(a);
         a.click();
-        document.bodu.removeChild(a);
+        document.body.removeChild(a);
     }
     catch (error) {
         console.error('There was a problem with the fetch operation:', error);
     }
 }
 
-async function exportToCsv2() {
-    if (countyIDClickedOnRightNow === null) {
+async function exportToCsvCounty() {
+    if (firstCounty === null) {
         document.getElementById("errorExport").innerHTML = "<span class='error'> Please click on a county first </span>";
         return;
     }
     try {
-        const response = await fetch(`http://localhost:5000/csv/${countyIDClickedOnRightNow}`);
+        const response = await fetch(`http://localhost:5000/csv/${firstCounty}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -137,10 +196,10 @@ async function exportToCsv2() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${countyIDClickedOnRightNow.toLowerCase()}_county_export.csv`;
+        a.download = `${firstCounty.toLowerCase()}_county_export.csv`;
         document.body.appendChild(a);
         a.click();
-        document.bodu.removeChild(a);
+        document.body.removeChild(a);
         document.getElementById("errorMass").innerHTML = "<b></b>";
         document.getElementById("errorExport").innerHTML = "<b></b>";
 

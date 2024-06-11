@@ -18,8 +18,6 @@
         width: 100%;
         max-width: 1600px;
         margin: 0 auto;
-        padding-left: 12px;
-        padding-right: 12px;
     }
 
     .hambuger{
@@ -73,6 +71,17 @@
         border-radius: 5px;
         
     }
+    #info2{
+        color: white;
+        text-align: center;
+        width: fit-content;
+        opacity: 1;
+        text-align: center;
+        padding: 5px;
+        border-radius: 5px;
+        
+    }
+
 
     svg {
         display: block;
@@ -92,8 +101,8 @@
 
 
     label {
-        margin-left: 10px;
-        margin-right: 10px;
+        margin-left: 0.5px;
+        margin-right: 0.5px;
         margin-bottom: 10px;
         color: white;
     }

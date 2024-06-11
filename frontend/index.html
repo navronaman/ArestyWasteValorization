@@ -30,6 +30,17 @@
             </p>
 
         </div>
+        <div id="info2">
+            <p id="info2">
+                <b>County <br>
+                Lignocellulosic Biomass: <br>
+                Annual Ethanol ($ gal/year): <br>
+                Price ($/kg): <br>
+                GWP (kg CO2 eq/kg): </b><br>
+            </p>
+
+        </div>
+
     </div>
     
     <?xml version="1.0" encoding="iso-8859-1"?>
@@ -603,8 +614,8 @@
     </svg>
 
     <div class="export-container">
-        <button onclick="exportToCsv2()" id="export">Export County Data to CSV</button>
-        <button onclick="exportToCsv()" id="export">Export NJ Data to CSV</button>
+        <button onclick="exportToCsvCounty()" id="export">Export County Data to CSV</button>
+        <button onclick="exportToCsvMain()" id="export">Export NJ Data to CSV</button>
         <div id="errorExport">
             <b> </b>
         </div>
