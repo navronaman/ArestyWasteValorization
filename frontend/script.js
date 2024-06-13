@@ -1,3 +1,15 @@
+// show sidebar
+function showSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = 'flex';
+}
+
+// hide sidebar
+function hideSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = 'none';
+}
+
 // internal function, used to get info about a county
 async function getInfo(county, bool) {
     const url = `http://localhost:5000/county/${county}`;
@@ -15,11 +27,18 @@ async function getInfo(county, bool) {
         const price = data.price;
         const gwp = data.gwp;
 
-        document.getElementById('info').innerHTML = `<b> ${countyname} County <br>
+        document.getElementById('info').innerHTML = `<b><span id='countyName'> ${countyname} County </span><br>
          Lignocellulosic Biomass: </b> ${dry_tonnes} dry tonnes <br>
          <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
          <b> Price ($/kg): </b> ${price} <br>
          <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
+
+        const countyNameSpan = document.getElementById('countyName');
+        countyNameSpan.classList.add('highlight');
+
+        setTimeout(() => {
+            countyNameSpan.classList.remove('highlight');
+        }, 2000);
 
          if (bool){
             document.getElementById('r1-name').innerHTML = `${countyname} County`
