@@ -28,8 +28,8 @@ async function getInfo(county, bool) {
         const gwp = data.gwp;
 
         document.getElementById('info').innerHTML = `<b><span id='countyName'> ${countyname} County </span><br>
-         Lignocellulosic Biomass: </b> ${dry_tonnes} dry tonnes <br>
-         <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
+         Lignocellulosic Biomass: </b> ${dry_tonnes} tons <br>
+         <b> Annual Ethanol (gal/year): </b> ${ethanol} <br>
          <b> Price ($/kg): </b> ${price} <br>
          <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
 
@@ -42,13 +42,13 @@ async function getInfo(county, bool) {
 
          if (bool){
             document.getElementById('r1-name').innerHTML = `${countyname} County`
-            document.getElementById('r1-biomass').innerHTML = `${dry_tonnes} tonnes`
+            document.getElementById('r1-biomass').innerHTML = `${dry_tonnes} tons`
             document.getElementById('r1-ethanol').innerHTML = ethanol
             document.getElementById('r1-price').innerHTML = price
             document.getElementById('r1-gwp').innerHTML = gwp
 
             document.getElementById('r2-name').innerHTML = 'County 2'
-            document.getElementById('r2-biomass').innerHTML = '0 tonnes'
+            document.getElementById('r2-biomass').innerHTML = '0 tons'
             document.getElementById('r2-ethanol').innerHTML = 0
             document.getElementById('r2-price').innerHTML = 0
             document.getElementById('r2-gwp').innerHTML = 0
@@ -57,7 +57,7 @@ async function getInfo(county, bool) {
 
         if (!bool){
             document.getElementById('r2-name').innerHTML = `${countyname} County`
-            document.getElementById('r2-biomass').innerHTML = `${dry_tonnes} tonnes`
+            document.getElementById('r2-biomass').innerHTML = `${dry_tonnes} tons`
             document.getElementById('r2-ethanol').innerHTML = ethanol
             document.getElementById('r2-price').innerHTML = price
             document.getElementById('r2-gwp').innerHTML = gwp
@@ -131,7 +131,7 @@ document.querySelectorAll('.allPaths').forEach(e => {
             document.getElementById("info2").innerHTML = `
                 <b>County <br>
                 Lignocellulosic Biomass: <br>
-                Annual Ethanol ($ gal/year): <br>
+                Annual Ethanol (gal/year): <br>
                 Price ($/kg): <br>
                 GWP (kg CO2 eq/kg): </b><br>`;
         }
@@ -189,7 +189,7 @@ function getMassInfo() {
             const gwp = data.gwp;
 
             document.getElementById("infoOutput").innerHTML = `
-         <b> Annual Ethanol ($ gal/year): </b> ${ethanol} <br>
+         <b> Annual Ethanol (gal/year): </b> ${ethanol} <br>
          <b> Price ($/kg): </b> ${price} <br>
          <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
 
