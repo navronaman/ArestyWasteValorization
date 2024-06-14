@@ -68,20 +68,18 @@ nav li:first-child{
 
 .menuBtn{
     display: none;
-    position: fixed;
-    top: 3px;
-    right: 3px;
-    z-index: 1000;
-    background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 2px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* header css */
 body{
     min-height: 100vh;
-    background-color: rgb(116, 177, 201);
+    background: linear-gradient(to bottom,
+        rgb(116, 177, 201), /* Start color */
+        rgb(100, 160, 190), /* Mid color */
+        rgb(84, 143, 179), /* Mid color */
+        rgb(100, 160, 190), /* Mid color */
+        rgb(116, 177, 201) /* End color */
+    );    
     font-family: Arial, sans-serif;
 }
 
@@ -305,12 +303,12 @@ input {
 
 
 #export{
-    background-color: rgb(117, 117, 117);
+    background-color: rgb(158, 158, 158);
     margin-bottom: 20px;
 }
 
 #export:hover{
-    background-color: rgb(90, 90, 90);
+    background-color: rgb(130, 130, 130);
 }
 
 /* mass error and other error buttons */
