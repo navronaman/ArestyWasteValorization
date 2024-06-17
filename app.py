@@ -31,7 +31,7 @@ def county_data(countyname):
         name, tonnes, ethanol, price, gwp = result
         return jsonify({
             "name": name,
-            "tonnes": tonnes,
+            "tons": tonnes,
             "ethanol": ethanol,
             "price": price,
             "gwp": gwp

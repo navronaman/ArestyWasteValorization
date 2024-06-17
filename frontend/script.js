@@ -16,16 +16,14 @@ function selectUnit(imperial_or_metric) {
     console.log(imperial_or_metric);
     if (imperial_or_metric === 'imperial') {
         unit = true;
-        document.getElementById('info').innerHTML = `<b>County <br>
-                Lignocellulosic Biomass: <br>
-                Annual Ethanol (gal/year): <br>
-                Price ($/gal): <br> 
-                GWP (kg CO2 eq/gal): </b><br>`;
+        document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (gal/year):';
+        document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
+        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/gal):';
+
         document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (gal/year):';
         document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/gal):';
-        document.getElementById('r1-biomass').innerHTML = '0 tons';
-        document.getElementById('r2-biomass').innerHTML = '0 tons';
+
         document.getElementById('infoOutput').innerHTML = `
                     <b>Annual Ethanol (gal/year): <br>
                     Price ($/gal): <br>
@@ -33,16 +31,15 @@ function selectUnit(imperial_or_metric) {
     } 
     else {
         unit = false;
-        document.getElementById('info').innerHTML = `<b>County <br>
-                Lignocellulosic Biomass: <br>
-                Annual Ethanol (kg/year): <br>
-                Price ($/kg): <br> 
-                GWP (kg CO2 eq/kg): </b><br>`;
+
+        document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (kg/year):';
+        document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
+        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
+
         document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (kg/year):';
         document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
-        document.getElementById('r1-biomass').innerHTML = '0 tonnes';
-        document.getElementById('r2-biomass').innerHTML = '0 tonnes';
+
         document.getElementById('infoOutput').innerHTML = `
                     <b>Annual Ethanol (kg/year): <br>
                     Price ($/kg): <br>
@@ -64,16 +61,30 @@ async function getInfo(county, bool) {
         console.log(data);
 
         const countyname = data.name;
-        const dry_tonnes = data.tonnes;
+        const tons = data.tons;
         const ethanol = data.ethanol;
         const price = data.price;
         const gwp = data.gwp;
 
-        document.getElementById('info').innerHTML = `<b><span id='countyName'> ${countyname} County </span><br>
-         Lignocellulosic Biomass: </b> ${dry_tonnes} tons <br>
-         <b> Annual Ethanol (gal/year): </b> ${ethanol} <br>
-         <b> Price ($/kg): </b> ${price} <br>
-         <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
+        if (!unit) {
+            // this is a metric unit, now we will convert
+            const tonnes = tons * 0.907185;
+            tonnes = tonnes.toFixed(2);
+            ethanol = ethanol * 2.98668849;
+            ethanol = ethanol.toFixed(3);
+            price = price / 2.98668849;
+            price = price.toFixed(2);
+            gwp = gwp / 2.98668849;
+            gwp = gwp.toFixed(2);
+
+            document.getElementById('biomass').innerHTML = `${tonnes} tonnes`;
+
+        }
+
+        document.getElementById('biomass').innerHTML = `${tons} tons`;
+        document.getElementById('ethanol').innerHTML = ethanol;
+        document.getElementById('price').innerHTML = price;
+        document.getElementById('gwp').innerHTML = gwp;
 
         const countyNameSpan = document.getElementById('countyName');
         countyNameSpan.classList.add('highlight');
@@ -84,7 +95,7 @@ async function getInfo(county, bool) {
 
          if (bool){
             document.getElementById('r1-name').innerHTML = `${countyname} County`
-            document.getElementById('r1-biomass').innerHTML = `${dry_tonnes} tons`
+            document.getElementById('r1-biomass').innerHTML = `${tons} tons`
             document.getElementById('r1-ethanol').innerHTML = ethanol
             document.getElementById('r1-price').innerHTML = price
             document.getElementById('r1-gwp').innerHTML = gwp
@@ -99,7 +110,7 @@ async function getInfo(county, bool) {
 
         if (!bool){
             document.getElementById('r2-name').innerHTML = `${countyname} County`
-            document.getElementById('r2-biomass').innerHTML = `${dry_tonnes} tons`
+            document.getElementById('r2-biomass').innerHTML = `${tons} tons`
             document.getElementById('r2-ethanol').innerHTML = ethanol
             document.getElementById('r2-price').innerHTML = price
             document.getElementById('r2-gwp').innerHTML = gwp
