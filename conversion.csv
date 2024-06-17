@@ -1,0 +1,5 @@
+input, imperial, metric
+biomass, dry tons, tonnes
+ethanol, gallons/year, kg/year
+price, $/gallon, $/kg
+GWP, kg CO2/gal, kg CO2/kg

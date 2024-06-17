@@ -35,7 +35,7 @@ data = pd.read_csv('data.csv')
 data["Kilogram"] = data["Lignocellulose (dry tons)"] * 907.185
 data["Kilogram/hr"] = data["Kilogram"] / (365*24*0.96)
 data["Annual Ethanol ($ gal/yr)"] = None
-data["Price ($/kg)"] = None
+data["Price ($/gal)"] = None
 data["GWP (kg CO2e/gal)"] = None
 print(data)
 
@@ -45,7 +45,7 @@ for i in range(len(data)):
     print(f"Annual estimated lignocellulose in dry tons: {data['Lignocellulose (dry tons)'][i]}")
     ethanol, price, gwp = calculate_annual_ethanol_price_GWP(data['Kilogram/hr'][i])
     data["Annual Ethanol ($ gal/yr)"][i] = ethanol
-    data["Price ($/kg)"][i] = price
+    data["Price ($/gal)"][i] = price
     data["GWP (kg CO2e/gal)"][i] = gwp
     
 print(data)

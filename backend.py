@@ -102,7 +102,7 @@ def calculate_annual_ethanol_price_GWP(mass, cornstover_price=0.2, GWP_CFs=GWP_C
     print(f'price: ${get_MESP():.2f}/gal')
     print(f'GWP: {get_GWP():.2f} kg CO2e/gal')
     
-    return round(get_ethanol(), 3), round(get_MESP(), 2), round(get_GWP(), 2)
+    return get_ethanol(), get_MESP(), get_GWP(),
     
 # Due to a lack of accurate data on the mass of lignocellulosic waste produced in New Jersey, we will look at the number of farmers who surveyed in New Jersey and the average farm size in New Jersey to use biomass in their renewable energy production.
 # Data from 2017: https://www.nass.usda.gov/Publications/AgCensus/2017/Full_Report/Volume_1,_Chapter_2_County_Level/New_Jersey/st34_2_0043_0043.pdf
@@ -144,7 +144,7 @@ def county(name, state_data=STATE_DATA):
 
     ethanol, price, gwp = calculate_annual_ethanol_price_GWP(kg_per_hr)
 
-    return name_final, dry_tonnes, ethanol, price, gwp
+    return name_final, dry_tonnes, round(ethanol, 3), round(price, 3), round(gwp, 3)
     
 def county_data_export_csv(name, new_data=NEW_DATA):
     
