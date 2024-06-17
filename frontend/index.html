@@ -29,6 +29,7 @@
         </ul>
     </nav>
 
+    <!-- header -->
     <header>
         <div class="head-container" id="home">
             <h2><span>
@@ -37,19 +38,50 @@
         </div>
     </header>
 
+    <!-- imperial/metric button -->
+    <div class="tab-container">
+        <input type="radio" id="imperial" name="unit" value="imperial" checked>
+        <label for="imperial" class="tab-label" onclick="selectUnit('imperial')">Imperial</label>
+        
+        <input type="radio" id="metric" name="unit" value="metric">
+        <label for="metric" class="tab-label" onclick="selectUnit('metric')">Metric</label>
+    </div>
+
     <!-- Holds content for the information of the counties -->
-    <div class="container">
+    <!-- <div class="container">
         <div id="info" class="info-div">
             <p id="info" class="info-div">
                 <b>County <br>
                 Lignocellulosic Biomass: <br>
                 Annual Ethanol (gal/year): <br>
-                Price ($/kg): <br>
+                Price ($/gal): <br> 
                 GWP (kg CO2 eq/kg): </b><br>
             </p>
 
         </div>
+    </div> -->
+
+    <div class="container">
+        <div id="info" class="info-div">
+            <p id="info">
+                <b>County:</b> <span id="county">Monmouth</span> 
+                <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
+
+                <b>Lignocellulosic Biomass:</b> <span id="biomass">100 dry tonnes</span>
+                <span class="info-icon">ℹ️<span class="tooltip">Amount of biomass available</span></span><br>
+
+                <b>Annual Ethanol (gal/year):</b> <span id="ethanol">500,000</span>
+                <span class="info-icon">ℹ️<span class="tooltip">Annual ethanol production</span></span><br>
+
+                <b>Price ($/gal):</b> <span id="price">3.50</span>
+                <span class="info-icon">ℹ️<span class="tooltip">Cost of ethanol per gallon</span></span><br> 
+
+                <b>GWP (kg CO2 eq/kg):</b> <span id="gwp">2.75</span>
+                <span class="info-icon">ℹ️<span class="tooltip">Global Warming Potential per kg</span></span><br>
+            </p>
+        </div>
     </div>
+    
     
     <!-- Map -->
     <?xml version="1.0" encoding="iso-8859-1"?>
@@ -642,9 +674,9 @@
                     <tr>
                         <th></th>
                         <th>Biomass</th>
-                        <th>Annual Ethanol (gal/year)</th>
-                        <th>Price ($/kg)</th>
-                        <th>GWP (kg CO2 eq/kg)</th>
+                        <th id="r0-ethanol">Annual Ethanol (gal/year)</th>
+                        <th id="r0-price">Price ($/gal)</th>
+                        <th id="r0-gwp">GWP (kg CO2 eq/gal)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -677,8 +709,8 @@
         <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
         <div id="infoOutput">
             <b>Annual Ethanol (gal/year): <br>
-            Price ($/kg): <br>
-            GWP (kg CO2 eq/kg): <br> </b>
+            Price ($/gal): <br>
+            GWP (kg CO2 eq/gal): <br> </b>
         </div>
         <div id="errorMass">
             <b> </b>

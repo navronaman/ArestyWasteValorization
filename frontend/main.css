@@ -70,6 +70,61 @@ nav li:first-child{
     display: none;
 }
 
+/* imperial/metric button */
+.tab-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+.tab-label {
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+    transition: color 0.3s;
+}
+
+input[type="radio"]:checked + .tab-label {
+    background-color: white;
+    color:  rgb(116, 177, 201);
+    border: 2px solid  rgb(116, 177, 201);
+}
+
+/* tool tip */
+.info-div {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.info-icon {
+    cursor: pointer;
+    margin-left: 5px;
+    color: blue;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+}
+
+.info-icon:hover .tooltip {
+    visibility: visible;
+}
+
 /* header css */
 body{
     min-height: 100vh;

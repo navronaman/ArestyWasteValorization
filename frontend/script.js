@@ -10,8 +10,50 @@ function hideSidebar() {
     sidebar.style.display = 'none';
 }
 
+// imperial/metric button
+let unit = true;
+function selectUnit(imperial_or_metric) {
+    console.log(imperial_or_metric);
+    if (imperial_or_metric === 'imperial') {
+        unit = true;
+        document.getElementById('info').innerHTML = `<b>County <br>
+                Lignocellulosic Biomass: <br>
+                Annual Ethanol (gal/year): <br>
+                Price ($/gal): <br> 
+                GWP (kg CO2 eq/gal): </b><br>`;
+        document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (gal/year):';
+        document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
+        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/gal):';
+        document.getElementById('r1-biomass').innerHTML = '0 tons';
+        document.getElementById('r2-biomass').innerHTML = '0 tons';
+        document.getElementById('infoOutput').innerHTML = `
+                    <b>Annual Ethanol (gal/year): <br>
+                    Price ($/gal): <br>
+                    GWP (kg CO2 eq/gal): <br> </b>`
+    } 
+    else {
+        unit = false;
+        document.getElementById('info').innerHTML = `<b>County <br>
+                Lignocellulosic Biomass: <br>
+                Annual Ethanol (kg/year): <br>
+                Price ($/kg): <br> 
+                GWP (kg CO2 eq/kg): </b><br>`;
+        document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (kg/year):';
+        document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
+        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
+        document.getElementById('r1-biomass').innerHTML = '0 tonnes';
+        document.getElementById('r2-biomass').innerHTML = '0 tonnes';
+        document.getElementById('infoOutput').innerHTML = `
+                    <b>Annual Ethanol (kg/year): <br>
+                    Price ($/kg): <br>
+                    GWP (kg CO2 eq/kg): <br> </b>`
+    }
+    console.log(unit);
+}
+
 // internal function, used to get info about a county
 async function getInfo(county, bool) {
+    console.log(unit);
     const url = `http://localhost:5000/county/${county}`;
     try {
         const response = await fetch(url);
@@ -128,12 +170,6 @@ document.querySelectorAll('.allPaths').forEach(e => {
 
             secondCounty = null;
             getInfo(firstCounty, true)
-            document.getElementById("info2").innerHTML = `
-                <b>County <br>
-                Lignocellulosic Biomass: <br>
-                Annual Ethanol (gal/year): <br>
-                Price ($/kg): <br>
-                GWP (kg CO2 eq/kg): </b><br>`;
         }
         currentCounty = e.id;
         document.getElementById("errorMass").innerHTML = "<b></b>";
@@ -152,9 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
         container.classList.toggle('active');
     });
 
-    button.addEventListener('click', () => {
-        container.classList.toggle('active');
-    });
+    // button.addEventListener('click', () => {
+    //     container.classList.toggle('active');
+    // });
 });
 
 
