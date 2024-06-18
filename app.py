@@ -11,7 +11,6 @@ import secrets
 
 # Additional imports for CSV file sendings
 import pandas as pd
-from io import StringIO
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
@@ -69,18 +68,6 @@ def export_csv(file_path=FILE_PATH):
     
     output = make_response(csv_string)
     output.headers["Content-Disposition"] = "attachment; filename=export.csv"
-    output.headers["Content-type"] = "text/csv"
-    return output
-
-@app.route('/csv/atlantic')
-def county_data_export_csv0(df=FILE_PATH):
-    df = pd.read_csv(df)
-    df = df.loc[df['County'] == 'Atlantic']
-    csv_string = df.to_csv(index=False)
-    print(type(csv_string))
-    
-    output = make_response(csv_string)
-    output.headers["Content-Disposition"] = "attachment; filename=atlantic_data.csv"
     output.headers["Content-type"] = "text/csv"
     return output
 
