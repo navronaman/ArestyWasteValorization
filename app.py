@@ -16,7 +16,8 @@ app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
 CORS(app)
 
-FILE_PATH = "new_data.csv"
+FILE_PATH_IMPERIAL = "new_data_imperial.csv"
+FILE_PATH_METRIC = "new_data_metric.csv"
     
 @app.route('/county/<string:countyname>')
 def county_data(countyname):
@@ -77,7 +78,15 @@ def mass_data(mass):
         })
         
 @app.route('/csv')
-def export_csv(file_path=FILE_PATH):
+def export_csv():
+    unit = request.headers.get('X-Unit', 'imperial')
+    match unit:
+        case 'true':
+            file_path = FILE_PATH_IMPERIAL
+        case 'false':
+            file_path = FILE_PATH_METRIC
+        case _:
+            file_path = FILE_PATH_IMPERIAL
     
     df = pd.read_csv(file_path)
     csv_string = df.to_csv(index=False)
@@ -89,7 +98,17 @@ def export_csv(file_path=FILE_PATH):
 
 
 @app.route('/csv/<string:countyname>')
-def county_data_export_csv(countyname, file_path=FILE_PATH):
+def county_data_export_csv(countyname):
+    
+    unit = request.headers.get('X-Unit', 'imperial')
+    match unit:
+        case 'true':
+            file_path = FILE_PATH_IMPERIAL
+        case 'false':
+            file_path = FILE_PATH_METRIC
+        case _:
+            file_path = FILE_PATH_IMPERIAL
+    
     county = countyname.replace("_", " ").title()
     print(county)
     df = pd.read_csv(file_path)

@@ -10,8 +10,6 @@ function hideSidebar() {
     sidebar.style.display = 'none';
 }
 
-// let firstCounty = null; // first county selected
-// let secondCounty = null; // second county selected
 let currentCounty = null; // current county selected
 let previousCounty = null; // previous county selected
 
@@ -377,7 +375,12 @@ function getMassInfo() {
 // Getting the two CSV functions
 async function exportToCsvMain() {
     try {
-        const response = await fetch('http://localhost:5000/csv');
+        const options = {
+            headers: {
+                'X-Unit': unit
+            }
+        };
+        const response = await fetch('http://localhost:5000/csv', options);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -401,7 +404,12 @@ async function exportToCsvCounty() {
         return;
     }
     try {
-        const response = await fetch(`http://localhost:5000/csv/${currentCounty}`);
+        const options = {
+            headers: {
+                'X-Unit': unit
+            }
+        };
+        const response = await fetch(`http://localhost:5000/csv/${currentCounty}`, options);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
