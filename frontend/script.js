@@ -10,6 +10,16 @@ function hideSidebar() {
     sidebar.style.display = 'none';
 }
 
+// let firstCounty = null; // first county selected
+// let secondCounty = null; // second county selected
+let currentCounty = null; // current county selected
+let previousCounty = null; // previous county selected
+
+let currentCountyData = null;
+let previousCountyData = null;
+
+let orderOfComparison = true; // true if first county is selected, false if second county is selected
+
 // imperial/metric button
 let unit = true;
 function selectUnit(imperial_or_metric) {
@@ -20,6 +30,7 @@ function selectUnit(imperial_or_metric) {
         document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
         document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/gal):';
 
+        document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tons):';
         document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (gal/year):';
         document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/gal):';
@@ -27,7 +38,7 @@ function selectUnit(imperial_or_metric) {
         document.getElementById('infoOutput').innerHTML = `
                     <b>Annual Ethanol (gal/year): <br>
                     Price ($/gal): <br>
-                    GWP (kg CO2 eq/gal): <br> </b>`
+                    GWP (kg CO2 eq/gal): <br> </b>`;
     } 
     else {
         unit = false;
@@ -36,20 +47,35 @@ function selectUnit(imperial_or_metric) {
         document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
         document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
 
+        document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tonnes):';
         document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (kg/year):';
-        document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
+        document.getElementById('r0-price').innerHTML = 'Price ($/kg):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
 
         document.getElementById('infoOutput').innerHTML = `
                     <b>Annual Ethanol (kg/year): <br>
                     Price ($/kg): <br>
-                    GWP (kg CO2 eq/kg): <br> </b>`
+                    GWP (kg CO2 eq/kg): <br> </b>`;
+
+    }
+
+    if (currentCountyData !== null && previousCountyData !== null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(currentCountyData, previousCountyData);
+    }
+    else if (currentCountyData !== null && previousCountyData === null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(currentCountyData, null);
+    }
+    else {
+        console.log('no data');
     }
     console.log(unit);
 }
 
 // internal function, used to get info about a county
-async function getInfo(county, bool) {
+// this info will be set to current county data, and then used to update info and comparison
+async function getInfo(county) {
     console.log(unit);
     const url = `http://localhost:5000/county/${county}`;
     try {
@@ -59,66 +85,131 @@ async function getInfo(county, bool) {
         }
         const data = await response.json();
         console.log(data);
+        currentCountyData = data;
+        return data;
+    }
 
-        const countyname = data.name;
-        const tons = data.tons;
-        const ethanol = data.ethanol;
-        const price = data.price;
-        const gwp = data.gwp;
-
-        if (!unit) {
-            // this is a metric unit, now we will convert
-            const tonnes = tons * 0.907185;
-            tonnes = tonnes.toFixed(2);
-            ethanol = ethanol * 2.98668849;
-            ethanol = ethanol.toFixed(3);
-            price = price / 2.98668849;
-            price = price.toFixed(2);
-            gwp = gwp / 2.98668849;
-            gwp = gwp.toFixed(2);
-
-            document.getElementById('biomass').innerHTML = `${tonnes} tonnes`;
-
-        }
-
-        document.getElementById('biomass').innerHTML = `${tons} tons`;
-        document.getElementById('ethanol').innerHTML = ethanol;
-        document.getElementById('price').innerHTML = price;
-        document.getElementById('gwp').innerHTML = gwp;
-
-        const countyNameSpan = document.getElementById('countyName');
-        countyNameSpan.classList.add('highlight');
-
-        setTimeout(() => {
-            countyNameSpan.classList.remove('highlight');
-        }, 2000);
-
-         if (bool){
-            document.getElementById('r1-name').innerHTML = `${countyname} County`
-            document.getElementById('r1-biomass').innerHTML = `${tons} tons`
-            document.getElementById('r1-ethanol').innerHTML = ethanol
-            document.getElementById('r1-price').innerHTML = price
-            document.getElementById('r1-gwp').innerHTML = gwp
-
-            document.getElementById('r2-name').innerHTML = 'County 2'
-            document.getElementById('r2-biomass').innerHTML = '0 tons'
-            document.getElementById('r2-ethanol').innerHTML = 0
-            document.getElementById('r2-price').innerHTML = 0
-            document.getElementById('r2-gwp').innerHTML = 0
-
-        }
-
-        if (!bool){
-            document.getElementById('r2-name').innerHTML = `${countyname} County`
-            document.getElementById('r2-biomass').innerHTML = `${tons} tons`
-            document.getElementById('r2-ethanol').innerHTML = ethanol
-            document.getElementById('r2-price').innerHTML = price
-            document.getElementById('r2-gwp').innerHTML = gwp
-        }
-        
-    } 
     catch (error) {
         console.error('There was a problem with the fetch operation:', error);
+        return null;
+    }
+}
+
+// this displays the current county data on the top
+function displayInfoTop(data){
+    let countyname = data.name;
+    let tons = data.tons;
+    let ethanol = data.ethanol;
+    let price = data.price;
+    let gwp = data.gwp;
+
+    document.getElementById('countyName').innerHTML = `${countyname} County`;
+    document.getElementById('biomass').innerHTML = `${tons} tons`;
+    if (!unit) {
+
+        console.log('metric unit')
+
+        // this is a metric unit, now we will convert
+        let tonnes = tons * 0.907185;
+        tonnes = tonnes.toFixed(1);
+
+        ethanol = ethanol * 2.98668849;
+        ethanol = ethanol.toFixed(3);
+
+        price = price / 2.98668849;
+        price = price.toFixed(3);
+
+        gwp = gwp / 2.98668849;
+        gwp = gwp.toFixed(3);
+
+        console.log(tonnes, ethanol, price, gwp);
+
+        document.getElementById('biomass').innerHTML = `${tonnes} tonnes`; // only because there's a difference in tonnes and tons
+
+    }
+
+    console.log(tons, ethanol, price, gwp);
+
+    document.getElementById('ethanol').innerHTML = ethanol;
+    document.getElementById('price').innerHTML = price;
+    document.getElementById('gwp').innerHTML = gwp;
+
+    const countyNameSpan = document.getElementById('countyName');
+    countyNameSpan.classList.add('highlight');
+
+    setTimeout(() => {
+        countyNameSpan.classList.remove('highlight');
+    }, 2000);
+
+}
+
+// this is for the comparison
+function displayComparison(data1, data2){
+
+    if (data1 === null){
+        return;
+    }
+
+    let countyname = data1.name;
+    let t = data1.tons;
+    let ethanol = data1.ethanol;
+    let price = data1.price;
+    let gwp = data1.gwp;
+
+    if (!unit) {
+
+        console.log('metric unit')
+        // this is a metric unit, now we will convert
+        t = t * 0.907185;
+        t = t.toFixed(1);
+        ethanol = ethanol * 2.98668849;
+        ethanol = ethanol.toFixed(3);
+        price = price / 2.98668849;
+        price = price.toFixed(3);
+        gwp = gwp / 2.98668849;
+        gwp = gwp.toFixed(3);
+
+        console.log(t, ethanol, price, gwp);
+    }
+
+    document.getElementById('r1-name').innerHTML = `${countyname} County`
+    document.getElementById('r1-biomass').innerHTML = t 
+    document.getElementById('r1-ethanol').innerHTML = ethanol
+    document.getElementById('r1-price').innerHTML = price
+    document.getElementById('r1-gwp').innerHTML = gwp
+
+    // data is always in imperial units
+    if (data2 === null){
+        document.getElementById('r2-name').innerHTML = 'County 2'
+        document.getElementById('r2-biomass').innerHTML = 0
+        document.getElementById('r2-ethanol').innerHTML = 0
+        document.getElementById('r2-price').innerHTML = 0
+        document.getElementById('r2-gwp').innerHTML = 0
+    }
+
+    else {
+        let countyname2 = data2.name;
+        let t2 = data2.tons;
+        let ethanol2 = data2.ethanol;
+        let price2 = data2.price;
+        let gwp2 = data2.gwp;
+
+        if (!unit) {
+            t2 = t2 * 0.907185;
+            t2 = t2.toFixed(1);
+            ethanol2 = ethanol2 * 2.98668849;
+            ethanol2 = ethanol2.toFixed(3);
+            price2 = price2 / 2.98668849;
+            price2 = price2.toFixed(3);
+            gwp2 = gwp2 / 2.98668849;
+            gwp2 = gwp2.toFixed(3);
+        }
+
+        document.getElementById('r2-name').innerHTML = `${countyname2} County`
+        document.getElementById('r2-biomass').innerHTML = t2 
+        document.getElementById('r2-ethanol').innerHTML = ethanol2
+        document.getElementById('r2-price').innerHTML = price2
+        document.getElementById('r2-gwp').innerHTML = gwp2
     }
 }
 
@@ -130,11 +221,6 @@ Most important of code
 -It displays the county information when the county is clicked
 
 */
-
-
-let firstCounty = null;
-let secondCounty = null;
-let currentCounty = null;
 
 document.querySelectorAll('.allPaths').forEach(e => {
     e.setAttribute("class", `allPaths ${e.id}`);
@@ -156,33 +242,57 @@ document.querySelectorAll('.allPaths').forEach(e => {
     });
 
     e.addEventListener("click", function () {
-        if (firstCounty == null){
+        if (currentCounty == null){
             console.log("I'm here at one!")
 
-            firstCounty = e.id;
+            currentCounty = e.id;
 
-            console.log(firstCounty)
-            getInfo(firstCounty, true);
+            getInfo(currentCounty).then(currentCountyData => {
+                console.log(currentCountyData); // This should log the data returned by getInfo
+                displayInfoTop(currentCountyData);
+                displayComparison(currentCountyData, null);        
+            }).catch(error => {
+                console.error('Error fetching data:', error);
+            });
+
         }
-        else if (secondCounty == null && e.id !== firstCounty){
+        else if (previousCounty == null && e.id !== currentCounty){
+
             console.log("I'm here at two!")
 
-            secondCounty = e.id;
+            previousCounty = currentCounty;
+            previousCountyData = currentCountyData;
 
-            console.log(secondCounty)
-            getInfo(secondCounty, false);
+            currentCounty = e.id;
+
+            getInfo(currentCounty).then(currentCountyData => {
+                console.log(currentCountyData); // This should log the data returned by getInfo
+                displayInfoTop(currentCountyData);
+                displayComparison(previousCountyData, currentCountyData);    
+            }).catch(error => {
+                console.error('Error fetching data:', error);
+            });
+
         }
         else {
+
             console.log("I'm here at three!")
 
-            firstCounty = e.id;
+            previousCounty = null;
+            previousCountyData = null;
 
-            console.log(firstCounty)
+            currentCounty = e.id;
 
-            secondCounty = null;
-            getInfo(firstCounty, true)
+            getInfo(currentCounty).then(currentCountyData => {
+                console.log(currentCountyData); // This should log the data returned by getInfo
+                displayInfoTop(currentCountyData);
+                displayComparison(currentCountyData, null);    
+            }).catch(error => {
+                console.error('Error fetching data:', error);
+            });
+
+
         }
-        currentCounty = e.id;
         document.getElementById("errorMass").innerHTML = "<b></b>";
         document.getElementById("errorExport").innerHTML = "<b></b>";
     });
@@ -190,7 +300,6 @@ document.querySelectorAll('.allPaths').forEach(e => {
 });
 
 // Collapsible content
-// scripts.js
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.collapsible-header');
     const container = document.querySelector('.collapsible-container');
@@ -199,12 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
         container.classList.toggle('active');
     });
 
-    // button.addEventListener('click', () => {
-    //     container.classList.toggle('active');
-    // });
+
 });
-
-
 
 // Getting mass
 function getMassInfo() {
@@ -298,5 +403,3 @@ async function exportToCsvCounty() {
     }
 
 }
-
-
