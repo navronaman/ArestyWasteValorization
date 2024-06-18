@@ -32,11 +32,6 @@ GWP_CFs = {
 STATE_DATA = pd.read_csv('data.csv')
 STATE_DATA["Kilogram"] = STATE_DATA["Lignocellulose (dry tons)"] * 907.185
 STATE_DATA["Kilogram/hr"] = STATE_DATA["Kilogram"] / (365*24*0.96)
-STATE_DATA["Annual Ethanol ($ gal/yr)"] = None
-STATE_DATA["Price ($/kg)"] = None
-STATE_DATA["GWP (kg CO2e/gal)"] = None
-
-NEW_DATA = pd.read_csv('new_data.csv')
 
 
 def calculate_annual_ethanol_price_GWP(mass, cornstover_price=0.2, GWP_CFs=GWP_CFs, characterization_factors=(1., 1.,), power_utility_price=0.07):
@@ -146,11 +141,11 @@ def county(name, state_data=STATE_DATA):
 
     return name_final, dry_tonnes, round(ethanol, 3), round(price, 3), round(gwp, 3)
     
-def county_data_export_csv(name, new_data=NEW_DATA):
+def county_data_export_csv(name, df):
     
     name_final = None
     
-    for item in new_data['County']:
+    for item in df['County']:
         if item.lower() == name.lower():
             name_final = item
             break
@@ -159,9 +154,14 @@ def county_data_export_csv(name, new_data=NEW_DATA):
         return None
 
     # Return the data for the specific county in a pandas dataframe
-    return new_data.loc[new_data['County'] == name_final]
+    return df.loc[df['County'] == name_final]
 
 if __name__ == '__main__':
     
+    df1 = pd.read_csv('new_data_imperial.csv')
+    df2 = pd.read_csv('new_data_metric.csv')
+    
     print(county('cape may'))
-    print(county_data_export_csv('cape may'))
+    
+    print(county_data_export_csv('cape may', df1))
+    print(county_data_export_csv('cape may', df2))
