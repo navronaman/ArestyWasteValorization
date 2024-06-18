@@ -47,20 +47,6 @@
         <label for="metric" class="tab-label" onclick="selectUnit('metric')">Metric</label>
     </div>
 
-    <!-- Holds content for the information of the counties -->
-    <!-- <div class="container">
-        <div id="info" class="info-div">
-            <p id="info" class="info-div">
-                <b>County <br>
-                Lignocellulosic Biomass: <br>
-                Annual Ethanol (gal/year): <br>
-                Price ($/gal): <br> 
-                GWP (kg CO2 eq/kg): </b><br>
-            </p>
-
-        </div>
-    </div> -->
-
     <div class="container">
         <div id="info" class="info-div">
             <p id="info">
@@ -704,13 +690,16 @@
     <div class="form-container">
 
         <h3> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h3>
-        <label for="massInput">Enter the biomass produced per hour (kg/hr) to be processed:</label>
-        <input type="number" id="massInput" name="massInput" placeholder="100-100000" min="100" max="100000" required>
+        <label for="massInput">Enter annual biomass produced in <span id="m-biomass">tons</span> to be processed:</label>
+        <input type="number" id="massInput" name="massInput" placeholder="1000-1000000" min="1000" max="1000000" required>
         <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
-        <div id="infoOutput">
-            <b>Annual Ethanol (gal/year): <br>
-            Price ($/gal): <br>
-            GWP (kg CO2 eq/gal): <br> </b>
+        <div id="massInfoOutput">
+            <b>Annual Ethanol: </b><span id="m-ethanol">0</span><span id="m-ethanol-unit"> (gal/year):</span><br>
+
+            <b>Price: </b>$<span id="m-price">0</span><span id="m-price-unit"> /gal:</span><br>
+
+            <b>GWP: </b> <span id="m-gwp">0</span> <span id="m-gwp-unit"> (kg CO2 eq/kg):</span><br>
+
         </div>
         <div id="errorMass">
             <b> </b>

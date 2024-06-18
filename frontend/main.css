@@ -338,7 +338,7 @@ input {
     background-color: #0056b3;
 }
 
-#infoOutput{
+#massInfoOutput{
     display: block;
     padding: 10px;
     border-radius: 5px;
@@ -358,12 +358,12 @@ input {
 
 
 #export{
-    background-color: rgb(158, 158, 158);
+    background-color: #007BFF;
     margin-bottom: 20px;
 }
 
 #export:hover{
-    background-color: rgb(130, 130, 130);
+    background-color: #0056b3;
 }
 
 /* mass error and other error buttons */

@@ -1,8 +1,8 @@
 # Imports from backend file
-from backend import county, calculate_annual_ethanol_price_GWP, county_data_export_csv
+from backend import county, calculate_annual_ethanol_price_GWP
 
 # Imports from flask
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 
 # For client ID and client secret
@@ -38,22 +38,38 @@ def county_data(countyname):
                 
 @app.route('/mass/<int:mass>')
 def mass_data(mass):
+    unit = request.headers.get('X-Unit', 'imperial')
+    if unit not in ['imperial', 'metric']:
+        unit = 'imperial'
+    
     try:
+        # case switch statements
+        match unit:
+            case 'imperial':
+                # convert mass from short tons into kilograms
+                mass = mass * 907.185
+                # convert from annual kilograms to hourly kilograms
+                mass = mass / (365*24*0.96)
+            case 'metric':
+                # convert mass from metric tonnes into kilograms
+                mass = mass * 1000
+                # convert from annual kilograms to hourly kilograms
+                mass = mass / (365*24*0.96)
+    
         result = calculate_annual_ethanol_price_GWP(mass)
-        if result is None:
-            return jsonify({
-                "success": "false",
-                "error": "Mass incorrect"
-            })
-        else:
-            ethanol, price, gwp = result
-            return jsonify({
-                "success": "true",
-                "mass": mass,
-                "ethanol": ethanol,
-                "price": price,
-                "gwp": gwp
-            })
+        ethanol, price, gwp = result
+        match unit:
+            case 'metric':
+                ethanol = ethanol * 2.98668849
+                price = price / 2.98668849
+                gwp = gwp * 2.98668849
+        return jsonify({
+            "success": "true",
+            "mass": mass,
+            "ethanol": round(ethanol, 3),
+            "price": round(price, 3),
+            "gwp": round(gwp, 3)
+        })
     except Exception as e:
         return jsonify({
             "success": "false",

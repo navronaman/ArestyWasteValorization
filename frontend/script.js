@@ -35,16 +35,17 @@ function selectUnit(imperial_or_metric) {
         document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/gal):';
 
-        document.getElementById('infoOutput').innerHTML = `
-                    <b>Annual Ethanol (gal/year): <br>
-                    Price ($/gal): <br>
-                    GWP (kg CO2 eq/gal): <br> </b>`;
+        document.getElementById('m-biomass').innerHTML = 'tons';
+        document.getElementById('m-ethanol-unit').innerHTML = ' (gal/year)';
+        document.getElementById('m-price-unit').innerHTML = ' /gal';
+        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/gal):';
+
     } 
     else {
         unit = false;
 
         document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (kg/year):';
-        document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
+        document.getElementById('price-unit').innerHTML = 'Price ($/kg):';
         document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
 
         document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tonnes):';
@@ -52,10 +53,10 @@ function selectUnit(imperial_or_metric) {
         document.getElementById('r0-price').innerHTML = 'Price ($/kg):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
 
-        document.getElementById('infoOutput').innerHTML = `
-                    <b>Annual Ethanol (kg/year): <br>
-                    Price ($/kg): <br>
-                    GWP (kg CO2 eq/kg): <br> </b>`;
+        document.getElementById('m-biomass').innerHTML = 'tonnes';
+        document.getElementById('m-ethanol-unit').innerHTML = ' (kg/year)';
+        document.getElementById('m-price-unit').innerHTML = ' /kg';
+        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/kg)';
 
     }
 
@@ -70,6 +71,11 @@ function selectUnit(imperial_or_metric) {
     else {
         console.log('no data');
     }
+    document.getElementById('m-ethanol').innerHTML = 0;
+    document.getElementById('m-price').innerHTML = 0;
+    document.getElementById('m-gwp').innerHTML = 0;
+
+
     console.log(unit);
 }
 
@@ -316,44 +322,57 @@ function getMassInfo() {
     const massInput = document.getElementById("massInput").value;
     const mass = Number(massInput)
 
-    if (isNaN(mass) || mass < 100 || mass > 100000 || mass === 0 || !Number.isInteger(mass)){
+    if (isNaN(mass) || mass < 1000 || mass > 1000000 || mass === 0 || !Number.isInteger(mass)){
         document.getElementById("errorMass").innerHTML = "<span class='error'> Please enter a valid number between 100 and 100000 </span>";
         return;
     }
 
+    let unitName = "imperial"
+    switch (unit) {
+        case true:
+            unitName = "imperial";
+            break;
+        case false:
+            unitName = "metric";
+            break;
+    }
+
     const url = `http://localhost:5000/mass/${mass}`;
-    fetch(url)
+    const options = {
+        headers: {
+            'X-Unit': unitName
+        }
+    };
+
+    // Example of using fetch with the URL and options
+    fetch(url, options)
         .then(response => {
-            return response.json();
+            return response.json()
         })
         .then(data => {
-            const sucesss = data.success;
-            console.log(data);
+            const success = data.success;
+            console.log(data)
 
-            if (!sucesss) {
+            if (!success) {
                 document.getElementById("errorMass").innerHTML = "<span class='error'> There was an error with the request </span>";
                 return;
             }
 
-            const countyname = data.name;
             const ethanol = data.ethanol;
             const price = data.price;
             const gwp = data.gwp;
 
-            document.getElementById("infoOutput").innerHTML = `
-         <b> Annual Ethanol (gal/year): </b> ${ethanol} <br>
-         <b> Price ($/kg): </b> ${price} <br>
-         <b> GWP (kg CO2 eq/kg): </b> ${gwp}`;
+            document.getElementById("m-ethanol").innerHTML = ethanol;
+            document.getElementById("m-price").innerHTML = price;
+            document.getElementById("m-gwp").innerHTML = gwp;
 
-         document.getElementById("errorMass").innerHTML = "<b></b>";
-         document.getElementById("errorExport").innerHTML = "<b></b>";
-
+            document.getElementById("errorMass").innerHTML = "<b></b>";
+            document.getElementById("errorExport").innerHTML = "<b></b>";   
+            
         })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-    }
-
+        .catch(error => console.error('Error:', error));  
+}
+          
 
 // Getting the two CSV functions
 async function exportToCsvMain() {
