@@ -1,4 +1,4 @@
-from backend import calculate_annual_ethanol_price_GWP
+from lignocellulose import calculate_annual_ethanol_price_GWP
 import pandas as pd
 """
 We are going to use the data from https://ecocomplex.rutgers.edu/biomass-energy-potential.html 
@@ -49,7 +49,7 @@ def imperial(data):
         
     print(data)
     # Export data into an updated data csv
-    data.to_csv('new_data_imperial.csv', index=False)
+    data.to_csv(r'backend\fermentation\biomass_imperial.csv', index=False)
         
 def metric(data):
     data["Lignocellulose (metric tonnes)"] = data["Lignocellulose (dry tons)"] * (907.185/1000)
@@ -69,10 +69,10 @@ def metric(data):
         
     print(data)
     # Export data into an updated data csv
-    data.to_csv('new_data_metric.csv', index=False)
+    data.to_csv(r'backend\fermentation\biomass_metric.csv', index=False)
 
 if __name__ == '__main__':
-    data1 = pd.read_csv('data.csv')
+    data1 = pd.read_csv(r'backend\fermentation\biomass_data.csv')
     data2 = data1.copy()
     imperial(data1)
     metric(data2)

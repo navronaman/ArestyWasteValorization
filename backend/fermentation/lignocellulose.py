@@ -29,7 +29,7 @@ GWP_CFs = {
     'FGD_lime': 1, #!!! need to be clear if this is CaO or Ca(OH)2
     }
 
-STATE_DATA = pd.read_csv('data.csv')
+STATE_DATA = pd.read_csv(r'backend\fermentation\biomass_data.csv')
 STATE_DATA["Kilogram"] = STATE_DATA["Lignocellulose (dry tons)"] * 907.185
 STATE_DATA["Kilogram/hr"] = STATE_DATA["Kilogram"] / (365*24*0.96)
 
@@ -158,8 +158,8 @@ def county_data_export_csv(name, df):
 
 if __name__ == '__main__':
     
-    df1 = pd.read_csv('new_data_imperial.csv')
-    df2 = pd.read_csv('new_data_metric.csv')
+    df1 = pd.read_csv(r"backend\fermentation\biomass_imperial.csv")
+    df2 = pd.read_csv(r"backend\fermentation\biomass_metric.csv")
     
     print(county('cape may'))
     

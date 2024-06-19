@@ -1,5 +1,5 @@
 # Imports from backend file
-from backend import county, calculate_annual_ethanol_price_GWP
+from backend.fermentation.lignocellulose import county, calculate_annual_ethanol_price_GWP
 
 # Imports from flask
 from flask import Flask, jsonify, make_response, request
@@ -16,8 +16,8 @@ app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
 CORS(app)
 
-FILE_PATH_IMPERIAL = "new_data_imperial.csv"
-FILE_PATH_METRIC = "new_data_metric.csv"
+FILE_PATH_IMPERIAL = r"backend\fermentation\new_data_imperial.csv"
+FILE_PATH_METRIC = r"backend\fermentation\new_data_metric.csv"
     
 @app.route('/county/<string:countyname>')
 def county_data(countyname):
@@ -120,8 +120,6 @@ def county_data_export_csv(countyname):
     output.headers["Content-type"] = "text/csv"
     return output
 
-    
-    
 if __name__ == '__main__':
     app.run(debug=True)
 
