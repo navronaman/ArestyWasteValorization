@@ -6,18 +6,18 @@ from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 
 # For client ID and client secret
-# from dotenv import load_dotenv
 import secrets
 
 # Additional imports for CSV file sendings
+import os
 import pandas as pd
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
 CORS(app)
 
-FILE_PATH_IMPERIAL = r"backend\fermentation\new_data_imperial.csv"
-FILE_PATH_METRIC = r"backend\fermentation\new_data_metric.csv"
+FILE_PATH_IMPERIAL = os.path.abspath(r"backend/fermentation/biomass_imperial.csv")
+FILE_PATH_METRIC = os.path.abspath(r"backend/fermentation/biomass_metric.csv")
     
 @app.route('/county/<string:countyname>')
 def county_data(countyname):
