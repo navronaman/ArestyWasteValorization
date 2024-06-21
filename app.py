@@ -1,5 +1,5 @@
 # Imports from backend file
-from backend.fermentation.lignocellulose import county, calculate_annual_ethanol_price_GWP
+from backend.fermentation.lignocellulose import lignocellulose_county, lignocellulose_calc
 
 # Imports from flask
 from flask import Flask, jsonify, make_response, request
@@ -22,7 +22,7 @@ FILE_PATH_METRIC = os.path.abspath(r"backend/fermentation/biomass_metric.csv")
 @app.route('/county/<string:countyname>')
 def county_data(countyname):
     countyname = countyname.replace("_", " ")
-    result = county(countyname)
+    result = lignocellulose_county(countyname)
     if result is None:
         return jsonify({
             "error": "County not found"
@@ -57,7 +57,7 @@ def mass_data(mass):
                 # convert from annual kilograms to hourly kilograms
                 mass = mass / (365*24*0.96)
     
-        result = calculate_annual_ethanol_price_GWP(mass)
+        result = lignocellulose_calc(mass)
         ethanol, price, gwp = result
         match unit:
             case 'metric':

@@ -34,7 +34,7 @@ STATE_DATA["Kilogram"] = STATE_DATA["Lignocellulose (dry tons)"] * 907.185
 STATE_DATA["Kilogram/hr"] = STATE_DATA["Kilogram"] / (365*24*0.96)
 
 
-def calculate_annual_ethanol_price_GWP(mass, cornstover_price=0.2, GWP_CFs=GWP_CFs, characterization_factors=(1., 1.,), power_utility_price=0.07):
+def lignocellulose_calc(mass, cornstover_price=0.2, GWP_CFs=GWP_CFs, characterization_factors=(1., 1.,), power_utility_price=0.07):
     """
     Calculate the annual ethanol price and GWP based on the given mass of ethanol produced.
     
@@ -120,7 +120,7 @@ def calculate_annual_ethanol_price_GWP(mass, cornstover_price=0.2, GWP_CFs=GWP_C
 
 
 
-def county(name, state_data=STATE_DATA):
+def lignocellulose_county(name, state_data=STATE_DATA):
     # check if the name inputted in county exists in the first column of state_data
     
     name_final = None
@@ -137,7 +137,7 @@ def county(name, state_data=STATE_DATA):
     dry_tonnes = int(state_data.loc[state_data['County'] == name_final, 'Lignocellulose (dry tons)'].values[0])
     kg_per_hr = state_data.loc[state_data['County'] == name_final, 'Kilogram/hr'].values[0]
 
-    ethanol, price, gwp = calculate_annual_ethanol_price_GWP(kg_per_hr)
+    ethanol, price, gwp = lignocellulose_calc(kg_per_hr)
 
     return name_final, dry_tonnes, round(ethanol, 3), round(price, 3), round(gwp, 3)
     
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     df1 = pd.read_csv(r"backend\fermentation\biomass_imperial.csv")
     df2 = pd.read_csv(r"backend\fermentation\biomass_metric.csv")
     
-    print(county('cape may'))
+    print(lignocellulose_county('cape may'))
     
     print(county_data_export_csv('cape may', df1))
     print(county_data_export_csv('cape may', df2))

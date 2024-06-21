@@ -1,4 +1,4 @@
-from lignocellulose import calculate_annual_ethanol_price_GWP
+from lignocellulose import lignocellulose_calc
 import pandas as pd
 """
 We are going to use the data from https://ecocomplex.rutgers.edu/biomass-energy-potential.html 
@@ -42,7 +42,7 @@ def imperial(data):
     for i in range(len(data)):
         print(f"\n{data['County'][i]} County")
         print(f"Annual estimated lignocellulose in dry tons: {data['Lignocellulose (dry tons)'][i]}")
-        ethanol, price, gwp = calculate_annual_ethanol_price_GWP(data['Kilogram/hr'][i])
+        ethanol, price, gwp = lignocellulose_calc(data['Kilogram/hr'][i])
         data["Annual Ethanol (gal/yr)"][i] = ethanol
         data["Price ($/gal)"][i] = price
         data["GWP (kg CO2e/gal)"][i] = gwp
@@ -62,7 +62,7 @@ def metric(data):
     for i in range(len(data)):
         print(f"\n{data['County'][i]} County")
         print(f"Annual estimated lignocellulose in tonnes: {data['Lignocellulose (metric tonnes)'][i]}")
-        ethanol, price, gwp = calculate_annual_ethanol_price_GWP(data['Kilogram/hr'][i])
+        ethanol, price, gwp = lignocellulose_calc(data['Kilogram/hr'][i])
         data["Annual Ethanol (kg/yr)"][i] = ethanol * 2.98668849
         data["Price ($/kg)"][i] = price / 2.98668849
         data["GWP (kg CO2e/kg)"][i] = gwp / 2.98668849
