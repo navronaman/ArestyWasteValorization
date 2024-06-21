@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import warnings
+warnings.filterwarnings('ignore')
+
 '''
 QSDsan-webapp: Web application for QSDsan
 
@@ -99,28 +102,20 @@ def lignocellulose_calc(mass, cornstover_price=0.2, GWP_CFs=GWP_CFs, characteriz
     
     return get_ethanol(), get_MESP(), get_GWP(),
     
-# Due to a lack of accurate data on the mass of lignocellulosic waste produced in New Jersey, we will look at the number of farmers who surveyed in New Jersey and the average farm size in New Jersey to use biomass in their renewable energy production.
-# Data from 2017: https://www.nass.usda.gov/Publications/AgCensus/2017/Full_Report/Volume_1,_Chapter_2_County_Level/New_Jersey/st34_2_0043_0043.pdf
-# Harvested biomass for use in renewable energy production: 116 farms
-# Atlantic: 4
-# Bergen: 0
-# Burlington: 1
-# Camden: 0
-# Cape May: 0
-# Cumberland: 2
-# Essex: 0
-# Gloucester: 3
-# Hudson: 0
-# Hunterdon: 19
-# Mercer: 3
-# Middlesex: 6
-# Monmouth: 10
-# Morris: 13
-# Ocean: 2
-
-
 
 def lignocellulose_county(name, state_data=STATE_DATA):
+    """
+    Take a county name from the user and return the annual ethanol price and GWP.
+    
+    Parameters
+    ----------
+    name : str
+        The name of the county.
+    state_data : pandas.DataFrame
+        The data for the state.
+        Set to default value of STATE_DATA.
+        https://ecocomplex.rutgers.edu/biomass-energy-potential.html
+    """
     # check if the name inputted in county exists in the first column of state_data
     
     name_final = None
