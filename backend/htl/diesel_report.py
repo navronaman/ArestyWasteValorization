@@ -73,3 +73,42 @@ print(final_df.columns)
         
 # Save the final dataframe to a CSV file
 final_df.to_csv(r'backend\htl\sludge_production_data.csv', index=False)
+
+def get_county_data(df):
+    """
+    Takes the data from the dataframe and returns a dataframe of the county data:
+    - Scrapes the existing flow mgd from each county 
+    - Totals each county's flow mgd
+    - Stores the data into a new dataframe with the county name and the total flow mgd
+
+    Parameters:
+    df (pd.DataFrame): The dataframe to scrape the county, which is the sludge_production_data.csv
+    """
+    
+    # Create a new dataframe to store the county data
+    county_data = pd.DataFrame(columns=['County', 'Flow MGD'])
+    
+    # Traverse through the data
+    for i, row in df.iterrows():
+        county = row['COUNTY']
+        flow_mgd = float(row['EXISTING FLOW (MGD)'])
+        
+        # Check if the county is already in the dataframe
+        if county in county_data['County'].values:
+            # Add the flow mgd to the existing flow mgd
+            county_data.loc[county_data['County'] == county, 'Flow MGD'] += flow_mgd
+        else:
+            # Add the county and flow mgd to the dataframe
+            new_row = pd.DataFrame({'County': county, 'Flow MGD': flow_mgd}, index=[0])
+            county_data = pd.concat([county_data, new_row], ignore_index=True)
+            
+    return county_data
+
+final_county_data = get_county_data(final_df)
+print(final_county_data.shape)
+print(final_county_data.head())
+print(final_county_data.tail())
+print(final_county_data.columns)
+
+# Save the final county data to a CSV file
+final_county_data.to_csv(r'backend\htl\sludge_production_county_data.csv', index=False)
