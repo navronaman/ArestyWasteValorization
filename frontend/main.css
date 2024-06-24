@@ -315,8 +315,8 @@ tbody th {
 
 
 label {
-    margin-left: 0.5px;
-    margin-right: 0.5px;
+    /* margin-left: 0.5px; */
+    /* margin-right: 0.5px; */
     margin-bottom: 10px;
     color: white;
 }
@@ -386,7 +386,7 @@ input {
 .error-icon {
     display: inline-block;
     vertical-align: middle;
-    margin-right: 8px;
+    /* margin-right: 8px; */
     font-size: 18px;
 }
 
