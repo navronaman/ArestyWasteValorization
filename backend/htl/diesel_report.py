@@ -30,7 +30,6 @@ def clean_df(df):
     indices_of_rows_to_remove = []
     for i, row in df.iterrows():
         if row.iloc[0] != district_name or row.iloc[0] == 'None':
-            print(f"Row {i}: {row.iloc[0]}")
             indices_of_rows_to_remove.append(i)
 
     df.drop(indices_of_rows_to_remove, inplace=True) # Remove rows after the district name
@@ -45,27 +44,32 @@ def clean_df(df):
     df.columns = df.columns.str.replace('\n', ' ', regex=True)
     df.replace(to_replace='\n', value=' ', regex=True, inplace=True)
                 
-    print(f"No. of Columns: {len(df.columns)}")
-    print(f"Columns: {df.columns}")
     return df
     
 with pdfplumber.open(pdf_path) as pdf:
-    for i, page in enumerate(pdf.pages[7:37]):
-        print(f"Processing page {i+8} of {len(pdf.pages)}")
+    for i, page in enumerate(pdf.pages[7:37]): # Only these pages contain the required content
+        print(f"\nProcessing page {i+8} of {len(pdf.pages)}")
         try:
             # Extract tables from page
             tables = page.extract_tables()
             for table in tables:
-                print('\n')
                 if table:
                     df = pd.DataFrame(table[2:], columns=table[1]) # Create a dataframe from the table data
-                    if len(df.columns) > 10:
-                        print("HEY")
+                    if len(df.columns) > 10: # If the dataframe has more than 10 columns, it's the correct table
                         df = clean_df(df)
-                        print(df)                    
-                        dataframes.append(df)
+                        print(df.shape) # Print the shape of the dataframe, should have 14 columns
+                        dataframes.append(df) # Append to the final df
                     
         except Exception as e:
-            print(f"Error on page {i+8}: {e}")
+            print(f"\nError on page {i+8}: {e}")
             continue
         
+# Combine all the dataframes into one
+final_df = pd.concat(dataframes, ignore_index=True)
+print(final_df.shape)
+print(final_df.head())
+print(final_df.tail())
+print(final_df.columns)
+        
+# Save the final dataframe to a CSV file
+final_df.to_csv(r'backend\htl\sludge_production_data.csv', index=False)
