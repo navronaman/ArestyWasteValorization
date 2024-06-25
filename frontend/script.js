@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('navbar-placeholder').innerHTML = data;
         });
 
+    fetch('assets\\unitbutton.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('unitbutton-placeholder').innerHTML = data;
+        });
+
     fetch('assets\\njname.svg')
         .then(response => response.text())
         .then(data => {
