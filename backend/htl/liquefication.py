@@ -72,8 +72,21 @@ def htl_calc(existing_flow):
     return MDSP.get(), GWP.get()
 
 if __name__ == '__main__':
+    
+    import pandas as pd
 
     MDSP, GWP = htl_calc(240) # 240 MGD
+    print(f'MDSP: ${MDSP:.2f} [$/gal diesel]')
+    print(f'GWP: {GWP:.2f} [kg CO2/MMBTU diesel]')
+    
+    
+    df = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
+    
+    # locate the flow mgd for warren    
+    warren_flow_mgd = df.loc[df['County'] == 'Union ', 'Flow MGD'].values[0]
+    print(warren_flow_mgd)
+
+    MDSP, GWP = htl_calc(warren_flow_mgd) # 240 MGD
     print(f'MDSP: ${MDSP:.2f} [$/gal diesel]')
     print(f'GWP: {GWP:.2f} [kg CO2/MMBTU diesel]')
 
