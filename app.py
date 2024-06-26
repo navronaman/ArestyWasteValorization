@@ -1,5 +1,6 @@
 # Imports from backend file
 from backend.fermentation.lignocellulose import lignocellulose_county, lignocellulose_calc
+from backend.htl.liquefication import htl_county, htl_calc
 
 # Imports from flask
 from flask import Flask, jsonify, make_response, request
@@ -19,8 +20,9 @@ CORS(app)
 FILE_PATH_IMPERIAL = os.path.abspath(r"backend/fermentation/biomass_imperial.csv")
 FILE_PATH_METRIC = os.path.abspath(r"backend/fermentation/biomass_metric.csv")
     
-@app.route('/county/<string:countyname>')
-def county_data(countyname):
+# county and mass for fermentation
+@app.route('/fermentation-county/<string:countyname>')
+def fermentation_county_data(countyname):
     countyname = countyname.replace("_", " ")
     result = lignocellulose_county(countyname)
     if result is None:
@@ -37,8 +39,8 @@ def county_data(countyname):
             "gwp": gwp
         })
                 
-@app.route('/mass/<int:mass>')
-def mass_data(mass):
+@app.route('/fermentation-biomass/<int:mass>')
+def fermentation_biomass_data(mass):
     unit = request.headers.get('X-Unit', 'imperial')
     if unit not in ['imperial', 'metric']:
         unit = 'imperial'
@@ -76,6 +78,60 @@ def mass_data(mass):
             "success": "false",
             "error": str(e)
         })
+        
+# county and mass for htl
+@app.route('/htl-county/<string:countyname>')
+def htl_county_data(countyname):
+    countyname = countyname.replace("_", " ")
+    result = htl_county(countyname)
+    if result is None:
+        return jsonify({
+            "error": "County not found"
+        })
+    else :
+        name, sludge, price, gwp = result
+        return jsonify({
+            "name": name,
+            "sludge": sludge,
+            "price": price,
+            "gwp": gwp
+        })
+        
+@app.route('/htl-sludge/<int:sludge>')
+def htl_sludge_data(sludge):
+    unit = request.headers.get('X-Unit', 'imperial')
+    if unit not in ['imperial', 'metric']:
+        unit = 'imperial'
+    
+    try:
+        print("Hey")
+        # case switch statements
+        match unit:
+            case 'imperial':
+                None
+            case 'metric':
+                None
+    
+        result = htl_calc(sludge)
+        price, gwp = result
+        print(price)
+        print(gwp)
+        match unit:
+            case 'metric':
+                None
+                
+        return jsonify({
+            "success": "true",
+            "sludge": sludge,
+            "price": round(price, 3),
+            "gwp": round(gwp, 3)
+        })
+    except Exception as e:
+        return jsonify({
+            "success": "false",
+            "error": str(e)
+        })
+
         
 @app.route('/csv')
 def export_csv():
