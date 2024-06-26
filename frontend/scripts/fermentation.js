@@ -11,7 +11,7 @@ function changeSettings(unit) {
         document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/gal):';
 
-        document.getElementById('m-biomass').innerHTML = 'tons';
+        document.getElementById('m-biomass').innerHTML = 'tons';fun
         document.getElementById('m-ethanol-unit').innerHTML = ' (gal/year)';
         document.getElementById('m-price-unit').innerHTML = ' /gal';
         document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/gal):';
@@ -41,7 +41,7 @@ function changeSettings(unit) {
 // this info will be set to current county data, and then used to update info and comparison
 async function getInfo(county) {
     console.log(unit);
-    const url = `http://localhost:5000/county/${county}`;
+    const url = `http://localhost:5000/fermentation-county/${county}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -197,7 +197,7 @@ function getMassInfo() {
             break;
     }
 
-    const url = `http://localhost:5000/mass/${mass}`;
+    const url = `http://localhost:5000/fermentation-biomass/${mass}`;
     const options = {
         headers: {
             'X-Unit': unitName
