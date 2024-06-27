@@ -144,6 +144,8 @@ function getMassInfo() {
     const massInput = document.getElementById("massInput").value;
     const mass = Number(massInput)
 
+    console.log(mass)
+
     if (isNaN(mass) || mass < 1 || mass > 2000 || mass === 0 || !Number.isInteger(mass)){
         document.getElementById("errorMass").innerHTML = "<span class='error'> Please enter a valid number between 1 and 2000 </span>";
         return;
