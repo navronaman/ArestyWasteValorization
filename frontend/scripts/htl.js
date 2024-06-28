@@ -1,37 +1,75 @@
 // when the unit button is clicked
 function changeSettings(unit) {
-    if (unit) {
-        document.getElementById('price-unit').innerHTML = 'Price ($/gal diesel):';
-        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2/MMBTU diesel):';
+    if (unit == "imperial") {
 
+        // infoTop units in imperial
+        document.getElementById('sludge-unit').innerHTML = '(MGD):';
+        document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
+        document.getElementById('gwp-unit').innerHTML = 'GWP (lb CO2 eq/gal):';
+
+        // comparison units in imperial
+        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
+        document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
+        document.getElementById('r0-gwp').innerHTML = 'GWP (lb CO2 eq/gal):';
+
+        // manual input units in imperial
+        document.getElementById('m-sludge').innerHTML = 'MGD (million gallons per day)';
+        document.getElementById('m-price-unit').innerHTML = ' /gal';
+        document.getElementById('m-gwp-unit').innerHTML = ' (lb CO2 eq/gal):';
+
+        // tool tips from the infoTop
         document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day'
         document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
         document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
 
-        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
-        document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
-        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2/MMBTU):';
+    }
 
+    else if (unit == "metric") {
+
+        // infoTop units in metric
+        document.getElementById('sludge-unit').innerHTML = '(MGD):';
+        document.getElementById('price-unit').innerHTML = 'Price ($/kg):';
+        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
+
+        // comparison units in metric
+        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
+        document.getElementById('r0-price').innerHTML = 'Price ($/kg):';
+        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
+
+        // manual input units in metric
         document.getElementById('m-sludge').innerHTML = 'MGD (million gallons per day)';
-        document.getElementById('m-price-unit').innerHTML = ' /gal diesel';
-        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2/MMBTU diesel):';
+        document.getElementById('m-price-unit').innerHTML = ' /kg';
+        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/kg):';
+
+        // tool tips from the infoTop
+        document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day'
+        document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
+        document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
     }
 
     else {
-        document.getElementById('price-unit').innerHTML = 'Price ($/gal diesel):';
-        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2/MMBTU diesel):';
+        // energy
 
+        // infoTop units in energy
+        document.getElementById('sludge-unit').innerHTML = '(MGD):';
+        document.getElementById('price-unit').innerHTML = 'Price ($/MMBTU):';
+        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2/MMBTU):';
+
+        // comparison units in energy
+        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
+        document.getElementById('r0-price').innerHTML = 'Price ($/MMBTU):';
+        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
+
+        // manual input units in energy
+        document.getElementById('m-sludge').innerHTML = 'MGD (million gallons per day)';
+        document.getElementById('m-price-unit').innerHTML = ' /MMBTU';
+        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/MMBTU):';
+
+        // tool tips from the infoTop
         document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day'
         document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
         document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
 
-        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
-        document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
-        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2/MMBTU):';
-
-        document.getElementById('m-sludge').innerHTML = 'MGD (million gallons per day)';
-        document.getElementById('m-price-unit').innerHTML = ' /gal diesel';
-        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2/MMBTU diesel):';
     }
 
     document.getElementById('m-price').innerHTML = 0;

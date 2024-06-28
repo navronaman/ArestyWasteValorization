@@ -34,7 +34,7 @@
                 <b><span id="biomass-unit">Lignocellulosic Biomass:</span></b> <span id="biomass"></span>
                 <span class="info-icon">ℹ️<span class="tooltip" id="biomass-tool">Amount of biomass available</span></span><br>
 
-                <b><span id="ethanol-unit">Annual Ethanol (gal/year):</span></b> <span id="ethanol"></span>
+                <b><span id="ethanol-unit">Annual Ethanol (MM gal/year):</span></b> <span id="ethanol"></span>
                 <span class="info-icon">ℹ️<span class="tooltip" id="ethanol-tool">Annual ethanol production</span></span><br>
 
                 <b><span id="price-unit">Price ($/gal):</span></b> <span id="price"></span>
@@ -65,7 +65,7 @@
                     <tr>
                         <th></th>
                         <th id="r0-biomass">Annual Biomass (tons)</th>
-                        <th id="r0-ethanol">Annual Ethanol (gal/year)</th>
+                        <th id="r0-ethanol">Annual Ethanol (MM gal/year)</th>
                         <th id="r0-price">Price ($/gal)</th>
                         <th id="r0-gwp">GWP (lb CO2 eq/gal)</th>
                     </tr>
@@ -99,7 +99,7 @@
         <input type="number" id="massInput" name="massInput" placeholder="1000-1000000" min="1000" max="1000000" required>
         <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
         <div id="massInfoOutput">
-            <b>Annual Ethanol: </b><span id="m-ethanol">0</span><span id="m-ethanol-unit"> (gal/year):</span><br>
+            <b>Annual Ethanol: </b><span id="m-ethanol">0</span><span id="m-ethanol-unit"> (MM gal/year):</span><br>
 
             <b>Price: </b>$<span id="m-price">0</span><span id="m-price-unit"> /gal:</span><br>
 

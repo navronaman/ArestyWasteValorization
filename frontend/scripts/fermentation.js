@@ -1,37 +1,88 @@
 
 // this function is called when the page is loaded, and used to change the settings once the unit is clicked
 function changeSettings(unit) {
-    if (unit) {
-        document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (gal/year):';
+    if (unit == "imperial") {
+
+        // infoTop units in imperial
+        document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (MM gal/year):';
         document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
-        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/gal):';
+        document.getElementById('gwp-unit').innerHTML = 'GWP (lb CO2 eq/gal):';
 
+        // comparison units in imperial
         document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tons):';
-        document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (gal/year):';
+        document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (MM gal/year):';
         document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
-        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/gal):';
+        document.getElementById('r0-gwp').innerHTML = 'GWP (lb CO2 eq/gal):';
 
-        document.getElementById('m-biomass').innerHTML = 'tons';fun
-        document.getElementById('m-ethanol-unit').innerHTML = ' (gal/year)';
+        // manual input units in imperial
+        document.getElementById('m-biomass').innerHTML = 'tons';
+        document.getElementById('m-ethanol-unit').innerHTML = ' (MM gal/year)';
         document.getElementById('m-price-unit').innerHTML = ' /gal';
         document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/gal):';
+
+        // tool tips from the infoTop
+        document.getElementById('biomass-tool').innerHTML = 'Ethanol production in million gallons per year'
+        document.getElementById('ethanol-tool').innerHTML = 'Holding capacity in million gallons a day'
+        document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
+        document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
+
     }
-    else {
+    else if (unit == "metric") {
+
+        // infoTop units in metric
         document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (kg/year):';
         document.getElementById('price-unit').innerHTML = 'Price ($/kg):';
         document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
 
+        // comparison units in metric
         document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tonnes):';
         document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (kg/year):';
         document.getElementById('r0-price').innerHTML = 'Price ($/kg):';
         document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
 
+        // manual input units in metric
         document.getElementById('m-biomass').innerHTML = 'tonnes';
         document.getElementById('m-ethanol-unit').innerHTML = ' (kg/year)';
         document.getElementById('m-price-unit').innerHTML = ' /kg';
         document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/kg)';
+
+        // tool tips from the infoTop
+        document.getElementById('biomass-tool').innerHTML = 'Holding capacity in million gallons a day'
+        document.getElementById('ethanol-tool').innerHTML = 'Holding capacity in million gallons a day'
+        document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
+        document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
+
     }
 
+    else{
+        // energy
+
+        // infoTop units in energy
+        document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (kg/year):';
+        document.getElementById('price-unit').innerHTML = 'Price ($/MMBTU):';
+        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
+
+        // comparison units in energy
+        document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tonnes):';
+        document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (kg/year):';
+        document.getElementById('r0-price').innerHTML = 'Price ($/MMBTU):';
+        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
+
+        // manual input units in energy
+        document.getElementById('m-biomass').innerHTML = 'tonnes';
+        document.getElementById('m-ethanol-unit').innerHTML = ' (kg/year)';
+        document.getElementById('m-price-unit').innerHTML = ' /MMBTU';
+        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/MMBTU)';
+
+        // tool tips from the infoTop
+        document.getElementById('biomass-tool').innerHTML = 'Holding capacity in million gallons a day'
+        document.getElementById('ethanol-tool').innerHTML = 'Holding capacity in million gallons a day'
+        document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
+        document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
+
+    }
+
+    // resetting the manual input units every time the unit is changed
     document.getElementById('m-ethanol').innerHTML = 0;
     document.getElementById('m-price').innerHTML = 0;
     document.getElementById('m-gwp').innerHTML = 0;

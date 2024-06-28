@@ -45,20 +45,26 @@ var previousCounty = null; // previous county selected
 var currentCountyData = null;
 var previousCountyData = null;
 
-var orderOfComparison = true; // true if first county is selected, false if second county is selected
-
 // imperial/metric button
-var unit = true;
+var unit = null;
 function selectUnit(imperial_or_metric) {
     console.log(imperial_or_metric);
+
+    // implement the changeSettings function to change the units in all of HTML
     if (imperial_or_metric == "imperial") {
-        unit = true;
+        unit = "imperial";
+        changeSettings(unit);
+    }
+    else if (imperial_or_metric == "metric") {
+        unit = "metric";
         changeSettings(unit);
     }
     else {
-        unit = false;
+        unit = "energy";
         changeSettings(unit);
     }
+
+    // change the values of the data in infoTop and comparison
     if (currentCountyData !== null && previousCountyData !== null) {
         displayInfoTop(currentCountyData);
         displayComparison(currentCountyData, previousCountyData);
@@ -69,9 +75,7 @@ function selectUnit(imperial_or_metric) {
     }
     else {
         console.log('no data');
-    }
-    console.log(unit);
-} 
+    }} 
 /*
 
 Most important of code
