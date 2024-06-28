@@ -10,7 +10,7 @@
 <body>
 
     <!-- navbar -->
-    <div id="navbar-placeholder"></div>\
+    <div id="navbar-placeholder"></div>
 
     <!-- header -->
     <header>
@@ -30,13 +30,13 @@
                 <b><span id="countyName">County</span></b>
                 <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
 
-                <b><span id="sludge-unit">Daily Sludge Capacity (MGD):</span></b> <span id="sludge"></span>
+                <b>Flow Capacity for Sludge <span id="sludge-unit">(MGD):</span></b> <span id="sludge"></span>
                 <span class="info-icon">ℹ️<span class="tooltip" id="sludge-tool">Holding capacity in million gallons a day</span></span><br>
 
-                <b><span id="price-unit">Price ($/gal diesel):</span></b> <span id="price"></span>
+                <b><span id="price-unit">Price ($/gal):</span></b> <span id="price"></span>
                 <span class="info-icon">ℹ️<span class="tooltip" id="price-tool">Cost of diesel per gallon (Minimum Selling Price)</span></span><br> 
 
-                <b><span id="gwp-unit">GWP (kg CO2/MMBTU diesel):</span></b> <span id="gwp"></span>
+                <b><span id="gwp-unit">GWP (lb CO2 eq/gal):</span></b> <span id="gwp"></span>
                 <span class="info-icon">ℹ️<span class="tooltip" id="gwp-tool">Global Warming Potential per MMBTU</span></span><br>
             </p>
         </div>
@@ -61,7 +61,7 @@
                         <th></th>
                         <th id="r0-sludge">Sludge (MGD)</th>
                         <th id="r0-price">Price ($/gal)</th>
-                        <th id="r0-gwp">GWP (kg CO2/MMBTU)</th>
+                        <th id="r0-gwp">GWP (lb CO2 eq/gal)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,9 +104,6 @@
 
     <script src="script.js"></script>
     <script src="scripts/htl.js"></script>
-
-
-
     
 </body>
 </html>
