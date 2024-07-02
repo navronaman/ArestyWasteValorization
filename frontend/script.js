@@ -40,10 +40,10 @@ function hideSidebar() {
 }
 
 var currentCounty = null; // current county selected
-var previousCounty = null; // previous county selected
+var previousCounty = null; // previous county selected (for comparison)
 
-var currentCountyData = null;
-var previousCountyData = null;
+var currentCountyData = null; // current county data
+var previousCountyData = null; // previous county data (for comparison)
 
 // imperial/metric button
 var unit = null;
@@ -59,11 +59,7 @@ function selectUnit(imperial_or_metric) {
         unit = "metric";
         changeSettings(unit);
     }
-    else {
-        unit = "energy";
-        changeSettings(unit);
-    }
-
+    
     // change the values of the data in infoTop and comparison
     if (currentCountyData !== null && previousCountyData !== null) {
         displayInfoTop(currentCountyData);

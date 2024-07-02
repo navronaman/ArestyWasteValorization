@@ -71,8 +71,13 @@ def htl_calc(existing_flow):
     
     # Want MDSP (minimum diesel selling price) and GWP diesel (global warming potential of diesel)
     MDSP, GWP = [m for m in model.metrics if m.name in ('MDSP', 'GWP diesel')]
+    # MDSP is in $/gal diesel, GWP is in kg CO2/MMBTU diesel
     
-    return MDSP.get(), GWP.get()
+    mmbtu_to_gal = 0.12845 # 1 MMBTU = 0.12745 gal diesel
+    kg_to_lb = 2.20462
+    
+    # when returning we convert kg CO2/MMBTU to lb CO2/gal
+    return MDSP.get(), GWP.get()*mmbtu_to_gal*kg_to_lb
 
 def htl_county(county, state_data=STATE_DATA):
     """
@@ -107,7 +112,7 @@ if __name__ == '__main__':
     
     MDSP, GWP = htl_calc(240) # 240 MGD
     print(f'MDSP: ${MDSP:.2f} [$/gal diesel]')
-    print(f'GWP: {GWP:.2f} [kg CO2/MMBTU diesel]')
+    print(f'GWP: {GWP:.2f} [lb CO2/gal diesel]')
         
     state_data = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
     print(state_data.head())
@@ -119,7 +124,7 @@ if __name__ == '__main__':
 
     MDSP, GWP = htl_calc(warren_flow_mgd) # 240 MGD
     print(f'MDSP: ${MDSP:.2f} [$/gal diesel]')
-    print(f'GWP: {GWP:.2f} [kg CO2/MMBTU diesel]')
+    print(f'GWP: {GWP:.2f} [lb CO2/gal diesel]')
     
     print(htl_county('cape may'))
 

@@ -31,12 +31,27 @@
                 <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
 
                 <b>Flow Capacity for Sludge <span id="sludge-unit">(MGD):</span></b> <span id="sludge"></span>
+                <select id="sludge=units" class="unit-select" onchange="updateUnits('sludge')">
+                    <option value="MGD">MGD</option>
+                    <option value="m3/d">m3/d</option>
+                </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="sludge-tool">Holding capacity in million gallons a day</span></span><br>
 
                 <b><span id="price-unit">Price ($/gal):</span></b> <span id="price"></span>
+                <select id="price-units" class="unit-select" onchange="updateUnits('price')">
+                    <option value="$/gal">$/gal</option>
+                    <option value="$/m3">$/m3</option>
+                    <option value="$/kg">$/kg</option>
+                </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="price-tool">Cost of diesel per gallon (Minimum Selling Price)</span></span><br> 
 
                 <b><span id="gwp-unit">GWP (lb CO2 eq/gal):</span></b> <span id="gwp"></span>
+                <select id="gwp-units" class="unit-select" onchange="updateUnits('gwp')">
+                    <option value="lb CO2 eq/gal">lb CO2 eq/gal</option>
+                    <option value="kg CO2 eq/m3">kg CO2 eq/m3</option>
+                    <option value="kg CO2 eq/kg">kg CO2 eq/kg</option>
+                    <option value="kg CO2 eq/MMBTU">kg CO2 eq/MMBTU</option>
+                </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="gwp-tool">Global Warming Potential per MMBTU</span></span><br>
             </p>
         </div>

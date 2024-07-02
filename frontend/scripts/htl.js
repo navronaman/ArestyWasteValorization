@@ -47,31 +47,6 @@ function changeSettings(unit) {
         document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
     }
 
-    else {
-        // energy
-
-        // infoTop units in energy
-        document.getElementById('sludge-unit').innerHTML = '(MGD):';
-        document.getElementById('price-unit').innerHTML = 'Price ($/MMBTU):';
-        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2/MMBTU):';
-
-        // comparison units in energy
-        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
-        document.getElementById('r0-price').innerHTML = 'Price ($/MMBTU):';
-        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
-
-        // manual input units in energy
-        document.getElementById('m-sludge').innerHTML = 'MGD (million gallons per day)';
-        document.getElementById('m-price-unit').innerHTML = ' /MMBTU';
-        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/MMBTU):';
-
-        // tool tips from the infoTop
-        document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day'
-        document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
-        document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
-
-    }
-
     document.getElementById('m-price').innerHTML = 0;
     document.getElementById('m-gwp').innerHTML = 0;
 }
@@ -106,7 +81,7 @@ function displayInfoTop(data){
 
     document.getElementById('countyName').innerHTML = `${countyname} County`;
     document.getElementById('sludge').innerHTML = `${sludge} gal`;
-    if (!unit) {
+    if (unit == "metric") {
 
         console.log('metric unit')
 
