@@ -30,6 +30,8 @@ Union: 36,023
 Warren: 139,757
 """
 
+ETHANOL_DENSITY_KG_GAL_CONVERSION = 2.98668849
+
 def imperial(data):
     data["Kilogram"] = data["Lignocellulose (dry tons)"] * 907.185
     data["Kilogram/hr"] = data["Kilogram"] / (365*24*0.96)
@@ -63,9 +65,9 @@ def metric(data):
         print(f"\n{data['County'][i]} County")
         print(f"Annual estimated lignocellulose in tonnes: {data['Lignocellulose (metric tonnes)'][i]}")
         ethanol, price, gwp = lignocellulose_calc(data['Kilogram/hr'][i])
-        data["Annual Ethanol (kg/yr)"][i] = ethanol * 2.98668849
-        data["Price ($/kg)"][i] = price / 2.98668849
-        data["GWP (kg CO2e/kg)"][i] = gwp / 2.98668849
+        data["Annual Ethanol (kg/yr)"][i] = ethanol * ETHANOL_DENSITY_KG_GAL_CONVERSION
+        data["Price ($/kg)"][i] = price / ETHANOL_DENSITY_KG_GAL_CONVERSION
+        data["GWP (kg CO2e/kg)"][i] = gwp / ETHANOL_DENSITY_KG_GAL_CONVERSION
         
     print(data)
     # Export data into an updated data csv

@@ -205,6 +205,25 @@ h1, h2, h3{
     
 }
 
+.unit-select {
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 2px 5px;
+    margin-left: 5px;
+}
+
+.unit-select:focus {
+    outline: none;
+}
+
+.unit-select option {
+    background-color: rgb(116, 177, 201);
+    color: white;
+}
+
+
 .highlight{
     text-decoration: underline;
     transition: text-decoration 0.3s ease;

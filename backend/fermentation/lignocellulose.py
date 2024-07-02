@@ -92,13 +92,15 @@ def lignocellulose_calc(mass, cornstover_price=0.2, GWP_CFs=GWP_CFs, characteriz
     
     sys.simulate()
     
+    kg_to_lb_conversion_factor = 2.20462
+    
     get_ethanol = lambda: ethanol.F_mass*ethanol_density_kggal*tea.operating_hours/1e6 # MM gal/year
     get_MESP = lambda: tea.solve_price(ethanol)*ethanol_density_kggal # from $/kg to $/gallon
-    get_GWP = lambda: sys.get_net_impact('GWP')/sys.operating_hours/ethanol.F_mass*ethanol_density_kggal
+    get_GWP = lambda: (sys.get_net_impact('GWP')/sys.operating_hours/ethanol.F_mass*ethanol_density_kggal)*kg_to_lb_conversion_factor # lb CO2e/gal
 
     print(f'annual ethanol: ${get_ethanol():.3f} MM gal/yr')
     print(f'price: ${get_MESP():.2f}/gal')
-    print(f'GWP: {get_GWP():.2f} kg CO2e/gal')
+    print(f'GWP: {get_GWP():.2f} lb CO2e/gal')
     
     return get_ethanol(), get_MESP(), get_GWP(),
     

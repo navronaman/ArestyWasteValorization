@@ -30,22 +30,41 @@
             <p id="info">
                 <b><span id="countyName">County</span></b>
                 <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
-
-                <b><span id="biomass-unit">Lignocellulosic Biomass:</span></b> <span id="biomass"></span>
+    
+                <b><span id="biomass-unit">Lignocellulosic Biomass:</span></b> <span id="biomass">1000</span>
+                <select id="biomass-units" class="unit-select" onchange="updateUnits('biomass')">
+                    <option value="short tons">short tons</option>
+                    <option value="metric tonnes">metric tonnes</option>
+                </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="biomass-tool">Amount of biomass available</span></span><br>
-
-                <b><span id="ethanol-unit">Annual Ethanol (MM gal/year):</span></b> <span id="ethanol"></span>
+    
+                <b><span id="ethanol-unit">Annual Ethanol (MM gal/year):</span></b> <span id="ethanol">50</span>
+                <select id="ethanol-units" class="unit-select" onchange="updateUnits('ethanol')">
+                    <option value="MM gal/year">MM gal/year</option>
+                    <option value="MM kg/year">MM kg/year</option>
+                    <option value="MMBTU/year">MMBTU/year</option>
+                </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="ethanol-tool">Annual ethanol production</span></span><br>
-
-                <b><span id="price-unit">Price ($/gal):</span></b> <span id="price"></span>
-                <span class="info-icon">ℹ️<span class="tooltip" id="price-tool">Cost of ethanol per gallon</span></span><br> 
-
-                <b><span id="gwp-unit">GWP (lb CO2 eq/gal):</span></b> <span id="gwp"></span>
+    
+                <b><span id="price-unit">Price ($/gal):</span></b> <span id="price">2.5</span>
+                <select id="price-units" class="unit-select" onchange="updateUnits('price')">
+                    <option value="$/gal">$/gal</option>
+                    <option value="$/kg">$/kg</option>
+                    <option value="$/MMBTU">$/MMBTU</option>
+                </select>
+                <span class="info-icon">ℹ️<span class="tooltip" id="price-tool">Cost of ethanol per gallon</span></span><br>
+    
+                <b><span id="gwp-unit">GWP (lb CO2 eq/gal):</span></b> <span id="gwp">10</span>
+                <select id="gwp-units" class="unit-select" onchange="updateUnits('gwp')">
+                    <option value="lb CO2/gal">lb CO2/gal</option>
+                    <option value="kg CO2/kg">kg CO2/kg</option>
+                    <option value="kg CO2/MMBTU">kg CO2/MMBTU</option>
+                </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="gwp-tool">Global Warming Potential per kg</span></span><br>
             </p>
         </div>
     </div>
-    
+        
     
     <!-- Map -->
     <div id="mapContainer"></div>

@@ -19,6 +19,9 @@ CORS(app)
 
 FILE_PATH_IMPERIAL = os.path.abspath(r"backend/fermentation/biomass_imperial.csv")
 FILE_PATH_METRIC = os.path.abspath(r"backend/fermentation/biomass_metric.csv")
+
+ETHANOL_DENSITY_KG_GAL_CONVERSION = 2.98668849
+KG_TO_LBS_CONVERSION = 2.20462
     
 # county and mass for fermentation
 @app.route('/fermentation-county/<string:countyname>')
@@ -63,10 +66,10 @@ def fermentation_biomass_data(mass):
         ethanol, price, gwp = result
         match unit:
             case 'metric':
-                ethanol = ethanol * 2.98668849
-                price = price / 2.98668849
-                gwp = gwp * 2.98668849
-        return jsonify({
+                ethanol = ethanol * ETHANOL_DENSITY_KG_GAL_CONVERSION
+                price = price / ETHANOL_DENSITY_KG_GAL_CONVERSION
+                gwp = (gwp * ETHANOL_DENSITY_KG_GAL_CONVERSION) / KG_TO_LBS_CONVERSION
+        return jsonify({    
             "success": "true",
             "mass": mass,
             "ethanol": round(ethanol, 3),
