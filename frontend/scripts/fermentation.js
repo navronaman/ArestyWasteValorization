@@ -1,10 +1,17 @@
 
 // this function is called when the page is loaded, and used to change the settings once the unit is clicked
 
-var biomassUnit = null;
-var ethanolUnit = null;
-var priceUnit = null;
-var gwpUnit = null;
+var biomassUnit = "tons"; // default unit for biomass
+var ethanolUnit = "MM gal/year"; // default unit for ethanol
+var priceUnit = "$/gal"; // default unit for price
+var gwpUnit = "lb CO2/gal"; // default unit for gwp
+
+var tonToTonne = 0.907185;
+var galToKgforEthanol = 2.98668849;
+var kgToLbsConversion = 2.20462;
+var galToMMBTUConversion = 0.07633; 
+// source for MM gal to MMBTU 
+// https://h2tools.org/hyarc/calculator-tools/lower-and-higher-heating-values-fuels
 
 function changeSettings(unit) {
     if (unit == "imperial") {
@@ -14,11 +21,6 @@ function changeSettings(unit) {
         ethanolUnit = "MM gal/year";
         priceUnit = "$/gal";
         gwpUnit = "lb CO2/gal";
-
-        // infoTop units in imperial
-        // document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (MM gal/year):';
-        // document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
-        // document.getElementById('gwp-unit').innerHTML = 'GWP (lb CO2 eq/gal):';
 
         // comparison units in imperial
         document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tons):';
@@ -43,14 +45,9 @@ function changeSettings(unit) {
 
         // change the unit values
         biomassUnit = "tonnes";
-        ethanolUnit = "MM kg/year";
+        ethanolUnit = "tonnes/year";
         priceUnit = "$/kg";
         gwpUnit = "kg CO2/kg";
-
-        // infoTop units in metric
-        // document.getElementById('ethanol-unit').innerHTML = 'Annual Ethanol (kg/year):';
-        // document.getElementById('price-unit').innerHTML = 'Price ($/kg):';
-        // document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
 
         // comparison units in metric
         document.getElementById('r0-biomass').innerHTML = 'Annual Biomass (tonnes):';
@@ -92,6 +89,7 @@ function updateUnits() {
     ethanolUnit = document.getElementById('ethanol-units').value;
     priceUnit = document.getElementById('price-units').value;
     gwpUnit = document.getElementById('gwp-units').value;
+
 
     // change the values of the data in infoTop and comparison
     if (currentCountyData !== null && previousCountyData !== null) {
@@ -138,43 +136,52 @@ function displayInfoTop(data){
     let gwp = data.gwp;
 
     document.getElementById('countyName').innerHTML = `${countyname} County`;
-    document.getElementById('biomass').innerHTML = `${tons} tons`;
 
     // change the units based on the unit selected
     switch (biomassUnit) {
         case "tons":
-            null
+            break;
         case "tonnes":
             tons = tons * 0.907185;
-            null
     }
 
     switch (ethanolUnit) {
         case "MM gal/year":
-            null
-        case "MM kg/year":
-            null
+            break;
+        case "tonnes/year":
+            ethanol = ethanol * galToKgforEthanol * 1e3; // since we're converting from million gallons into tonnes
+            break;
+        case "kilotonnes/year":
+            ethanol = ethanol * galToKgforEthanol; 
+            break;
         case "MMBTU/year":
-            null
+            ethanol = ethanol * galToMMBTUConversion;
     }
     
     switch (priceUnit) {
         case "$/gal":
-            null
+            break;
         case "$/kg":
-            null
+            price = price / galToKgforEthanol; 
+            break;
         case "$/MMBTU":
-            null
+            price = price / galToMMBTUConversion;
     }
 
     switch (gwpUnit) {
-        case "lb CO2 eq/gal":
-            null
-        case "kg CO2 eq/kg":
-            null
-        case "kg CO2 eq/MMBTU":
-            null
+        case "lb CO2/gal":
+            break;
+        case "kg CO2/kg":
+            gwp = gwp * kgToLbsConversion / galToKgforEthanol;
+            break;
+        case "kg CO2/MMBTU":
+            gwp = gwp * kgToLbsConversion / galToMMBTUConversion;
     }
+
+    tons = tons.toFixed(1);
+    ethanol = ethanol.toFixed(3);
+    price = price.toFixed(3);
+    gwp = gwp.toFixed(3);
 
     console.log(tons, ethanol, price, gwp);
 
