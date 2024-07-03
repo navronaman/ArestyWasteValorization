@@ -135,6 +135,18 @@ def htl_sludge_data(sludge):
             "error": str(e)
         })
 
+# county and mass for combustion
+@app.route('/combustion-county/<string:countyname>')
+def combustion_county_data(countyname):
+    return jsonify({
+        "error": "Not implemented"
+    })
+
+@app.route('/combustion-mass/<int:mass>')
+def combustion_mass_data(mass):
+    return jsonify({
+        "error": "Not implemented"
+    })
         
 @app.route('/csv')
 def export_csv():
