@@ -20,7 +20,7 @@ function changeSettings(unit) {
         biomassUnit = "tons";
         ethanolUnit = "MM gal/year";
         priceUnit = "$/gal";
-        gwpUnit = "lb CO2/gal";
+        gwpUnit = "lb CO2/gal"; 
 
         // manual input units
         document.getElementById('m-biomass').innerHTML = 'tons';
@@ -68,7 +68,7 @@ function updateUnits() {
     // change the values of the data in infoTop and comparison
     if (currentCountyData !== null && previousCountyData !== null) {
         displayInfoTop(currentCountyData);
-        displayComparison(currentCountyData, previousCountyData);
+        displayComparison(previousCountyData, currentCountyData);
     }
     else if (currentCountyData !== null && previousCountyData === null) {
         displayInfoTop(currentCountyData);

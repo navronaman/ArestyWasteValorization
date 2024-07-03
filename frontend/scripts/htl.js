@@ -23,6 +23,10 @@ function changeSettings(unit) {
         document.getElementById('m-price-unit').innerHTML = ' /gal';
         document.getElementById('m-gwp-unit').innerHTML = ' (lb CO2 eq/gal):';
 
+        document.getElementById('massInput').min = 1;
+        document.getElementById('massInput').max = 2000;
+        document.getElementById('massInput').placeholder = "1-2000";
+
     }
 
     else if (unit == "metric") {
@@ -36,12 +40,20 @@ function changeSettings(unit) {
         document.getElementById('m-sludge').innerHTML = 'm3/d (cubic meter per day)';
         document.getElementById('m-price-unit').innerHTML = ' /kg';
         document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/kg):';
+
+        document.getElementById('massInput').min = 10000;
+        document.getElementById('massInput').max = 1000000;
+        document.getElementById('massInput').placeholder = "10,000-1,000,000";
+
+
     }
 
+    console.log(sludgeUnit, priceUnit, gwpUnit);
+
     // update the drop down menues to reflect the changes
-    document.getElementById('sludge-units').innerHTML = sludgeUnit;
-    document.getElementById('price-units').innerHTML = priceUnit;
-    document.getElementById('gwp-units').innerHTML = gwpUnit;
+    document.getElementById('sludge-units').value = sludgeUnit;
+    document.getElementById('price-units').value = priceUnit;
+    document.getElementById('gwp-units').value = gwpUnit;
 
     updateUnitsEverywhere();
 }
@@ -50,16 +62,18 @@ function changeSettings(unit) {
 function updateUnits() {
 
     // get the unit value from HTML
-    sludgeUnit = document.getElementById('sludge-units').innerHTML;
-    priceUnit = document.getElementById('price-units').innerHTML;
-    gwpUnit = document.getElementById('gwp-units').innerHTML;
+    sludgeUnit = document.getElementById('sludge-units').value;
+    priceUnit = document.getElementById('price-units').value;
+    gwpUnit = document.getElementById('gwp-units').value;
+
+    console.log(sludgeUnit, priceUnit, gwpUnit);
 
     updateUnitsEverywhere();
 
     // change the values of the data in infoTop and comparison
     if (currentCountyData !== null && previousCountyData !== null) {
         displayInfoTop(currentCountyData);
-        displayComparison(currentCountyData, previousCountyData);
+        displayComparison(previousCountyData, currentCountyData);
     }
     else if (currentCountyData !== null && previousCountyData === null) {
         displayInfoTop(currentCountyData);
@@ -78,14 +92,15 @@ function updateUnitsEverywhere() {
     document.getElementById('m-price').innerHTML = 0;
     document.getElementById('m-gwp').innerHTML = 0;
 
+    /* changes units in two places:
+    1. the comparison table headers
+    2. the tool tips in the top info div */
     switch (sludgeUnit) {
         case "MGD":
-            document.getElementById('sludge-unit').innerHTML = '(MGD):';
             document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
             document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day';
             break;
         case "m3/d":
-            document.getElementById('sludge-unit').innerHTML = '(m3/d):';
             document.getElementById('r0-sludge').innerHTML = 'Sludge (m3/d)';
             document.getElementById('sludge-tool').innerHTML = 'Holding capacity in cubic meters a day';
             break;
@@ -93,44 +108,36 @@ function updateUnitsEverywhere() {
 
     switch (priceUnit) {
         case "$/gal":
-            document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
             document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
             document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)';
             break;
         case "$/kg":
-            document.getElementById('price-unit').innerHTML = 'Price ($/kg):';
             document.getElementById('r0-price').innerHTML = 'Price ($/kg):';
             document.getElementById('price-tool').innerHTML = 'Cost of diesel per kg (Minimum Selling Price)';
             break;
         case "$/m3":
-            document.getElementById('price-unit').innerHTML = 'Price ($/m3):';
             document.getElementById('r0-price').innerHTML = 'Price ($/m3):';
             document.getElementById('price-tool').innerHTML = 'Cost of diesel per cubic meter (Minimum Selling Price)';
             break;
         case "$/MMBTU":
-            document.getElementById('price-unit').innerHTML = 'Price ($/MMBTU):';
             document.getElementById('r0-price').innerHTML = 'Price ($/MMBTU):';
             document.getElementById('price-tool').innerHTML = 'Cost of diesel per million british thermal units (Minimum Selling Price)';
     }
 
     switch (gwpUnit) {
         case "lb CO2/gal":
-            document.getElementById('gwp-unit').innerHTML = 'GWP (lb CO2 eq/gal):';
             document.getElementById('r0-gwp').innerHTML = 'GWP (lb CO2 eq/gal):';
             document.getElementById('gwp-tool').innerHTML = 'Every gallon of ethanol saves this much CO2 in pounds';
             break;
         case "kg CO2/kg":
-            document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
             document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
             document.getElementById('gwp-tool').innerHTML = 'Every kg of ethanol saves this much CO2 in kg';
             break;
         case "kg CO2/m3":
-            document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/m3):';
             document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/m3):';
             document.getElementById('gwp-tool').innerHTML = 'Every cubic meter of ethanol saves this much CO2 in kg';
             break;
         case "kg CO2/MMBTU":
-            document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
             document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
             document.getElementById('gwp-tool').innerHTML = 'Every MMBTU of ethanol saves this much CO2 in kg';
             break;
@@ -204,7 +211,7 @@ function displayInfoTop(data){
             break;
     }
 
-    sludge = sludge.toFixed(0);
+    sludge = sludge.toFixed(3);
     price = price.toFixed(3);
     gwp = gwp.toFixed(3);    
 
@@ -289,7 +296,7 @@ function displayComparisonHelper(data, row){
             break;
     }
 
-    sludge = sludge.toFixed(0);
+    sludge = sludge.toFixed(3);
     price = price.toFixed(3);
     gwp = gwp.toFixed(3);    
 
@@ -307,27 +314,20 @@ function getMassInfo() {
     const massInput = document.getElementById("massInput").value;
     const mass = Number(massInput)
 
+    const min = document.getElementById("massInput").min;
+    const max = document.getElementById("massInput").max;
+
     console.log(mass)
 
-    if (isNaN(mass) || mass < 1 || mass > 2000 || mass === 0 || !Number.isInteger(mass)){
-        document.getElementById("errorMass").innerHTML = "<span class='error'> Please enter a valid number between 1 and 2000 </span>";
+    if (isNaN(mass) || mass < min || mass > max || mass === 0 || !Number.isInteger(mass)){
+        document.getElementById("errorMass").innerHTML = `<span class='error'> Please enter a valid number between ${min} and ${max} </span>`;
         return;
-    }
-
-    let unitName = "imperial"
-    switch (unit) {
-        case true:
-            unitName = "imperial";
-            break;
-        case false:
-            unitName = "metric";
-            break;
     }
 
     const url = `http://localhost:5000/htl-sludge/${mass}`;
     const options = {
         headers: {
-            'X-Unit': unitName
+            'X-Unit': unit
         }
     };
 

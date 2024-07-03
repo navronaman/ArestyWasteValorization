@@ -63,7 +63,7 @@ function selectUnit(imperial_or_metric) {
     // change the values of the data in infoTop and comparison
     if (currentCountyData !== null && previousCountyData !== null) {
         displayInfoTop(currentCountyData);
-        displayComparison(currentCountyData, previousCountyData);
+        displayComparison(previousCountyData, currentCountyData);
     }
     else if (currentCountyData !== null && previousCountyData === null) {
         displayInfoTop(currentCountyData);

@@ -22,6 +22,9 @@ FILE_PATH_METRIC = os.path.abspath(r"backend/fermentation/biomass_metric.csv")
 
 ETHANOL_DENSITY_KG_GAL_CONVERSION = 2.98668849
 KG_TO_LBS_CONVERSION = 2.20462
+
+GAL_TO_M3D_CONVERSION = 0.12845
+GAL_TO_KG_CONVERSION = 0.838*3.78541
     
 # county and mass for fermentation
 @app.route('/fermentation-county/<string:countyname>')
@@ -66,9 +69,9 @@ def fermentation_biomass_data(mass):
         ethanol, price, gwp = result
         match unit:
             case 'metric':
-                ethanol = ethanol * ETHANOL_DENSITY_KG_GAL_CONVERSION
-                price = price / ETHANOL_DENSITY_KG_GAL_CONVERSION
-                gwp = (gwp * ETHANOL_DENSITY_KG_GAL_CONVERSION) / KG_TO_LBS_CONVERSION
+                ethanol = ethanol * ETHANOL_DENSITY_KG_GAL_CONVERSION # convert from gal to kg
+                price = price / ETHANOL_DENSITY_KG_GAL_CONVERSION # convert from $/gal to $/kg
+                gwp = (gwp * ETHANOL_DENSITY_KG_GAL_CONVERSION) / KG_TO_LBS_CONVERSION # convert from lb CO2/gal to kg CO2/gal
         return jsonify({    
             "success": "true",
             "mass": mass,
@@ -107,21 +110,21 @@ def htl_sludge_data(sludge):
         unit = 'imperial'
     
     try:
-        print("Hey")
         # case switch statements
         match unit:
-            case 'imperial':
-                None
             case 'metric':
+                # convert from m3/d to MGD
+                sludge = sludge / (GAL_TO_M3D_CONVERSION*1e6)
+            case 'imperial':
                 None
     
         result = htl_calc(sludge)
         price, gwp = result
-        print(price)
-        print(gwp)
+        
         match unit:
             case 'metric':
-                None
+                price = price/GAL_TO_KG_CONVERSION # convert from $/gal to $/kg
+                gwp = gwp/(GAL_TO_KG_CONVERSION*KG_TO_LBS_CONVERSION) # convert from lb CO2/gal to kg CO2/gal
                 
         return jsonify({
             "success": "true",
