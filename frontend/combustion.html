@@ -17,7 +17,7 @@
     <header>
         <div class="head-container" id="home">
             <h2><span>
-                Lignocellulosic Ethanol Production in New Jersey
+                Combustion in New Jersey
             </span></h2>
         </div>
     </header>
@@ -38,31 +38,6 @@
                 </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="biomass-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
     
-                <b><span id="ethanol-unit">Annual Ethanol: </span></b> <span id="ethanol"></span>
-                <select id="ethanol-units" class="unit-select" onchange="updateUnits()">
-                    <option value="MM gal/year">MM gal/year</option>
-                    <option value="tonnes/year">tonnes/year</option>
-                    <option value="kilotonnes/year">kilotonnes/year</option>
-                    <option value="MMBTU/year">MMBTU/year</option>
-                </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="ethanol-tool">Annual production in million gallons</span></span><br>
-    
-                <b><span id="price-unit">Price: </span></b> <span id="price"></span>
-                <select id="price-units" class="unit-select" onchange="updateUnits()">
-                    <option value="$/gal">$/gal</option>
-                    <option value="$/kg">$/kg</option>
-                    <option value="$/MMBTU">$/MMBTU</option>
-                </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="price-tool">Cost of ethanol per gallon (Minimum Selling Price)</span></span><br>
-    
-                <b><span id="gwp-unit">GWP: </span></b> <span id="gwp"></span>
-                <select id="gwp-units" class="unit-select" onchange="updateUnits()">
-                    <option value="lb CO2/gal">lb CO2/gal</option>
-                    <option value="kg CO2/kg">kg CO2/kg</option>
-                    <option value="kg CO2/MMBTU">kg CO2/MMBTU</option>
-                </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="gwp-tool">Every gallon of ethanol saves this much CO2 in pounds</span></span><br>
-
             </p>
         </div>
     </div>
@@ -86,25 +61,16 @@
                     <tr>
                         <th></th>
                         <th id="r0-biomass">Annual Biomass (tons)</th>
-                        <th id="r0-ethanol">Annual Ethanol (MM gal/year)</th>
-                        <th id="r0-price">Price ($/gal)</th>
-                        <th id="r0-gwp">GWP (lb CO2 eq/gal)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="f-col" id="r1-name"> County 1</td>
                         <td id="r1-biomass">0</td>
-                        <td id="r1-ethanol">0</td>
-                        <td id="r1-price">0</td>
-                        <td id="r1-gwp">0</td>
                     </tr>
                     <tr>
                         <td class="f-col" id="r2-name">County 2</td>
                         <td id="r2-biomass">0</td>
-                        <td id="r2-ethanol">0</td>
-                        <td id="r2-price">0</td>
-                        <td id="r2-gwp">0</td>
                     </tr>
                 </tbody>
             </table>
@@ -115,16 +81,12 @@
     <!-- Manual Mass Input Calculator -->
     <div class="form-container">
 
-        <h3> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h3>
-        <label for="massInput">Enter annual biomass produced in <span id="m-biomass">tons</span> to be processed:</label>
+        <h3> Calculate the _________ of a County by Mass </h3>
+        <label for="massInput">Enter annual _________ produced in <span id="m-biomass">_________</span> to be processed:</label>
         <input type="number" id="massInput" name="massInput" placeholder="1000-1000000" min="1000" max="1000000" required>
         <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
         <div id="massInfoOutput">
             <b>Annual Ethanol: </b><span id="m-ethanol">0</span><span id="m-ethanol-unit"> (MM gal/year):</span><br>
-
-            <b>Price: </b>$<span id="m-price">0</span><span id="m-price-unit"> /gal:</span><br>
-
-            <b>GWP: </b> <span id="m-gwp">0</span> <span id="m-gwp-unit"> (lb CO2 eq/gal):</span><br>
 
         </div>
         <div id="errorMass">
@@ -134,7 +96,7 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="scripts/fermentation.js"></script>
+    <script src="scripts/combustion.js"></script>
     
 </body>
 
