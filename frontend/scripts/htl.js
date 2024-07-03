@@ -1,54 +1,140 @@
 // when the unit button is clicked
+
+var sludgeUnit = "MGD";
+var priceUnit = "$/gal";
+var gwpUnit = "lb CO2/gal";
+
+var galToM3 = 0.00378541;
+var kgToLbsConversion = 2.20462;
+var galToMMBTUConversion = 0.12845;
+var galToKg = 0.838*3.78541;
+
+
 function changeSettings(unit) {
     if (unit == "imperial") {
 
-        // infoTop units in imperial
-        document.getElementById('sludge-unit').innerHTML = '(MGD):';
-        document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
-        document.getElementById('gwp-unit').innerHTML = 'GWP (lb CO2 eq/gal):';
-
-        // comparison units in imperial
-        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
-        document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
-        document.getElementById('r0-gwp').innerHTML = 'GWP (lb CO2 eq/gal):';
+        // change the unit values
+        sludgeUnit = "MGD"
+        priceUnit = "$/gal"
+        gwpUnit = "lb CO2/gal"
 
         // manual input units in imperial
         document.getElementById('m-sludge').innerHTML = 'MGD (million gallons per day)';
         document.getElementById('m-price-unit').innerHTML = ' /gal';
         document.getElementById('m-gwp-unit').innerHTML = ' (lb CO2 eq/gal):';
 
-        // tool tips from the infoTop
-        document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day'
-        document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
-        document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
-
     }
 
     else if (unit == "metric") {
 
-        // infoTop units in metric
-        document.getElementById('sludge-unit').innerHTML = '(MGD):';
-        document.getElementById('price-unit').innerHTML = 'Price ($/kg):';
-        document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
-
-        // comparison units in metric
-        document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
-        document.getElementById('r0-price').innerHTML = 'Price ($/kg):';
-        document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
+        // change the unit values
+        sludgeUnit = "m3/d"
+        priceUnit = "$/kg"
+        gwpUnit = "kg CO2/kg"
 
         // manual input units in metric
-        document.getElementById('m-sludge').innerHTML = 'MGD (million gallons per day)';
+        document.getElementById('m-sludge').innerHTML = 'm3/d (cubic meter per day)';
         document.getElementById('m-price-unit').innerHTML = ' /kg';
         document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/kg):';
-
-        // tool tips from the infoTop
-        document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day'
-        document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)'
-        document.getElementById('gwp-tool').innerHTML = 'Global Warming Potential per MMBTU'
     }
 
+    // update the drop down menues to reflect the changes
+    document.getElementById('sludge-units').innerHTML = sludgeUnit;
+    document.getElementById('price-units').innerHTML = priceUnit;
+    document.getElementById('gwp-units').innerHTML = gwpUnit;
+
+    updateUnitsEverywhere();
+}
+
+// this function is for when a unit is changed in the drop down menus
+function updateUnits() {
+
+    // get the unit value from HTML
+    sludgeUnit = document.getElementById('sludge-units').innerHTML;
+    priceUnit = document.getElementById('price-units').innerHTML;
+    gwpUnit = document.getElementById('gwp-units').innerHTML;
+
+    updateUnitsEverywhere();
+
+    // change the values of the data in infoTop and comparison
+    if (currentCountyData !== null && previousCountyData !== null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(currentCountyData, previousCountyData);
+    }
+    else if (currentCountyData !== null && previousCountyData === null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(currentCountyData, null);
+    }
+    else {
+        console.log('no data');
+    }
+}
+
+// this function to update the units everywhere
+// and also change the tool tips
+function updateUnitsEverywhere() {
+
+    // resetting the manual input units every time the unit is changed
     document.getElementById('m-price').innerHTML = 0;
     document.getElementById('m-gwp').innerHTML = 0;
+
+    switch (sludgeUnit) {
+        case "MGD":
+            document.getElementById('sludge-unit').innerHTML = '(MGD):';
+            document.getElementById('r0-sludge').innerHTML = 'Sludge (MGD)';
+            document.getElementById('sludge-tool').innerHTML = 'Holding capacity in million gallons a day';
+            break;
+        case "m3/d":
+            document.getElementById('sludge-unit').innerHTML = '(m3/d):';
+            document.getElementById('r0-sludge').innerHTML = 'Sludge (m3/d)';
+            document.getElementById('sludge-tool').innerHTML = 'Holding capacity in cubic meters a day';
+            break;
+    }
+
+    switch (priceUnit) {
+        case "$/gal":
+            document.getElementById('price-unit').innerHTML = 'Price ($/gal):';
+            document.getElementById('r0-price').innerHTML = 'Price ($/gal):';
+            document.getElementById('price-tool').innerHTML = 'Cost of diesel per gallon (Minimum Selling Price)';
+            break;
+        case "$/kg":
+            document.getElementById('price-unit').innerHTML = 'Price ($/kg):';
+            document.getElementById('r0-price').innerHTML = 'Price ($/kg):';
+            document.getElementById('price-tool').innerHTML = 'Cost of diesel per kg (Minimum Selling Price)';
+            break;
+        case "$/m3":
+            document.getElementById('price-unit').innerHTML = 'Price ($/m3):';
+            document.getElementById('r0-price').innerHTML = 'Price ($/m3):';
+            document.getElementById('price-tool').innerHTML = 'Cost of diesel per cubic meter (Minimum Selling Price)';
+            break;
+        case "$/MMBTU":
+            document.getElementById('price-unit').innerHTML = 'Price ($/MMBTU):';
+            document.getElementById('r0-price').innerHTML = 'Price ($/MMBTU):';
+            document.getElementById('price-tool').innerHTML = 'Cost of diesel per million british thermal units (Minimum Selling Price)';
+    }
+
+    switch (gwpUnit) {
+        case "lb CO2/gal":
+            document.getElementById('gwp-unit').innerHTML = 'GWP (lb CO2 eq/gal):';
+            document.getElementById('r0-gwp').innerHTML = 'GWP (lb CO2 eq/gal):';
+            document.getElementById('gwp-tool').innerHTML = 'Every gallon of ethanol saves this much CO2 in pounds';
+            break;
+        case "kg CO2/kg":
+            document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/kg):';
+            document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/kg):';
+            document.getElementById('gwp-tool').innerHTML = 'Every kg of ethanol saves this much CO2 in kg';
+            break;
+        case "kg CO2/m3":
+            document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/m3):';
+            document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/m3):';
+            document.getElementById('gwp-tool').innerHTML = 'Every cubic meter of ethanol saves this much CO2 in kg';
+            break;
+        case "kg CO2/MMBTU":
+            document.getElementById('gwp-unit').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
+            document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2 eq/MMBTU):';
+            document.getElementById('gwp-tool').innerHTML = 'Every MMBTU of ethanol saves this much CO2 in kg';
+            break;
+    }
 }
 
 // get info for county
@@ -80,21 +166,55 @@ function displayInfoTop(data){
     let gwp = data.gwp;
 
     document.getElementById('countyName').innerHTML = `${countyname} County`;
-    document.getElementById('sludge').innerHTML = `${sludge} gal`;
-    if (unit == "metric") {
 
-        console.log('metric unit')
-
-        // this is a metric unit, now we will convert
-        document.getElementById('sludge').innerHTML = `${sludge} tonnes`; // only because there's a difference in tonnes and tons
-
+    // change the units based on the units selected
+    switch (sludgeUnit) {
+        case "MGD":
+            break;
+        case "m3/d":
+            sludge = sludge * galToM3 * 1e6; // since the default is in MGD, we multiply by 1e6 to get m3/d
+            break;
     }
+
+    switch (priceUnit) {
+        case "$/gal":
+            break;
+        case "$/kg":
+            price = price / galToKg; 
+            break;
+        case "$/m3":
+            price = price / galToM3; // divide by 0.00378541 to get $/m3
+            break;
+        case "$/MMBTU":
+            price = price / (galToMMBTUConversion * galToKg); // divide by 0.12845 * 0.838 to get $/MMBTU
+            break;
+    }
+
+    switch (gwpUnit) {
+        case "lb CO2/gal":
+            break;
+        case "kg CO2/kg":
+            gwp = gwp / (kgToLbsConversion * galToKg); // first change the lb to kg, then remove the gal
+            break; 
+        case "kg CO2/m3":
+            gwp = gwp / (kgToLbsConversion * galToM3); // first change the lb to kg, then remove the gal
+            break;
+        case "kg CO2/MMBTU":
+            gwp = gwp / (kgToLbsConversion * galToMMBTUConversion); // first change the lb to kg, then remove the gal
+            break;
+    }
+
+    sludge = sludge.toFixed(0);
+    price = price.toFixed(3);
+    gwp = gwp.toFixed(3);    
 
     console.log(sludge, price, gwp);
 
+    document.getElementById('sludge').innerHTML = sludge;
     document.getElementById('price').innerHTML = price;
     document.getElementById('gwp').innerHTML = gwp;
 
+    // highlight the county name
     const countyNameSpan = document.getElementById('countyName');
     countyNameSpan.classList.add('highlight');
 
@@ -109,24 +229,10 @@ function displayComparison(data1, data2){
 
     if (data1 === null){
         return;
-    }
+    }    
 
-    let countyname = data1.name;
-    let sludge = data1.sludge;
-    let price = data1.price;
-    let gwp = data1.gwp;
+    displayComparisonHelper(data1, 1);
 
-    if (!unit) {
-        // conversions
-        null
-    }
-
-    document.getElementById('r1-name').innerHTML = `${countyname} County`
-    document.getElementById('r1-sludge').innerHTML = sludge
-    document.getElementById('r1-price').innerHTML = price
-    document.getElementById('r1-gwp').innerHTML = gwp
-
-    // data is always in imperial units
     if (data2 === null){
         document.getElementById('r2-name').innerHTML = 'County 2'
         document.getElementById('r2-sludge').innerHTML = 0
@@ -135,21 +241,65 @@ function displayComparison(data1, data2){
     }
 
     else {
-        let countyname2 = data2.name;
-        let sludge2 = data2.sludge;
-        let price2 = data2.price;
-        let gwp2 = data2.gwp;
-
-        if (!unit) {
-            // conversions
-            null
-        }
-
-        document.getElementById('r2-name').innerHTML = `${countyname2} County`
-        document.getElementById('r2-sludge').innerHTML = sludge2
-        document.getElementById('r2-price').innerHTML = price2
-        document.getElementById('r2-gwp').innerHTML = gwp2
+        displayComparisonHelper(data2, 2);
     }
+}
+
+// this is a helper function for the comparison
+function displayComparisonHelper(data, row){
+    let countyname = data.name;
+    let sludge = data.sludge;
+    let price = data.price;
+    let gwp = data.gwp;
+
+    // change the units based on the units selected
+    switch (sludgeUnit) {
+        case "MGD":
+            break;
+        case "m3/d":
+            sludge = sludge * galToM3 * 1e6; // since the default is in MGD, we multiply by 1e6 to get m3/d
+            break;
+    }
+
+    switch (priceUnit) {
+        case "$/gal":
+            break;
+        case "$/kg":
+            price = price / galToKg; 
+            break;
+        case "$/m3":
+            price = price / galToM3; // divide by 0.00378541 to get $/m3
+            break;
+        case "$/MMBTU":
+            price = price / (galToMMBTUConversion * galToKg); // divide by 0.12845 * 0.838 to get $/MMBTU
+            break;
+    }
+
+    switch (gwpUnit) {
+        case "lb CO2/gal":
+            break;
+        case "kg CO2/kg":
+            gwp = gwp / (kgToLbsConversion * galToKg); // first change the lb to kg, then remove the gal
+            break; 
+        case "kg CO2/m3":
+            gwp = gwp / (kgToLbsConversion * galToM3); // first change the lb to kg, then remove the gal
+            break;
+        case "kg CO2/MMBTU":
+            gwp = gwp / (kgToLbsConversion * galToMMBTUConversion); // first change the lb to kg, then remove the gal
+            break;
+    }
+
+    sludge = sludge.toFixed(0);
+    price = price.toFixed(3);
+    gwp = gwp.toFixed(3);    
+
+    console.log(sludge, price, gwp);
+
+    document.getElementById(`r${row}-name`).innerHTML = `${countyname} County`
+    document.getElementById(`r${row}-sludge`).innerHTML = sludge
+    document.getElementById(`r${row}-price`).innerHTML = price
+    document.getElementById(`r${row}-gwp`).innerHTML = gwp
+
 }
 
 // Getting mass

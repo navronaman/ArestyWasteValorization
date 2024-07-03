@@ -22,6 +22,12 @@ function changeSettings(unit) {
         priceUnit = "$/gal";
         gwpUnit = "lb CO2/gal";
 
+        // manual input units
+        document.getElementById('m-biomass').innerHTML = 'tons';
+        document.getElementById('m-ethanol-unit').innerHTML = ' (MM gal/year)';
+        document.getElementById('m-price-unit').innerHTML = ' /gal';
+        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/gal):';
+
     }
     else if (unit == "metric") {
 
@@ -30,6 +36,12 @@ function changeSettings(unit) {
         ethanolUnit = "kilotonnes/year";
         priceUnit = "$/kg";
         gwpUnit = "kg CO2/kg";
+
+        // manual input units
+        document.getElementById('m-biomass').innerHTML = 'tonnes';
+        document.getElementById('m-ethanol-unit').innerHTML = ' (kilotonnes/year)';
+        document.getElementById('m-price-unit').innerHTML = ' /kg';
+        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2/kg)';
 
     }
 
@@ -44,6 +56,8 @@ function changeSettings(unit) {
 
 // this function is for when a unit is changed in the drop down menus
 function updateUnits() {
+
+    // get the units from the html
     biomassUnit = document.getElementById('biomass-units').value;
     ethanolUnit = document.getElementById('ethanol-units').value;
     priceUnit = document.getElementById('price-units').value;
@@ -238,36 +252,8 @@ function displayComparison(data1, data2){
         return;
     }
 
-    // everything below is assuming that data1 is not null
-    let countyname = data1.name;
-    let t = data1.tons;
-    let ethanol = data1.ethanol;
-    let price = data1.price;
-    let gwp = data1.gwp;
+    displayComparisonHelper(data1, 1);
 
-    if (unit == "metric") {
-
-        console.log('metric unit')
-        // this is a metric unit, now we will convert
-        t = t * 0.907185;
-        t = t.toFixed(1);
-        ethanol = ethanol * 2.98668849;
-        ethanol = ethanol.toFixed(3);
-        price = price / 2.98668849;
-        price = price.toFixed(3);
-        gwp = gwp / 2.98668849;
-        gwp = gwp.toFixed(3);
-
-        console.log(t, ethanol, price, gwp);
-    }
-
-    document.getElementById('r1-name').innerHTML = `${countyname} County`
-    document.getElementById('r1-biomass').innerHTML = t 
-    document.getElementById('r1-ethanol').innerHTML = ethanol
-    document.getElementById('r1-price').innerHTML = price
-    document.getElementById('r1-gwp').innerHTML = gwp
-
-    // data is always in imperial units
     if (data2 === null){
         document.getElementById('r2-name').innerHTML = 'County 2'
         document.getElementById('r2-biomass').innerHTML = 0
@@ -277,29 +263,69 @@ function displayComparison(data1, data2){
     }
 
     else {
-        let countyname2 = data2.name;
-        let t2 = data2.tons;
-        let ethanol2 = data2.ethanol;
-        let price2 = data2.price;
-        let gwp2 = data2.gwp;
-
-        if (unit == "metric") {
-            t2 = t2 * 0.907185;
-            t2 = t2.toFixed(1);
-            ethanol2 = ethanol2 * 2.98668849;
-            ethanol2 = ethanol2.toFixed(3);
-            price2 = price2 / 2.98668849;
-            price2 = price2.toFixed(3);
-            gwp2 = gwp2 / 2.98668849;
-            gwp2 = gwp2.toFixed(3);
-        }
-
-        document.getElementById('r2-name').innerHTML = `${countyname2} County`
-        document.getElementById('r2-biomass').innerHTML = t2 
-        document.getElementById('r2-ethanol').innerHTML = ethanol2
-        document.getElementById('r2-price').innerHTML = price2
-        document.getElementById('r2-gwp').innerHTML = gwp2
+        displayComparisonHelper(data2, 2);
     }
+}
+
+// this function is used to display the data in the comparison table
+function displayComparisonHelper(data, row){
+    let countyname = data.name;
+    let tons = data.tons;
+    let ethanol = data.ethanol;
+    let price = data.price;
+    let gwp = data.gwp;
+
+    switch (biomassUnit) {
+        case "tons":
+            break;
+        case "tonnes":
+            tons = tons * 0.907185;
+    }
+
+    switch (ethanolUnit) {
+        case "MM gal/year":
+            break;
+        case "tonnes/year":
+            ethanol = ethanol * galToKgforEthanol * 1e3; // since we're converting from million gallons into tonnes
+            break;
+        case "kilotonnes/year":
+            ethanol = ethanol * galToKgforEthanol; 
+            break;
+        case "MMBTU/year":
+            ethanol = ethanol * galToMMBTUConversion;
+    }
+    
+    switch (priceUnit) {
+        case "$/gal":
+            break;
+        case "$/kg":
+            price = price / galToKgforEthanol; 
+            break;
+        case "$/MMBTU":
+            price = price / galToMMBTUConversion;
+    }
+
+    switch (gwpUnit) {
+        case "lb CO2/gal":
+            break;
+        case "kg CO2/kg":
+            gwp = gwp * kgToLbsConversion / galToKgforEthanol;
+            break;
+        case "kg CO2/MMBTU":
+            gwp = gwp * kgToLbsConversion / galToMMBTUConversion;
+    }
+
+    tons = tons.toFixed(0);
+    ethanol = ethanol.toFixed(3);
+    price = price.toFixed(3);
+    gwp = gwp.toFixed(3);
+    
+    document.getElementById(`r${row}-name`).innerHTML = `${countyname} County`
+    document.getElementById(`r${row}-biomass`).innerHTML = tons
+    document.getElementById(`r${row}-ethanol`).innerHTML = ethanol
+    document.getElementById(`r${row}-price`).innerHTML = price
+    document.getElementById(`r${row}-gwp`).innerHTML = gwp
+
 }
 
 // Getting mass
@@ -312,20 +338,10 @@ function getMassInfo() {
         return;
     }
 
-    let unitName = "imperial"
-    switch (unit) {
-        case true:
-            unitName = "imperial";
-            break;
-        case false:
-            unitName = "metric";
-            break;
-    }
-
     const url = `http://localhost:5000/fermentation-biomass/${mass}`;
     const options = {
         headers: {
-            'X-Unit': unitName
+            'X-Unit': unit // this is the unit that we're using
         }
     };
 

@@ -74,7 +74,7 @@ def htl_calc(existing_flow):
     # MDSP is in $/gal diesel, GWP is in kg CO2/MMBTU diesel
     
     mmbtu_to_gal = 0.12845 # 1 MMBTU = 0.12745 gal diesel
-    kg_to_lb = 2.20462
+    kg_to_lb = 2.20462 # 1 kg CO2 = 2.20462 lb CO2
     
     # when returning we convert kg CO2/MMBTU to lb CO2/gal
     return MDSP.get(), GWP.get()*mmbtu_to_gal*kg_to_lb
