@@ -1,3 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+'''
+QSDsan-webapp: Web application for QSDsan
+
+This module is developed by:
+    
+    Yalin Li <mailto.yalin.li@gmail.com>
+
+This module is under the University of Illinois/NCSA Open Source License.
+Please refer to https://github.com/QSD-Group/QSDsan/blob/main/LICENSE.txt
+for license details.
+'''
+
 import biosteam as bst
 from exposan import htl
 from biorefineries.cane import create_sugarcane_chemicals
@@ -5,6 +20,7 @@ from biorefineries.tea import create_cellulosic_ethanol_tea
 
 class BoilerTurbogenerator(bst.facilities.BoilerTurbogenerator):
 
+    # Make it work for a system without utility agents
     def _load_utility_agents(self):
         steam_utilities = self.steam_utilities
         steam_utilities.clear()
@@ -25,6 +41,7 @@ def create_chemicals():
     htl_cmps = htl.create_components()
     cane_chems = create_sugarcane_chemicals()
     
+    # Components in the feedstock
     Water = htl_cmps.Water
     Lipids = htl_cmps.Sludge_lipid.copy('Lipids')
     Proteins = htl_cmps.Sludge_protein.copy('Proteins')
@@ -61,74 +78,47 @@ def create_system():
     sys = bst.System('sys', path=(BT,))
     return sys
 
-def combustion_calc(composition=[0.7, 0.257, 0.204, 0.463], nj_avg_power_co2=486.63):
-    """
-    Calculates the annual electricity production and avoided emissions from combustion of sludge, food waste, FOG, or green manure.
-    
-    Parameters
-    ----------
-    composition : list
-        [moisture, ash, lipids, proteins] in kg/hr
-    nj_avg_power_co2 : float
-        Average power plant emissions in lb CO2/MWh
-        
-    Returns
-    -------
-    annual_electricity : float
-        Annual electricity production in MWh
-    avoided_emissions : float
-        Avoided emissions in million metric tonnes
-    avoided_emissions_percent : float
-        Avoided emissions as a percentage of total emissions
-        
-    Raises
-    ------
-    TypeError
-        If composition is not a list
-    TypeError
-        If nj_avg_power_co2 is not a float or an int
-    ValueError
-        If composition does not have 4 elements
-    
-    Examples
-    --------
-    >>> combustion_calc([0.7, 0.257, 0.204, 0.463], 486.63)
-        
-    """
-    
-    # Error handling
-    if not isinstance(composition, list):
-        raise TypeError("composition must be a list")
-    if not isinstance(nj_avg_power_co2, (float, int)):
-        raise TypeError("nj_avg_power_co2 must be a float or an int")
-    if len(composition) != 4:
-        raise ValueError("composition must have 4 elements")
-    
-    # Assign values
-    a, b, c, d = composition
-    e = 1 - a - b - c - d
-    feedstock = bst.Stream('feedstock',
-                           Water=a, # kg/hr
-                            Ash=b, # kg/hr
-                            Lipids=c, # kg/hr
-                            Proteins=d, # kg/hr
-                            Carbohydrates=e) # kg/hr
-    BT = BoilerTurbogenerator('BT', ins=feedstock)
-    sys = bst.System('sys', path=(BT,))
-    BT = sys.flowsheet.unit.BT
-    tea = create_cellulosic_ethanol_tea(sys, OSBL_units=[BT])
-    sys.simulate()
-    
-    total_electricity = -BT.net_power # kW (kWh/hr), net production so the original value is negative
-    annual_electricity = total_electricity * 365 * 24 / 1e3 # MWh // million watters we can generate per year
-    
-    NJ_avg_power_CO2 = nj_avg_power_co2 * 0.453592 # lb CO2/MWh to kg CO2/MWh
-    avoided_emissions = NJ_avg_power_CO2 * annual_electricity / 1e3 / 1e6 # million metric tonne
-    
-    avoided_emissions_percent = avoided_emissions / 97.6
-                           
-    return (
-        annual_electricity,
-        avoided_emissions,
-        avoided_emissions_percent
-    )
+# drop down menu to select
+# sludge, food, fog, green, manure
+
+
+# From the HTL module
+# water, ash, lipid, protein, carbohydrate
+compositions = {
+    'sludge': (0.7, 0.257, 0.204, 0.463), # moisture, ash, lipid, protein; lipid/protein in ash-free dry weight
+    'food': (0.74, 0.0679, 0.22, 0.2),
+    'fog': (0.35, 0.01865, 0.987, 0.002), # fats, oils, and grease
+    'green': (0.342, 0.134, 0.018, 0.049),
+    'manure': (0.6634, 0.3056, 0.092325, 0.216375),
+    }
+
+sys = create_system()
+BT = sys.flowsheet.unit.BT
+tea = create_cellulosic_ethanol_tea(sys, OSBL_units=[BT])
+sys.simulate()
+
+total_electricity = -BT.net_power # kW (kWh/hr), net production so the original value is negative
+annual_electricity = total_electricity * 365 * 24 / 1e3 # MWh // million watters we can generate per year
+# first output - electricity generated
+
+# NJ averaged CO2 emission, https://www.epa.gov/egrid/data-explorer
+NJ_avg_power_CO2 = 486.63 * 0.453592 # lb CO2/MWh to kg CO2/MWh
+
+avoided_emissions = NJ_avg_power_CO2 * annual_electricity / 1e3 / 1e6 # million metric tonne
+# absolute number of emisions
+
+
+# Net GHG emissions of NJ is 97.6 million metric tonnes of CO2e
+# https://dep.nj.gov/ghg/nj-ghg-inventory/
+avoided_emissions_percent = avoided_emissions / 97.6 
+# percentage of avoided emissions
+
+
+# # This is biogenic CO2, does not count
+# emissions = sys.flowsheet.stream.emissions
+# total_CO2 = emissions.imass['CO2'] # CO2 emission # kg/hr
+# CO2_per_kWh = total_electricity / total_CO2
+
+
+# everything is in kg/hr
+print(annual_electricity, avoided_emissions, avoided_emissions_percent)
