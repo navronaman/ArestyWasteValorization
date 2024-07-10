@@ -226,6 +226,8 @@ def combustion_county(county, waste_type, state_data=STATE_DATA):
         
     Returns
     -------
+    county : str
+        County name
     annual_electricity : float
         Annual electricity production in MWh
     avoided_emissions : float
@@ -247,7 +249,7 @@ def combustion_county(county, waste_type, state_data=STATE_DATA):
     Examples
     --------
     >>> combustion_county("Warren", "sludge")
-    (16771611.411033249, 3.7020225242133353, 0.037930558649726796)
+    (Warren, 16771611.411033249, 3.7020225242133353, 0.037930558649726796)
         
     """
     
@@ -273,35 +275,39 @@ def combustion_county(county, waste_type, state_data=STATE_DATA):
         case "sludge":
             mass = state_data.loc[state_data['County'] == name_final, 'Sludge'].values[0] # this is tons | Convert from dry tons/year to kg/hr
             final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
-            return combustion_calc(final_mass, waste_type)
+            
         case "food":
             mass = state_data.loc[state_data['County'] == name_final, 'Food (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
             final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
-            return combustion_calc(final_mass, waste_type)
+
         case "fog":
             mass = state_data.loc[state_data['County'] == name_final, 'Fog (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
             final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
-            return combustion_calc(final_mass, waste_type)
+
         case "green":
             mass = state_data.loc[state_data['County'] == name_final, 'Green'].values[0] # this is tons | Convert from dry tons/year to kg/hr
             final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
-            return combustion_calc(final_mass, waste_type)
         case "manure":
             mass = state_data.loc[state_data['County'] == name_final, 'Manure'].values[0] # this is tons | Convert from dry tons/year to kg/hr
             final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
-            return combustion_calc(final_mass, waste_type)
+
         case _:
             raise ValueError("waste_type must be one of 'sludge', 'food', 'fog', 'green', or 'manure'")
-
-    
-    
+        
+    annual_electricity, avoided_emissions, avoided_emissions_percent = combustion_calc(final_mass, waste_type)
+    return (
+        name_final,
+        annual_electricity,
+        avoided_emissions,
+        avoided_emissions_percent
+    )
     
 if __name__ == '__main__':
     print(combustion_calc_raw(1000))
     print(combustion_calc(1000, "sludge"))
     
     print(combustion_county("Warren", "sludge"))
-    print(combustion_county("Warren", "food"))
-    print(combustion_county("Warren", "fog"))
-    print(combustion_county("Warren", "green"))
-    print(combustion_county("Warren", "manure"))
+    print(combustion_county("cape may", "food"))
+    print(combustion_county("Bergen", "fog"))
+    print(combustion_county("mIddlesex", "green"))
+    print(combustion_county("mercer", "manure"))

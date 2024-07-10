@@ -1,6 +1,7 @@
 # Imports from backend file
 from backend.fermentation.lignocellulose import lignocellulose_county, lignocellulose_calc
 from backend.htl.liquefication import htl_county, htl_calc
+from backend.combustion.combustion import combustion_county, combustion_calc
 
 # Imports from flask
 from flask import Flask, jsonify, make_response, request
@@ -141,9 +142,20 @@ def htl_sludge_data(sludge):
 # county and mass for combustion
 @app.route('/combustion-county/<string:countyname>')
 def combustion_county_data(countyname):
-    return jsonify({
-        "error": "Not implemented"
-    })
+    countyname = countyname.replace("_", " ")
+    result = combustion_county(countyname)
+    if result is None:
+        return jsonify({
+            "error": "County not found"
+        })
+    else:
+        name, electricity, emissions, percent = result
+        return jsonify({
+            "name": name,
+            "electricity": electricity,
+            "emissions": emissions,
+            "percent": percent,
+        })
 
 @app.route('/combustion-mass/<int:mass>')
 def combustion_mass_data(mass):
