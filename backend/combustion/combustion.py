@@ -297,6 +297,8 @@ def combustion_county(county, waste_type, state_data=STATE_DATA):
     annual_electricity, avoided_emissions, avoided_emissions_percent = combustion_calc(final_mass, waste_type)
     return (
         name_final,
+        waste_type,
+        mass,
         annual_electricity,
         avoided_emissions,
         avoided_emissions_percent

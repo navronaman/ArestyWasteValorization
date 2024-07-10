@@ -142,16 +142,22 @@ def htl_sludge_data(sludge):
 # county and mass for combustion
 @app.route('/combustion-county/<string:countyname>')
 def combustion_county_data(countyname):
+    waste_type = request.headers.get('X-WasteType', 'sludge')
     countyname = countyname.replace("_", " ")
-    result = combustion_county(countyname)
+    
+    print(waste_type)
+    
+    result = combustion_county(countyname, waste_type)
     if result is None:
         return jsonify({
             "error": "County not found"
         })
     else:
-        name, electricity, emissions, percent = result
+        name, waste_type2, mass, electricity, emissions, percent = result
         return jsonify({
             "name": name,
+            "waste_type": waste_type2,
+            "mass": int(mass),
             "electricity": electricity,
             "emissions": emissions,
             "percent": percent,

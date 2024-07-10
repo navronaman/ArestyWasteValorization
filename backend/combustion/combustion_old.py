@@ -70,10 +70,11 @@ def create_system():
     chems = create_chemicals()
     feedstock = bst.Stream('feedstock', # this is the flow rate that we can change
                             Water=700, # 1000 kg/hr, 0.7*1000=700 | this is moisture
-                            Ash=257, # 0.257*1000=257 | this is ash
+                            Ash=257, # 0.257*1000=257 | this is ash | ash content is dry weight basis
                             Lipids=204*(1000-700-257)/1e3, # 0.204*(nonmoisture-nonash) = 0.204*(1000-700-257) | this is lipid, part of non-moisture, non-ash
                             Proteins=463*(1000-700-257)/1e3,  # 0.463*(nonmoisture-nonash) = 0.463*(1000-700-257) | this is protein, part of non-moisture, non-ash
                             Carbohydrates=(1000-204-463)*(1000-700-257)/1e3,) # 1000-204-463=333 | this is carbohydrate, part of non-moisture, non-ash
+    # the remaining three are ash-free dry weight
     BT = BoilerTurbogenerator('BT', ins=feedstock)
     sys = bst.System('sys', path=(BT,))
     return sys

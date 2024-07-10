@@ -31,15 +31,50 @@
                 <b><span id="countyName">County</span></b>
                 <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
     
-                <b><span id="biomass-unit">Lignocellulosic Biomass:</span></b> <span id="biomass"></span>
-                <select id="biomass-units" class="unit-select" onchange="updateUnits()">
+                <b><span id="wastetype-unit">Sludge:</span></b> <span id="wastetype"></span>
+                <select id="wastetype-units" class="unit-select" onchange="updateUnits()">
                     <option value="tons">short tons</option>
                     <option value="tonnes">metric tonnes</option>
                 </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="biomass-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
+                <span class="info-icon">ℹ️<span class="tooltip" id="wastetype-tool">US Short Tons (2000 lbs) used for measuring waste</span></span><br>
     
+                <b><span id="electricity-unit">Annual Electricity:</span></b> <span id="electricity"></span>
+                <select id="electricity-units" class="unit-select" onchange="updateUnits()">
+                    <option value="mwh">megawatt</option>
+                </select>
+                <span class="info-icon">ℹ️<span class="tooltip" id="electricity-tool">Megawatts in an year this wastetype can produce</span></span><br>
+    
+                <b><span id="emissions-unit">Avoided Emissions:</span></b> <span id="emissions"></span>
+                <select id="emissions-units" class="unit-select" onchange="updateUnits()">
+                    <option value="tons">short tons</option>
+                </select>
+                <span class="info-icon">ℹ️<span class="tooltip" id="emissions-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
+    
+                <b><span id="percent-unit">Avoided Emissions Percentage:</span></b> <span id="biomass"></span>
+                <select id="percent-units" class="unit-select" onchange="updateUnits()">
+                    <option value="%">%</option>
+                </select>
+                <span class="info-icon">ℹ️<span class="tooltip" id="percent-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
             </p>
         </div>
+    </div>
+
+    <div class="tab-container" id="wastetype-placeholder">
+        <input type="radio" id="sludge" name="wastetype" value="sludge" checked>
+        <label for="sludge" class="tab-label" onclick="selectWasteType('sludge')">Sludge</label>
+
+        <input type="radio" id="food" name="wastetype" value="food">
+        <label for="food" class="tab-label" onclick="selectWasteType('food')">Food Waste</label>
+
+        <input type="radio" id="fog" name="wastetype" value="fog">
+        <label for="fog" class="tab-label" onclick="selectWasteType('fog')">Fats, Oils & Grease</label>
+
+        <input type="radio" id="green" name="wastetype" value="green">
+        <label for="green" class="tab-label" onclick="selectWasteType('green')">Green Waste</label>
+
+        <input type="radio" id="manure" name="wastetype" value="manure">
+        <label for="manure" class="tab-label" onclick="selectWasteType('manure')">Manure</label>
+
     </div>
         
     
@@ -81,13 +116,13 @@
     <!-- Manual Mass Input Calculator -->
     <div class="form-container">
 
-        <h3> Calculate the _________ of a County by Mass </h3>
-        <label for="massInput">Enter annual _________ produced in <span id="m-biomass">_________</span> to be processed:</label>
+        <h3> Calculate the electricity of a County </h3>
+        <label for="massInput">Enter annual dry tons produced in <span id="m-wastetype">sludge</span> to be processed:</label>
         <input type="number" id="massInput" name="massInput" placeholder="1000-1000000" min="1000" max="1000000" required>
         <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
         <div id="massInfoOutput">
-            <b>Annual Ethanol: </b><span id="m-ethanol">0</span><span id="m-ethanol-unit"> (MM gal/year):</span><br>
-
+            <b>Annual Electricity: </b><span id="m-ethanol">0</span><span id="m-electricty-unit"> (MM gal/year):</span><br>
+            <b>Avoided Emissions: </b><span id="m-emissions">0</span><span id="m-emissions-unit"> (MM gal/year):</span><br>
         </div>
         <div id="errorMass">
             <b> </b>
