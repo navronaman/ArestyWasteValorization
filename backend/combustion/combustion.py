@@ -127,7 +127,15 @@ def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], n
         avoided_emissions_percent
     )
     
-def combustion_calc(mass, waste_type):
+COMPOSITIONS = {
+    'sludge': [0.7, 0.257, 0.204, 0.463], 
+    'food': [0.74, 0.0679, 0.22, 0.2],
+    'fog': [0.35, 0.01865, 0.987, 0.002], 
+    'green': [0.342, 0.134, 0.018, 0.049],
+    'manure': [0.6634, 0.3056, 0.092325, 0.216375],
+    }
+
+def combustion_calc(mass, waste_type, compositions=COMPOSITIONS):
     """
     Calculates the annual electricity production and avoided emissions from combustion of sludge, food waste, FOG, or green manure.
     
@@ -137,6 +145,8 @@ def combustion_calc(mass, waste_type):
         Mass flow rate in kg/hr
     waste_type : str
         Type of waste, must be one of 'sludge', 'food', 'fog', 'green', or 'manure'
+    compositions : dict
+        Dictionary containing the compositions of water, ash, lipids, and proteins for each waste type
         
     Returns
     -------
@@ -155,6 +165,8 @@ def combustion_calc(mass, waste_type):
         If waste_type is not a string
     TypeError
         If mass is not a float or an int
+    ValueError
+        If compositions is not a dict
         
     Examples
     --------
@@ -168,25 +180,128 @@ def combustion_calc(mass, waste_type):
         raise TypeError("waste_type must be a string")
     if not isinstance(mass, (float, int)):
         raise TypeError("mass must be a float or an int")
+    if not isinstance(compositions, dict):
+        raise ValueError("compositions must be a dict")
     
     waste_type = waste_type.lower()
     
     match waste_type:
         case "sludge":
-            return combustion_calc_raw(mass, [0.7, 0.257, 0.204, 0.463])
+            list_to_use = compositions['sludge']
+            mass = mass / list_to_use[0] # convert from dry to total
+            return combustion_calc_raw(mass, list_to_use)
         case "food":
-            return combustion_calc_raw(mass, [0.74, 0.0679, 0.22, 0.2])
+            list_to_use = compositions['food']
+            mass = mass / list_to_use[0] # convert from dry to total
+            return combustion_calc_raw(mass, list_to_use)
         case "fog":
-            return combustion_calc_raw(mass, [0.35, 0.01865, 0.987, 0.002])
+            list_to_use = compositions['fog']
+            mass = mass / list_to_use[0] # convert from dry to total
+            return combustion_calc_raw(mass, list_to_use)
         case "green":
-            return combustion_calc_raw(mass, [0.342, 0.134, 0.018, 0.049])
+            list_to_use = compositions['green']
+            mass = mass / list_to_use[0] # convert from dry to total
+            return combustion_calc_raw(mass, list_to_use)
         case "manure":
-            return combustion_calc_raw(mass, [0.6634, 0.3056, 0.092325, 0.216375])
+            list_to_use = compositions['manure']
+            mass = mass / list_to_use[0] # convert from dry to total
+            return combustion_calc_raw(mass, list_to_use)
         case _:
             raise ValueError("waste_type must be one of 'sludge', 'food', 'fog', 'green', or 'manure'")
         
 STATE_DATA = pd.read_csv(r"backend\combustion\combustion_data.csv")
+
+def combustion_county(county, waste_type, state_data=STATE_DATA):
+    """
+    Calculates the annual electricity production and avoided emissions from combustion of sludge, food waste, FOG, or green manure in a county.
+    
+    Parameters
+    ----------
+    county : str
+        County name
+    waste_type : str
+        Type of waste, must be one of 'sludge', 'food', 'fog', 'green', or 'manure'
+    state_data : pd.DataFrame
+        DataFrame containing the waste data for each county
+        
+    Returns
+    -------
+    annual_electricity : float
+        Annual electricity production in MWh
+    avoided_emissions : float
+        Avoided emissions in million metric tonnes
+    avoided_emissions_percent : float
+        Avoided emissions as a percentage of total emissions
+        
+    Raises
+    ------
+    ValueError
+        If waste_type is not one of 'sludge', 'food', 'fog', 'green', or 'manure'
+    TypeError
+        If waste_type is not a string
+    TypeError
+        If county is not a string
+    TypeError
+        If state_data is not a pd.DataFrame
+        
+    Examples
+    --------
+    >>> combustion_county("Warren", "sludge")
+    (16771611.411033249, 3.7020225242133353, 0.037930558649726796)
+        
+    """
+    
+    # raising the TypeErrors
+    if not isinstance(waste_type, str):
+        raise TypeError("waste_type must be a string")
+    if not isinstance(county, str):
+        raise TypeError("county must be a string")
+    if not isinstance(state_data, pd.DataFrame):
+        raise TypeError("state_data must be a pd.DataFrame")
+        
+    name_final = None
+    
+    for item in state_data['County']:
+        if item.lower() == county.lower():
+            name_final = item
+            break
+        
+    if name_final is None:
+        return None
+    
+    match waste_type:
+        case "sludge":
+            mass = state_data.loc[state_data['County'] == name_final, 'Sludge'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            return combustion_calc(final_mass, waste_type)
+        case "food":
+            mass = state_data.loc[state_data['County'] == name_final, 'Food (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            return combustion_calc(final_mass, waste_type)
+        case "fog":
+            mass = state_data.loc[state_data['County'] == name_final, 'Fog (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            return combustion_calc(final_mass, waste_type)
+        case "green":
+            mass = state_data.loc[state_data['County'] == name_final, 'Green'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            return combustion_calc(final_mass, waste_type)
+        case "manure":
+            mass = state_data.loc[state_data['County'] == name_final, 'Manure'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            return combustion_calc(final_mass, waste_type)
+        case _:
+            raise ValueError("waste_type must be one of 'sludge', 'food', 'fog', 'green', or 'manure'")
+
+    
+    
     
 if __name__ == '__main__':
     print(combustion_calc_raw(1000))
     print(combustion_calc(1000, "sludge"))
+    
+    print(combustion_county("Warren", "sludge"))
+    print(combustion_county("Warren", "food"))
+    print(combustion_county("Warren", "fog"))
+    print(combustion_county("Warren", "green"))
+    print(combustion_county("Warren", "manure"))
