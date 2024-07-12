@@ -116,18 +116,43 @@
     <div class="form-container">
 
         <h3> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h3>
-        <label for="massInput">Enter annual biomass produced in <span id="m-biomass">tons</span> to be processed:</label>
-        <input type="number" id="massInput" name="massInput" placeholder="1000-1000000" min="1000" max="1000000" required>
-        <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
-        <div id="massInfoOutput">
-            <b>Annual Ethanol: </b><span id="m-ethanol">0</span><span id="m-ethanol-unit"> (MM gal/year):</span><br>
+        <label for="manualInput">Enter annual biomass produced in <span id="m-biomass">tons</span> to be processed:</label>
+        <div id="form-container-input">
+            <input type="number" id="manualInput" name="manualInput" placeholder="1000-1000000" min="1000" max="1000000" required>
+            <select id="m-biomass-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="tons">short tons</option>
+                <option value="tonnes">metric tonnes</option>
+            </select>
+        </div>
+        <button class="btn-class" onclick="clickManual()" id="manualBox">Submit</button>
+        <div id="manualInfoOutput">
+            <b>Annual Ethanol: </b><span id="m-ethanol">0</span>
+            <select id="m-ethanol-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="MM gal/year">MM gal/year</option>
+                <option value="tonnes/year">tonnes/year</option>
+                <option value="kilotonnes/year">kilotonnes/year</option>
+                <option value="MMBTU/year">MMBTU/year</option>
+            </select>
+            <br>
 
-            <b>Price: </b>$<span id="m-price">0</span><span id="m-price-unit"> /gal:</span><br>
+            <b>Price: </b><span id="m-price">0</span>
+            <select id="m-price-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="$/gal">$/gal</option>
+                <option value="$/kg">$/kg</option>
+                <option value="$/MMBTU">$/MMBTU</option>
+            </select>
+            <br>
 
-            <b>GWP: </b> <span id="m-gwp">0</span> <span id="m-gwp-unit"> (lb CO2 eq/gal):</span><br>
+            <b>GWP: </b> <span id="m-gwp">0</span>
+            <select id="m-gwp-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="lb CO2/gal">lb CO2/gal</option>
+                <option value="kg CO2/kg">kg CO2/kg</option>
+                <option value="kg CO2/MMBTU">kg CO2/MMBTU</option>
+            </select>
+            <br>
 
         </div>
-        <div id="errorMass">
+        <div id="errorManual">
             <b> </b>
         </div>
 

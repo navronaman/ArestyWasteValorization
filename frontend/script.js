@@ -45,6 +45,8 @@ var previousCounty = null; // previous county selected (for comparison)
 var currentCountyData = null; // current county data
 var previousCountyData = null; // previous county data (for comparison)
 
+var manualData = null; // manual data input
+
 // imperial/metric button
 var unit = null;
 function selectUnit(imperial_or_metric) {
@@ -60,18 +62,7 @@ function selectUnit(imperial_or_metric) {
         changeSettings(unit);
     }
     
-    // change the values of the data in infoTop and comparison
-    if (currentCountyData !== null && previousCountyData !== null) {
-        displayInfoTop(currentCountyData);
-        displayComparison(previousCountyData, currentCountyData);
-    }
-    else if (currentCountyData !== null && previousCountyData === null) {
-        displayInfoTop(currentCountyData);
-        displayComparison(currentCountyData, null);
-    }
-    else {
-        console.log('no data');
-    }} 
+} 
 /*
 
 Most important of code
@@ -161,7 +152,7 @@ function attachEventListenersToMap() {
     });
 }
 
-// Collapsible content
+// Collapsible content, for the comparison
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.collapsible-header');
     const container = document.querySelector('.collapsible-container');
@@ -172,3 +163,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
+// For the manual input button
+function clickManual() {
+    const manualInput = document.getElementById("manualInput").value;
+    const manualInputInt = Number(manualInput);
+
+    const min = document.getElementById("manualInput").min;
+    const max = document.getElementById("manualInput").max;
+
+    if (isNaN(manualInputInt) || manualInputInt <= 0 || manualInputInt > max || manualInputInt < min || !Number.isInteger(manualInputInt)) {
+        document.getElementById("errorManual").innerHTML = `<span class='error'> Please enter a valid number between ${min} and ${max} </span>`;;
+    }
+
+    getManualInfo(manualInputInt).then(manualDataObtained => {
+        manualData = manualDataObtained;
+        console.log(manualData); // This should log the data returned by getManualInfo
+        displayManual(manualData);
+    }).catch(error => {
+        document.getElementById("errorManual").innerHTML = `<span class='error'> Error fetching data: ${error} </span>`;
+        console.error('Error fetching data:', error);
+    });
+
+}

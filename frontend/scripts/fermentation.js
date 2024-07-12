@@ -22,12 +22,6 @@ function changeSettings(unit) {
         priceUnit = "$/gal";
         gwpUnit = "lb CO2/gal"; 
 
-        // manual input units
-        document.getElementById('m-biomass').innerHTML = 'tons';
-        document.getElementById('m-ethanol-unit').innerHTML = ' (MM gal/year)';
-        document.getElementById('m-price-unit').innerHTML = ' /gal';
-        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2 eq/gal):';
-
     }
     else if (unit == "metric") {
 
@@ -36,12 +30,6 @@ function changeSettings(unit) {
         ethanolUnit = "kilotonnes/year";
         priceUnit = "$/kg";
         gwpUnit = "kg CO2/kg";
-
-        // manual input units
-        document.getElementById('m-biomass').innerHTML = 'tonnes';
-        document.getElementById('m-ethanol-unit').innerHTML = ' (kilotonnes/year)';
-        document.getElementById('m-price-unit').innerHTML = ' /kg';
-        document.getElementById('m-gwp-unit').innerHTML = ' (kg CO2/kg)';
 
     }
 
@@ -64,25 +52,23 @@ function updateUnits() {
     gwpUnit = document.getElementById('gwp-units').value;
 
     updateUnitsEverywhere();
-
-    // change the values of the data in infoTop and comparison
-    if (currentCountyData !== null && previousCountyData !== null) {
-        displayInfoTop(currentCountyData);
-        displayComparison(previousCountyData, currentCountyData);
-    }
-    else if (currentCountyData !== null && previousCountyData === null) {
-        displayInfoTop(currentCountyData);
-        displayComparison(currentCountyData, null);
-    }
-    else {
-        console.log('no data');
-    }
 } 
 
 // this function is used to update the units in all of the HTML
 // we also change the tool tips over here
 function updateUnitsEverywhere() {
-    
+
+    // update the drop down menus
+    document.getElementById('biomass-units').value = biomassUnit;
+    document.getElementById('ethanol-units').value = ethanolUnit;
+    document.getElementById('price-units').value = priceUnit;
+    document.getElementById('gwp-units').value = gwpUnit;
+
+    document.getElementById('m-biomass-units').value = biomassUnit;
+    document.getElementById('m-ethanol-units').value = ethanolUnit;
+    document.getElementById('m-price-units').value = priceUnit;
+    document.getElementById('m-gwp-units').value = gwpUnit;
+
     // resetting the manual input units every time the unit is changed
     document.getElementById('m-ethanol').innerHTML = 0;
     document.getElementById('m-price').innerHTML = 0;
@@ -148,6 +134,18 @@ function updateUnitsEverywhere() {
             break;
     }
 
+    // change the values of the data in infoTop and comparison
+    if (currentCountyData !== null && previousCountyData !== null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(previousCountyData, currentCountyData);
+    }
+    else if (currentCountyData !== null && previousCountyData === null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(currentCountyData, null);
+    }
+    else {
+        console.log('no data');
+    }
 }
 
 // internal function, used to get info about a county

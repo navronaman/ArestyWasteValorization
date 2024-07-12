@@ -50,7 +50,7 @@
                 </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="emissions-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
     
-                <b><span id="percent-unit">Avoided Emissions Percentage:</span></b> <span id="biomass"></span>
+                <b><span id="percent-unit">Avoided Emissions Percentage:</span></b> <span id="percent"></span>
                 <select id="percent-units" class="unit-select" onchange="updateUnits()">
                     <option value="%">%</option>
                 </select>
@@ -117,10 +117,10 @@
     <div class="form-container">
 
         <h3> Calculate the electricity of a County </h3>
-        <label for="massInput">Enter annual dry tons produced in <span id="m-wastetype">sludge</span> to be processed:</label>
-        <input type="number" id="massInput" name="massInput" placeholder="1000-1000000" min="1000" max="1000000" required>
-        <button class="btn-class" onclick="getMassInfo()" id="massBox">Submit</button>
-        <div id="massInfoOutput">
+        <label for="manualInput">Enter annual dry tons produced in <span id="m-wastetype">sludge</span> to be processed:</label>
+        <input type="number" id="manualInput" name="manualInput" placeholder="1000-1000000" min="1000" max="1000000" required>
+        <button class="btn-class" onclick="clickManual()" id="manualBox">Submit</button>
+        <div id="manualInfoOutput">
             <b>Annual Electricity: </b><span id="m-ethanol">0</span><span id="m-electricty-unit"> (MM gal/year):</span><br>
             <b>Avoided Emissions: </b><span id="m-emissions">0</span><span id="m-emissions-unit"> (MM gal/year):</span><br>
         </div>

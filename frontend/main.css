@@ -322,7 +322,7 @@ tbody th {
 }
 
 
-/* mass calculator */
+/* manual calculator */
 
 .form-container {
     display: flex;
@@ -348,15 +348,15 @@ input {
 }
 
 
-#massBox{
+#manualBox{
     background-color: #007BFF;
 }
 
-#massBox:hover{
+#manualBox:hover{
     background-color: #0056b3;
 }
 
-#massInfoOutput{
+#manualInfoOutput{
     display: block;
     padding: 10px;
     border-radius: 5px;
@@ -384,7 +384,7 @@ input {
     background-color: #0056b3;
 }
 
-/* mass error and other error buttons */
+/* manual error and other error buttons */
 
 .error {
     color: rgb(231, 21, 21);
