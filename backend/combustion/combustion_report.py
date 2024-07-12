@@ -6,8 +6,8 @@ green_data = pd.read_csv(r"backend\fermentation\biomass_data.csv")
 
 sludge_data = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
 
-county_names = green_data["County"].tolist()[:-1] # Not including New Jersey
-county_greens = green_data["Lignocellulose (dry tons)"].tolist()[:-1] # Not including New Jersey
+county_names = green_data["County"].tolist()
+county_greens = green_data["Lignocellulose (dry tons)"].tolist()
 county_sludge = sludge_data["Flow MGD"].tolist() # Only because this sludge data does not have New Jersey
 
 
@@ -35,20 +35,43 @@ for index, county_name in enumerate(county_names):
         # for manure
         manure_lbs.append(dfs[county_name].iloc[119]["Unnamed: 3"]) # this is in lbs
 
-    except KeyError:
+    except KeyError: # This will be "New Jersey"
+        # Here we will calculate the total for fogs, food, and manure
+        # Append the tota
+        
+        total_food_tons = sum(food_tons)
+        total_food_dry_tons = sum(food_dry_tons)
+        
+        total_fog_tons = sum(fog_tons)
+        total_fog_dry_tons = sum(fog_dry_tons)
+        
+        total_manure_lbs = sum(manure_lbs)
+        
+        total_sludge_mgd = sum(county_sludge)
+        
+        food_tons.append(total_food_tons)
+        food_dry_tons.append(total_food_dry_tons)
+        
+        fog_tons.append(total_fog_tons)
+        fog_dry_tons.append(total_fog_dry_tons)
+        
+        manure_lbs.append(total_manure_lbs)
+        
+        county_sludge.append(total_sludge_mgd)
+        
         print(f"County Name: {county_name} not found in the combustion data")
         continue
     
 print(len(county_names), len(county_greens), len(county_sludge), len(food_tons), len(food_dry_tons), len(fog_tons), len(fog_dry_tons), len(manure_lbs))
 data = {
-    "County": county_names,  
-    "Sludge": county_sludge,  # Sludge left to be found
-    "Food (tons)": food_tons,
-    "Food (dry tons)": food_dry_tons,
-    "Fog (tons)": fog_tons,
-    "Fog (dry tons)": fog_dry_tons,
-    "Green": county_greens,
-    "Manure": manure_lbs, # Manure left to be found
+    "County": county_names, # County names, 21 counties of New Jersey
+    "Sludge (MGD)": county_sludge,  # In million gallons per day, to be converted to kg/hr
+    "Food (tons)": food_tons, # In tons per year, to be converted to kg/hr
+    "Food (dry tons)": food_dry_tons, # In tons per year, to be converted to kg/hr
+    "Fog (tons)": fog_tons, # In tons per year, to be converted to kg/hr
+    "Fog (dry tons)": fog_dry_tons, # In tons per year, to be converted to kg/hr
+    "Green (dry tons)": county_greens, # In tons per year, to be converted to kg/hr
+    "Manure (lbs)": manure_lbs, # Manure left to be found
 }
 
 df = pd.DataFrame(data)
