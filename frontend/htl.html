@@ -43,6 +43,7 @@
                     <option value="$/m3">$/m3</option>
                     <option value="$/kg">$/kg</option>
                     <option value="$/MMBTU">$/MMBTU</option>
+                    <option value="$/MJ">$/MJ</option>
                 </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="price-tool">Cost of diesel per gallon (Minimum Selling Price)</span></span><br> 
 
@@ -52,6 +53,7 @@
                     <option value="kg CO2/m3">kg CO2/m3</option>
                     <option value="kg CO2/kg">kg CO2/kg</option>
                     <option value="kg CO2/MMBTU">kg CO2/MMBTU</option>
+                    <option value="kg CO2/MJ">kg CO2/MMBTU</option>
                 </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="gwp-tool">Global Warming Potential per MMBTU</span></span><br>
             </p>
@@ -101,15 +103,36 @@
     <!-- Manual Input Calculator -->
     <div class="form-container">
 
-        <h3> Calculate the Price and GWP of a Sludge by MGD (Million Gallons per Day) </h3>
+        <h3> Calculate the Price and GWP by Sludge Production </h3>
         <label for="manualInput">Enter daily sludge capacity in <span id="m-sludge">MGD (million gallons per day)</span> to be processed:</label>
-        <input type="number" id="manualInput" name="manualInput" placeholder="1-2000" min="1" max="2000" required>
+        <div id="form-container-manual">
+            <input type="number" id="manualInput" name="manualInput" placeholder="1-2000" min="1" max="2000" required>
+            <select id="m-sludge-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="MGD">MGD</option>
+                <option value="m3/d">m3/d</option>
+            </select>
+        </div>
+        
         <button class="btn-class" onclick="clickManual()" id="manualBox">Submit</button>
         <div id="manualInfoOutput">
 
-            <b>Price: </b>$<span id="m-price">0</span><span id="m-price-unit"> /gal diesel:</span><br>
+            <b>Price: </b><span id="m-price">0</span>
+            <select id="m-price-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="$/gal">$/gal</option>
+                <option value="$/kg">$/kg</option>
+                <option value="$/MMBTU">$/MMBTU</option>
+                <option value="$/MJ">$/MJ</option>
+            </select>
+            <br>
 
-            <b>GWP: </b> <span id="m-gwp">0</span> <span id="m-gwp-unit"> (kg CO2/MMBTU diesel):</span><br>
+            <b>GWP: </b> <span id="m-gwp">0</span>
+            <select id="m-gwp-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="lb CO2/gal">lb CO2/gal</option>
+                <option value="kg CO2/kg">kg CO2/kg</option>
+                <option value="kg CO2/MMBTU">kg CO2/MMBTU</option>
+                <option value="kg CO2/MJ">kg CO2/MJ</option>
+            </select>
+            <br>
 
         </div>
         <div id="errorManual">

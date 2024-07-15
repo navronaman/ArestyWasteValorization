@@ -47,13 +47,11 @@
                 <b><span id="emissions-unit">Avoided Emissions:</span></b> <span id="emissions"></span>
                 <select id="emissions-units" class="unit-select" onchange="updateUnits()">
                     <option value="tons">short tons</option>
+                    <option value="tonnes">metric tonnes</option>
                 </select>
                 <span class="info-icon">ℹ️<span class="tooltip" id="emissions-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
     
-                <b><span id="percent-unit">Avoided Emissions Percentage:</span></b> <span id="percent"></span>
-                <select id="percent-units" class="unit-select" onchange="updateUnits()">
-                    <option value="%">%</option>
-                </select>
+                <b><span id="percent-unit">Avoided Emissions Percentage:</span></b> <span id="percent"></span>  %
                 <span class="info-icon">ℹ️<span class="tooltip" id="percent-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
             </p>
         </div>
@@ -117,12 +115,28 @@
     <div class="form-container">
 
         <h3> Calculate the electricity of a County </h3>
-        <label for="manualInput">Enter annual dry tons produced in <span id="m-wastetype">sludge</span> to be processed:</label>
-        <input type="number" id="manualInput" name="manualInput" placeholder="1000-1000000" min="1000" max="1000000" required>
+        <label for="manualInput">Enter annual dry mass produced in <span id="m-wastetype">sludge</span> to be processed:</label>
+        <div id="form-container-input">
+            <input type="number" id="manualInput" name="manualInput" placeholder="1000-1000000" min="1000" max="1000000" required>
+            <select id="m-wastetype-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="tons">short tons</option>
+                <option value="tonnes">metric tonnes</option>
+            </select>
+        </div>
         <button class="btn-class" onclick="clickManual()" id="manualBox">Submit</button>
         <div id="manualInfoOutput">
-            <b>Annual Electricity: </b><span id="m-ethanol">0</span><span id="m-electricty-unit"> (MM gal/year):</span><br>
-            <b>Avoided Emissions: </b><span id="m-emissions">0</span><span id="m-emissions-unit"> (MM gal/year):</span><br>
+            <b>Annual Electricity: </b><span id="m-ethanol">0</span>
+            <select id="m-ethanol-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="mwh">megawatt</option>
+            </select>
+            <br>
+
+            <b>Avoided Emissions: </b><span id="m-emissions">0</span>
+            <select id="m-emissions-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="tons">short tons</option>
+                <option value="tonnes">metric tonnes</option>
+            </select>
+            <br>
         </div>
         <div id="errorMass">
             <b> </b>
