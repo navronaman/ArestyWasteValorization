@@ -145,7 +145,7 @@ function attachEventListenersToMap() {
 
 
             }
-            document.getElementById("errorMass").innerHTML = "<b></b>";
+            document.getElementById("errorManual").innerHTML = "<b></b>";
             document.getElementById("errorExport").innerHTML = "<b></b>";
         });
         
@@ -173,13 +173,14 @@ function clickManual() {
     const max = document.getElementById("manualInput").max;
 
     if (isNaN(manualInputInt) || manualInputInt <= 0 || manualInputInt > max || manualInputInt < min || !Number.isInteger(manualInputInt)) {
-        document.getElementById("errorManual").innerHTML = `<span class='error'> Please enter a valid number between ${min} and ${max} </span>`;;
+        document.getElementById("errorManual").innerHTML = `<span class='error'> Please enter a valid number between ${min} and ${max} </span>`;
+        return;
     }
 
     getManualInfo(manualInputInt).then(manualDataObtained => {
         manualData = manualDataObtained;
         console.log(manualData); // This should log the data returned by getManualInfo
-        displayManual(manualData);
+        displayManualInfo(manualData);
     }).catch(error => {
         document.getElementById("errorManual").innerHTML = `<span class='error'> Error fetching data: ${error} </span>`;
         console.error('Error fetching data:', error);

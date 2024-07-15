@@ -26,7 +26,14 @@ KG_TO_LBS_CONVERSION = 2.20462
 
 GAL_TO_M3D_CONVERSION = 0.12845
 GAL_TO_KG_CONVERSION = 0.838*3.78541
-    
+
+"""
+In all Fermentation JSON data, there should be these 4 things     
+    1. Mass of feedstock in short tons                            
+    2. Ethanol produced in MM gallons/year                           
+    3. Price of ethanol in $/gallon                               
+    4. Greenhouse gas emissions in lb CO2e/gallon                 
+"""
 # county and mass for fermentation
 @app.route('/fermentation-county/<string:countyname>')
 def fermentation_county_data(countyname):
@@ -48,19 +55,21 @@ def fermentation_county_data(countyname):
                 
 @app.route('/fermentation-biomass/<int:mass>')
 def fermentation_biomass_data(mass):
-    unit = request.headers.get('X-Unit', 'imperial')
-    if unit not in ['imperial', 'metric']:
-        unit = 'imperial'
+    unit = request.headers.get('X-Unit', 'tons')
+    if unit not in ['tons', 'tonnes']: # in case the header has something other than 'tons' or 'tonnes'
+        unit = 'tons' # default to 'tons'
     
     try:
         # case switch statements
         match unit:
-            case 'imperial':
+            case 'tons':
+                tonnes = mass
                 # convert mass from short tons into kilograms
                 mass = mass * 907.185
                 # convert from annual kilograms to hourly kilograms
                 mass = mass / (365*24*0.96)
-            case 'metric':
+            case 'tonnes':
+                tonnes = mass / 907.185
                 # convert mass from metric tonnes into kilograms
                 mass = mass * 1000
                 # convert from annual kilograms to hourly kilograms
@@ -68,17 +77,13 @@ def fermentation_biomass_data(mass):
     
         result = lignocellulose_calc(mass)
         ethanol, price, gwp = result
-        match unit:
-            case 'metric':
-                ethanol = ethanol * ETHANOL_DENSITY_KG_GAL_CONVERSION # convert from gal to kg
-                price = price / ETHANOL_DENSITY_KG_GAL_CONVERSION # convert from $/gal to $/kg
-                gwp = (gwp * ETHANOL_DENSITY_KG_GAL_CONVERSION) / KG_TO_LBS_CONVERSION # convert from lb CO2/gal to kg CO2/gal
+
         return jsonify({    
             "success": "true",
-            "mass": mass,
-            "ethanol": round(ethanol, 3),
-            "price": round(price, 3),
-            "gwp": round(gwp, 3)
+            "tons": tonnes, # In dry tones
+            "ethanol": ethanol, # In gallons
+            "price": price, # In $/gallon
+            "gwp": gwp # In lb CO2e/gallon
         })
     except Exception as e:
         return jsonify({
@@ -86,6 +91,13 @@ def fermentation_biomass_data(mass):
             "error": str(e)
         })
         
+"""
+In all HTL JSON data, there should be these 4 things     
+    1. Sludge of feedstock in MGD (Million Gallons per Day)     
+    3. Price of ethanol in $/gallon                               
+    4. Greenhouse gas emissions in lb CO2e/gallon                 
+"""
+
 # county and mass for htl
 @app.route('/htl-county/<string:countyname>')
 def htl_county_data(countyname):
@@ -121,17 +133,17 @@ def htl_sludge_data(sludge):
     
         result = htl_calc(sludge)
         price, gwp = result
-        
-        match unit:
-            case 'metric':
-                price = price/GAL_TO_KG_CONVERSION # convert from $/gal to $/kg
-                gwp = gwp/(GAL_TO_KG_CONVERSION*KG_TO_LBS_CONVERSION) # convert from lb CO2/gal to kg CO2/gal
+
+        # match unit:
+        #     case 'metric':
+        #         price = price/GAL_TO_KG_CONVERSION # convert from $/gal to $/kg
+        #         gwp = gwp/(GAL_TO_KG_CONVERSION*KG_TO_LBS_CONVERSION) # convert from lb CO2/gal to kg CO2/gal
                 
         return jsonify({
             "success": "true",
-            "sludge": sludge,
-            "price": round(price, 3),
-            "gwp": round(gwp, 3)
+            "sludge": sludge, # In MGD
+            "price": price, # In $/gallon
+            "gwp": gwp # In lb CO2e/gallon
         })
     except Exception as e:
         return jsonify({

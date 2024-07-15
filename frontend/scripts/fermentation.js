@@ -10,6 +10,7 @@ var tonToTonne = 0.907185;
 var galToKgforEthanol = 2.98668849;
 var kgToLbsConversion = 2.20462;
 var galToMMBTUConversion = 0.07633; 
+var BTUtoMJ = 0.00105506; // 1 MJ = 0.00105506 BTU
 // source for MM gal to MMBTU 
 // https://h2tools.org/hyarc/calculator-tools/lower-and-higher-heating-values-fuels
 
@@ -53,6 +54,18 @@ function updateUnits() {
 
     updateUnitsEverywhere();
 } 
+
+// this function is for when a unit is changed in the manual input drop down menus
+function updateUnitsForManual() {
+
+    // get the units from the html
+    biomassUnit = document.getElementById('m-biomass-units').value;
+    ethanolUnit = document.getElementById('m-ethanol-units').value;
+    priceUnit = document.getElementById('m-price-units').value;
+    gwpUnit = document.getElementById('m-gwp-units').value;
+
+    updateUnitsEverywhere();
+}
 
 // this function is used to update the units in all of the HTML
 // we also change the tool tips over here
@@ -102,6 +115,10 @@ function updateUnitsEverywhere() {
             document.getElementById('ethanol-tool').innerHTML = 'Annual production in million MMBTU (million british thermal units)'
             document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (MMBTU/year):';
             break;
+        case "MJ/year":
+            document.getElementById('ethanol-tool').innerHTML = 'Annual production in mega joules'
+            document.getElementById('r0-ethanol').innerHTML = 'Annual Ethanol (MJ/year):';
+            break;
     }
 
     switch (priceUnit) {
@@ -116,6 +133,10 @@ function updateUnitsEverywhere() {
         case "$/MMBTU":
             document.getElementById('price-tool').innerHTML = 'Cost of ethanol per MMBTU (Minimum Selling Price)'
             document.getElementById('r0-price').innerHTML = 'Price ($/MMBTU):';
+            break;
+        case "$/MJ":
+            document.getElementById('price-tool').innerHTML = 'Cost of ethanol per MJ (Minimum Selling Price)'
+            document.getElementById('r0-price').innerHTML = 'Price ($/MJ):';
             break;
     }
 
@@ -132,6 +153,10 @@ function updateUnitsEverywhere() {
             document.getElementById('gwp-tool').innerHTML = 'Every MMBTU of ethanol saves this much CO2 in kg'
             document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2/MMBTU):';
             break;
+        case "kg CO2/MJ":
+            document.getElementById('gwp-tool').innerHTML = 'Every MJ of ethanol saves this much CO2 in kg'
+            document.getElementById('r0-gwp').innerHTML = 'GWP (kg CO2/MJ):';
+            break;
     }
 
     // change the values of the data in infoTop and comparison
@@ -144,7 +169,12 @@ function updateUnitsEverywhere() {
         displayComparison(currentCountyData, null);
     }
     else {
-        console.log('no data');
+        console.log('no data for county');
+    }
+
+    // change the values of the data in manual input
+    if (manualData !== null) {
+        displayManualInfo(manualData);
     }
 }
 
@@ -173,58 +203,10 @@ async function getInfo(county) {
 // this displays the current county data on the top
 function displayInfoTop(data){
     let countyname = data.name;
-    let tons = data.tons;
-    let ethanol = data.ethanol;
-    let price = data.price;
-    let gwp = data.gwp;
 
     document.getElementById('countyName').innerHTML = `${countyname} County`;
 
-    // change the units based on the unit selected
-    switch (biomassUnit) {
-        case "tons":
-            break;
-        case "tonnes":
-            tons = tons * 0.907185;
-    }
-
-    switch (ethanolUnit) {
-        case "MM gal/year":
-            break;
-        case "tonnes/year":
-            ethanol = ethanol * galToKgforEthanol * 1e3; // since we're converting from million gallons into tonnes
-            break;
-        case "kilotonnes/year":
-            ethanol = ethanol * galToKgforEthanol; 
-            break;
-        case "MMBTU/year":
-            ethanol = ethanol * galToMMBTUConversion;
-    }
-    
-    switch (priceUnit) {
-        case "$/gal":
-            break;
-        case "$/kg":
-            price = price / galToKgforEthanol; 
-            break;
-        case "$/MMBTU":
-            price = price / galToMMBTUConversion;
-    }
-
-    switch (gwpUnit) {
-        case "lb CO2/gal":
-            break;
-        case "kg CO2/kg":
-            gwp = gwp * kgToLbsConversion / galToKgforEthanol;
-            break;
-        case "kg CO2/MMBTU":
-            gwp = gwp * kgToLbsConversion / galToMMBTUConversion;
-    }
-
-    tons = tons.toFixed(0);
-    ethanol = ethanol.toFixed(3);
-    price = price.toFixed(3);
-    gwp = gwp.toFixed(3);
+    [tons, ethanol, price, gwp] = reformDataPerUnits(data);
 
     console.log(tons, ethanol, price, gwp);
 
@@ -268,55 +250,8 @@ function displayComparison(data1, data2){
 // this function is used to display the data in the comparison table
 function displayComparisonHelper(data, row){
     let countyname = data.name;
-    let tons = data.tons;
-    let ethanol = data.ethanol;
-    let price = data.price;
-    let gwp = data.gwp;
 
-    switch (biomassUnit) {
-        case "tons":
-            break;
-        case "tonnes":
-            tons = tons * 0.907185;
-    }
-
-    switch (ethanolUnit) {
-        case "MM gal/year":
-            break;
-        case "tonnes/year":
-            ethanol = ethanol * galToKgforEthanol * 1e3; // since we're converting from million gallons into tonnes
-            break;
-        case "kilotonnes/year":
-            ethanol = ethanol * galToKgforEthanol; 
-            break;
-        case "MMBTU/year":
-            ethanol = ethanol * galToMMBTUConversion;
-    }
-    
-    switch (priceUnit) {
-        case "$/gal":
-            break;
-        case "$/kg":
-            price = price / galToKgforEthanol; 
-            break;
-        case "$/MMBTU":
-            price = price / galToMMBTUConversion;
-    }
-
-    switch (gwpUnit) {
-        case "lb CO2/gal":
-            break;
-        case "kg CO2/kg":
-            gwp = gwp * kgToLbsConversion / galToKgforEthanol;
-            break;
-        case "kg CO2/MMBTU":
-            gwp = gwp * kgToLbsConversion / galToMMBTUConversion;
-    }
-
-    tons = tons.toFixed(0);
-    ethanol = ethanol.toFixed(3);
-    price = price.toFixed(3);
-    gwp = gwp.toFixed(3);
+    [tons, ethanol, price, gwp] = reformDataPerUnits(data);
     
     document.getElementById(`r${row}-name`).innerHTML = `${countyname} County`
     document.getElementById(`r${row}-biomass`).innerHTML = tons
@@ -324,6 +259,43 @@ function displayComparisonHelper(data, row){
     document.getElementById(`r${row}-price`).innerHTML = price
     document.getElementById(`r${row}-gwp`).innerHTML = gwp
 
+}
+
+// this function is used to get the manual input data
+async function getManualInfo(mass) {
+    const url = `http://localhost:5000/fermentation-biomass/${mass}`;
+    const options = {
+        headers: {
+            'X-Unit': biomassUnit // this is the unit that we're using
+            // it could be in tonnes or tons
+            // implying short tons or metric tonnes
+        }
+    };
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log(data);
+        manualData = data;
+        return data;
+    }
+
+    catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return null;
+    }
+}
+
+// this function is used to display the manual input data
+function displayManualInfo(data){
+    [tons, ethanol, price, gwp] = reformDataPerUnits(data);
+
+    document.getElementById('manualInput').value = tons;
+    document.getElementById('m-ethanol').innerHTML = ethanol;
+    document.getElementById('m-price').innerHTML = price;
+    document.getElementById('m-gwp').innerHTML = gwp;
 }
 
 // Getting mass
@@ -370,6 +342,69 @@ function getMassInfo() {
             
         })
         .catch(error => console.error('Error:', error));  
+}
+
+// Reforming data according to units
+function reformDataPerUnits(data) {
+    let tons = data.tons;
+    let ethanol = data.ethanol;
+    let price = data.price;
+    let gwp = data.gwp;
+
+    // change the units based on the unit selected
+    switch (biomassUnit) {
+        case "tons":
+            break;
+        case "tonnes":
+            tons = tons * tonToTonne; // since we're converting from short tons into metric tonnes
+    }
+
+    switch (ethanolUnit) {
+        case "MM gal/year":
+            break;
+        case "tonnes/year":
+            ethanol = ethanol * galToKgforEthanol * 1e3; // since we're converting from million gallons into tonnes
+            break;
+        case "kilotonnes/year":
+            ethanol = ethanol * galToKgforEthanol; 
+            break;
+        case "MMBTU/year":
+            ethanol = ethanol * galToMMBTUConversion;
+        case "MJ/year":
+            ethanol = ethanol * galToMMBTUConversion * BTUtoMJ * 1e6; // 1 MMBTU = 1055.06 MJ
+    }
+    
+    switch (priceUnit) {
+        case "$/gal":
+            break;
+        case "$/kg":
+            price = price / galToKgforEthanol; 
+            break;
+        case "$/MMBTU":
+            price = price / galToMMBTUConversion;
+        case "$/MJ":
+            price = price / (galToMMBTUConversion * BTUtoMJ * 1e6); // 1 MMBTU = 1055.06 MJ
+    }
+
+    switch (gwpUnit) {
+        case "lb CO2/gal":
+            break;
+        case "kg CO2/kg":
+            gwp = gwp * kgToLbsConversion / galToKgforEthanol;
+            break;
+        case "kg CO2/MMBTU":
+            gwp = gwp * kgToLbsConversion / galToMMBTUConversion;
+        case "kg CO2/MJ":
+            gwp = gwp * kgToLbsConversion / (galToMMBTUConversion * BTUtoMJ * 1e6); // 1 MMBTU = 1055.06 MJ
+    }
+
+    tons = tons.toFixed(0);
+    ethanol = ethanol.toFixed(3);
+    price = price.toFixed(3);
+    gwp = gwp.toFixed(3);
+
+    // return the values
+    return [tons, ethanol, price, gwp]; // return the values in an array
 }
           
 
