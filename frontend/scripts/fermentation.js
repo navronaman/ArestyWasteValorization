@@ -34,12 +34,6 @@ function changeSettings(unit) {
 
     }
 
-    // update the drop down menues to reflect the changes
-    document.getElementById('biomass-units').value = biomassUnit;
-    document.getElementById('ethanol-units').value = ethanolUnit;
-    document.getElementById('price-units').value = priceUnit;
-    document.getElementById('gwp-units').value = gwpUnit;
-    
     updateUnitsEverywhere(); // this changes the tool tips and the unit values
 }
 
@@ -81,11 +75,6 @@ function updateUnitsEverywhere() {
     document.getElementById('m-ethanol-units').value = ethanolUnit;
     document.getElementById('m-price-units').value = priceUnit;
     document.getElementById('m-gwp-units').value = gwpUnit;
-
-    // resetting the manual input units every time the unit is changed
-    document.getElementById('m-ethanol').innerHTML = 0;
-    document.getElementById('m-price').innerHTML = 0;
-    document.getElementById('m-gwp').innerHTML = 0;
 
     switch (biomassUnit) {
         case "tons":
@@ -159,23 +148,8 @@ function updateUnitsEverywhere() {
             break;
     }
 
-    // change the values of the data in infoTop and comparison
-    if (currentCountyData !== null && previousCountyData !== null) {
-        displayInfoTop(currentCountyData);
-        displayComparison(previousCountyData, currentCountyData);
-    }
-    else if (currentCountyData !== null && previousCountyData === null) {
-        displayInfoTop(currentCountyData);
-        displayComparison(currentCountyData, null);
-    }
-    else {
-        console.log('no data for county');
-    }
+    updateValuesEverywhere(); // this updates the values in the HTML
 
-    // change the values of the data in manual input
-    if (manualData !== null) {
-        displayManualInfo(manualData);
-    }
 }
 
 // internal function, used to get info about a county
@@ -206,7 +180,7 @@ function displayInfoTop(data){
 
     document.getElementById('countyName').innerHTML = `${countyname} County`;
 
-    [tons, ethanol, price, gwp] = reformDataPerUnits(data);
+    let {tons, ethanol, price, gwp} = reformDataPerUnits(data);
 
     console.log(tons, ethanol, price, gwp);
 
@@ -251,7 +225,7 @@ function displayComparison(data1, data2){
 function displayComparisonHelper(data, row){
     let countyname = data.name;
 
-    [tons, ethanol, price, gwp] = reformDataPerUnits(data);
+    let {tons, ethanol, price, gwp} = reformDataPerUnits(data);
     
     document.getElementById(`r${row}-name`).innerHTML = `${countyname} County`
     document.getElementById(`r${row}-biomass`).innerHTML = tons
@@ -290,58 +264,12 @@ async function getManualInfo(mass) {
 
 // this function is used to display the manual input data
 function displayManualInfo(data){
-    [tons, ethanol, price, gwp] = reformDataPerUnits(data);
+    let {tons, ethanol, price, gwp} = reformDataPerUnits(data);
 
     document.getElementById('manualInput').value = tons;
     document.getElementById('m-ethanol').innerHTML = ethanol;
     document.getElementById('m-price').innerHTML = price;
     document.getElementById('m-gwp').innerHTML = gwp;
-}
-
-// Getting mass
-function getMassInfo() {
-    const massInput = document.getElementById("massInput").value;
-    const mass = Number(massInput)
-
-    if (isNaN(mass) || mass < 1000 || mass > 1000000 || mass === 0 || !Number.isInteger(mass)){
-        document.getElementById("errorMass").innerHTML = "<span class='error'> Please enter a valid number between 100 and 100000 </span>";
-        return;
-    }
-
-    const url = `http://localhost:5000/fermentation-biomass/${mass}`;
-    const options = {
-        headers: {
-            'X-Unit': unit // this is the unit that we're using
-        }
-    };
-
-    // Example of using fetch with the URL and options
-    fetch(url, options)
-        .then(response => {
-            return response.json()
-        })
-        .then(data => {
-            const success = data.success;
-            console.log(data)
-
-            if (!success) {
-                document.getElementById("errorMass").innerHTML = "<span class='error'> There was an error with the request </span>";
-                return;
-            }
-
-            const ethanol = data.ethanol;
-            const price = data.price;
-            const gwp = data.gwp;
-
-            document.getElementById("m-ethanol").innerHTML = ethanol;
-            document.getElementById("m-price").innerHTML = price;
-            document.getElementById("m-gwp").innerHTML = gwp;
-
-            document.getElementById("errorMass").innerHTML = "<b></b>";
-            document.getElementById("errorExport").innerHTML = "<b></b>";   
-            
-        })
-        .catch(error => console.error('Error:', error));  
 }
 
 // Reforming data according to units
@@ -404,7 +332,7 @@ function reformDataPerUnits(data) {
     gwp = gwp.toFixed(3);
 
     // return the values
-    return [tons, ethanol, price, gwp]; // return the values in an array
+    return {tons, ethanol, price, gwp}; // return the values in an array
 }
           
 

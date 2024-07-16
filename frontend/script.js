@@ -187,3 +187,21 @@ function clickManual() {
     });
 
 }
+
+// Update values everywhere
+function updateValuesEverywhere() {
+    // change the values of the data in infoTop and comparison
+    if (currentCountyData !== null && previousCountyData !== null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(previousCountyData, currentCountyData);
+    }
+    else if (currentCountyData !== null && previousCountyData === null) {
+        displayInfoTop(currentCountyData);
+        displayComparison(currentCountyData, null);
+    }
+
+    // change the values of the data in manual input
+    if (manualData !== null) {
+        displayManualInfo(manualData);
+    }
+}

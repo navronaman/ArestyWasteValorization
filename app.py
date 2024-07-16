@@ -24,7 +24,7 @@ FILE_PATH_METRIC = os.path.abspath(r"backend/fermentation/biomass_metric.csv")
 ETHANOL_DENSITY_KG_GAL_CONVERSION = 2.98668849
 KG_TO_LBS_CONVERSION = 2.20462
 
-GAL_TO_M3D_CONVERSION = 0.12845
+GAL_TO_M3D_CONVERSION = 0.00378541
 GAL_TO_KG_CONVERSION = 0.838*3.78541
 
 """
@@ -69,7 +69,7 @@ def fermentation_biomass_data(mass):
                 # convert from annual kilograms to hourly kilograms
                 mass = mass / (365*24*0.96)
             case 'tonnes':
-                tonnes = mass / 907.185
+                tonnes = mass / 0.907185
                 # convert mass from metric tonnes into kilograms
                 mass = mass * 1000
                 # convert from annual kilograms to hourly kilograms
@@ -111,33 +111,28 @@ def htl_county_data(countyname):
         name, sludge, price, gwp = result
         return jsonify({
             "name": name,
-            "sludge": sludge,
-            "price": price,
-            "gwp": gwp
+            "sludge": sludge, # In MGD
+            "price": price, # In $/gallon
+            "gwp": gwp # In lb CO2e/gallon
         })
         
 @app.route('/htl-sludge/<int:sludge>')
 def htl_sludge_data(sludge):
-    unit = request.headers.get('X-Unit', 'imperial')
-    if unit not in ['imperial', 'metric']:
-        unit = 'imperial'
+    unit = request.headers.get('X-Unit', 'MGD')
+    if unit not in ['MGD', 'm3/d']: # in case the header has something other than 'MGD' or 'm3/d'
+        unit = 'MGD' # default to 'MGD'
     
     try:
         # case switch statements
         match unit:
-            case 'metric':
+            case 'm3/d':
                 # convert from m3/d to MGD
                 sludge = sludge / (GAL_TO_M3D_CONVERSION*1e6)
-            case 'imperial':
+            case 'MGD':
                 None
     
         result = htl_calc(sludge)
         price, gwp = result
-
-        # match unit:
-        #     case 'metric':
-        #         price = price/GAL_TO_KG_CONVERSION # convert from $/gal to $/kg
-        #         gwp = gwp/(GAL_TO_KG_CONVERSION*KG_TO_LBS_CONVERSION) # convert from lb CO2/gal to kg CO2/gal
                 
         return jsonify({
             "success": "true",
