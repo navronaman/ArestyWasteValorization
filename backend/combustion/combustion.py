@@ -53,7 +53,7 @@ def create_chemicals():
 
     return chems
 
-def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], nj_avg_power_co2=486.63):
+def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], nj_avg_power_co2=486.63, dry_mass_in_kg_hr=None):
     """
     Calculates the annual electricity production and avoided emissions based on the composition of water, ash, lipids, and proteins in the feedstock.
     
@@ -65,6 +65,8 @@ def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], n
         [moisture, ash, lipids, proteins] in kg/hr
     nj_avg_power_co2 : float
         Average power plant emissions in lb CO2/MWh
+    dry_mass : float
+        Dry mass flow rate in kg/hr
         
     Returns
     -------
@@ -101,12 +103,22 @@ def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], n
     # Assign values
     a, b, c, d = composition
     chems = create_chemicals() # Create chemicals, this code is important
+    
+    moisture = a*mass_in_kg_hr # Moisture is a% of mass flow rate, kg/hr
+    ash = b*mass_in_kg_hr # Ash is b% of mass flow rate, kg/hr
+    lipids = c*(mass_in_kg_hr*(1-a-b)) # Of the remaining non-moisture, non-ash, c% is lipids, kg/hr
+    proteins = d*(mass_in_kg_hr*(1-a-b)) # Of the remaining non-moisture, non-ash, d% is proteins, kg/hr
+    carbohydrates = (1-c-d)*(mass_in_kg_hr*(1-a-b)) # Of the remaining non-moisture, non-ash, the rest is carbohydrates, kg/hr
+    
+    if (dry_mass_in_kg_hr is not None):
+        moisture = mass_in_kg_hr - dry_mass_in_kg_hr
+    
     feedstock = bst.Stream('feedstock',
-                           Water=a*mass_in_kg_hr, # Moisture is a% of mass flow rate, kg/hr
-                            Ash=b*mass_in_kg_hr, # Ash is b% of mass flow rate, kg/hr
-                            Lipids=c*(mass_in_kg_hr*(1-a-b)), # Of the remaining non-moisture, non-ash, c% is lipids, kg/hr
-                            Proteins=d*(mass_in_kg_hr*(1-a-b)), # Of the remaining non-moisture, non-ash, d% is proteins, kg/hr
-                            Carbohydrates=(1-c-d)*(mass_in_kg_hr*(1-a-b))) # Of the remaining non-moisture, non-ash, the rest is carbohydrates, kg/hr
+                           Water=moisture, 
+                            Ash=ash,
+                            Lipids=lipids, 
+                            Proteins=proteins,
+                            Carbohydrates=carbohydrates)
     BT = BoilerTurbogenerator('BT', ins=feedstock)
     sys = bst.System('sys', path=(BT,))
     BT = sys.flowsheet.unit.BT
@@ -135,7 +147,7 @@ COMPOSITIONS = {
     'manure': [0.6634, 0.3056, 0.092325, 0.216375],
     }
 
-def combustion_calc(mass, waste_type, compositions=COMPOSITIONS):
+def combustion_calc(mass, waste_type, compositions=COMPOSITIONS, dry_mass=None):
     """
     Calculates the annual electricity production and avoided emissions from combustion of sludge, food waste, FOG, or green manure.
     
@@ -147,9 +159,15 @@ def combustion_calc(mass, waste_type, compositions=COMPOSITIONS):
         Type of waste, must be one of 'sludge', 'food', 'fog', 'green', or 'manure'
     compositions : dict
         Dictionary containing the compositions of water, ash, lipids, and proteins for each waste type
+    dry_mass : float
+        Dry mass flow rate in kg/hr
         
     Returns
     -------
+    waste_type : str
+        Type of waste - sludge, food, fog, green, manure
+    mass : float
+        Mass flow rate in kg/hr
     annual_electricity : float
         Annual electricity production in MWh
     avoided_emissions : float
@@ -189,29 +207,33 @@ def combustion_calc(mass, waste_type, compositions=COMPOSITIONS):
         case "sludge":
             list_to_use = compositions['sludge']
             mass = mass / list_to_use[0] # convert from dry to total
-            return combustion_calc_raw(mass, list_to_use)
         case "food":
             list_to_use = compositions['food']
             mass = mass / list_to_use[0] # convert from dry to total
-            return combustion_calc_raw(mass, list_to_use)
         case "fog":
             list_to_use = compositions['fog']
             mass = mass / list_to_use[0] # convert from dry to total
-            return combustion_calc_raw(mass, list_to_use)
         case "green":
             list_to_use = compositions['green']
             mass = mass / list_to_use[0] # convert from dry to total
-            return combustion_calc_raw(mass, list_to_use)
         case "manure":
             list_to_use = compositions['manure']
             mass = mass / list_to_use[0] # convert from dry to total
-            return combustion_calc_raw(mass, list_to_use)
         case _:
             raise ValueError("waste_type must be one of 'sludge', 'food', 'fog', 'green', or 'manure'")
         
+    annual_electricity, avoided_emissions, avoided_emissions_percent = combustion_calc_raw(mass, list_to_use)
+    return (
+        waste_type, # type of waste - sludge, food, fog, green, manure
+        mass, # in kg/hr
+        annual_electricity, # in MWh
+        avoided_emissions, # in million metric tonnes
+        avoided_emissions_percent # as a percentage of total emissions
+    )
+        
 STATE_DATA = pd.read_csv(r"backend\combustion\combustion_data.csv")
 
-def combustion_county(county, waste_type, state_data=STATE_DATA):
+def combustion_county(county, waste_type, state_data=STATE_DATA, compositions=COMPOSITIONS):
     """
     Calculates the annual electricity production and avoided emissions from combustion of sludge, food waste, FOG, or green manure in a county.
     
@@ -223,11 +245,15 @@ def combustion_county(county, waste_type, state_data=STATE_DATA):
         Type of waste, must be one of 'sludge', 'food', 'fog', 'green', or 'manure'
     state_data : pd.DataFrame
         DataFrame containing the waste data for each county
+    compositions : dict
+        Dictionary containing the compositions of water, ash, lipids, and proteins for each waste type
         
     Returns
     -------
     county : str
         County name
+    waste_type : str
+        Type of waste - sludge, food, fog, green, manure
     annual_electricity : float
         Annual electricity production in MWh
     avoided_emissions : float
@@ -271,37 +297,49 @@ def combustion_county(county, waste_type, state_data=STATE_DATA):
     if name_final is None:
         return None
     
+    dry_mass_kg_hr = None
+    
     match waste_type:
         case "sludge":
-            mass = state_data.loc[state_data['County'] == name_final, 'Sludge'].values[0] # this is tons | Convert from dry tons/year to kg/hr
-            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            mass = state_data.loc[state_data['County'] == name_final, 'Sludge (MGD)'].values[0] # this is in MGD | Convert from million gallons/day to kg/hr
+            mass_kg_hr = mass * 1e6*3.78541/24 # number from report, MGD to kg/hr
             
         case "food":
-            mass = state_data.loc[state_data['County'] == name_final, 'Food (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
-            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
-
+            mass = state_data.loc[state_data['County'] == name_final, 'Food (tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            mass_kg_hr = mass * 907.185 / (24*365) # complete mass is kg/hr
+            
+            dry_mass = state_data.loc[state_data['County'] == name_final, 'Food (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            dry_mass_kg_hr = dry_mass * 907.185 / (24*365) # this is dry, which is some percentage of the data
+            
         case "fog":
-            mass = state_data.loc[state_data['County'] == name_final, 'Fog (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
-            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            mass = state_data.loc[state_data['County'] == name_final, 'Fog (tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            mass_kg_hr = mass * 907.185 / (24*365) # this is dry, which is some percentage of the data
+            
+            dry_mass = state_data.loc[state_data['County'] == name_final, 'Fog (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            dry_mass_kg_hr = dry_mass * 907.185 / (24*365) # this is dry, which is some percentage of the data
 
         case "green":
-            mass = state_data.loc[state_data['County'] == name_final, 'Green'].values[0] # this is tons | Convert from dry tons/year to kg/hr
-            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            mass = state_data.loc[state_data['County'] == name_final, 'Green (dry tons)'].values[0] # this is tons | Convert from dry tons/year to kg/hr
+            mass_kg_hr = mass * 907.185 / (24*365) # this is dry, which is some percentage of the data
+            mass_kg_hr = mass_kg_hr / compositions["green"][0] # this is complete green in kg/hr
+
         case "manure":
-            mass = state_data.loc[state_data['County'] == name_final, 'Manure'].values[0] # this is tons | Convert from dry tons/year to kg/hr
-            final_mass = mass * 907.185 / (24*365*0.96) # this is dry, which is some percentage of the data
+            mass = state_data.loc[state_data['County'] == name_final, 'Manure (lbs)'].values[0] # this is lbs | Convert from lbs/year to kg/hr
+            mass_kg_hr = mass * 0.453592 / (24*365) # this is dry, which is some percentage of the data
+            mass_kg_hr = mass_kg_hr / compositions["manure"][0] # this is complete manure in kg/hr
 
         case _:
             raise ValueError("waste_type must be one of 'sludge', 'food', 'fog', 'green', or 'manure'")
         
-    annual_electricity, avoided_emissions, avoided_emissions_percent = combustion_calc(final_mass, waste_type)
+    waste_type, mass, annual_electricity, avoided_emissions, avoided_emissions_percent = combustion_calc(mass_kg_hr, waste_type, dry_mass=dry_mass_kg_hr) 
+
     return (
-        name_final,
-        waste_type,
-        mass,
-        annual_electricity,
-        avoided_emissions,
-        avoided_emissions_percent
+        name_final, # County name
+        waste_type, # type of waste - sludge, food, fog, green, manure
+        mass, # in kg/hr
+        annual_electricity, # in MWh
+        avoided_emissions, # in million metric tonnes
+        avoided_emissions_percent # as a percentage of total emissions
     )
     
 if __name__ == '__main__':
