@@ -65,6 +65,7 @@ def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], n
         [moisture, ash, lipids, proteins] in kg/hr
     nj_avg_power_co2 : float
         Average power plant emissions in lb CO2/MWh
+        Default value from: https://www.epa.gov/egrid/data-explorer
     dry_mass : float
         Dry mass flow rate in kg/hr
         
@@ -90,7 +91,12 @@ def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], n
     --------
     >>> combustion_calc(1000, [0.7, 0.257, 0.204, 0.463], 486.63)
     (16771611.411033249, 3.7020225242133353, 0.037930558649726796)
+    
+    >>> combustion_calc(1000)
+    (16771611.411033249, 3.7020225242133353, 0.037930558649726796)
+
     """
+    
     
     # Error handling
     if not isinstance(composition, list):
@@ -105,13 +111,16 @@ def combustion_calc_raw(mass_in_kg_hr, composition=[0.7, 0.257, 0.204, 0.463], n
     chems = create_chemicals() # Create chemicals, this code is important
     
     moisture = a*mass_in_kg_hr # Moisture is a% of mass flow rate, kg/hr
-    ash = b*mass_in_kg_hr # Ash is b% of mass flow rate, kg/hr
-    lipids = c*(mass_in_kg_hr*(1-a-b)) # Of the remaining non-moisture, non-ash, c% is lipids, kg/hr
-    proteins = d*(mass_in_kg_hr*(1-a-b)) # Of the remaining non-moisture, non-ash, d% is proteins, kg/hr
-    carbohydrates = (1-c-d)*(mass_in_kg_hr*(1-a-b)) # Of the remaining non-moisture, non-ash, the rest is carbohydrates, kg/hr
     
     if (dry_mass_in_kg_hr is not None):
-        moisture = mass_in_kg_hr - dry_mass_in_kg_hr
+        moisture = mass_in_kg_hr - dry_mass_in_kg_hr 
+        # If provided the dry mass, then moisture is the difference between the total mass and the dry mass
+    
+    ash = b*mass_in_kg_hr # Ash is b% of mass flow rate, kg/hr
+    lipids = c*(mass_in_kg_hr - (moisture + ash)) # Of the remaining non-moisture, non-ash, c% is lipids, kg/hr
+    proteins = d*(mass_in_kg_hr - (moisture + ash)) # Of the remaining non-moisture, non-ash, d% is proteins, kg/hr
+    carbohydrates = mass_in_kg_hr - (moisture + ash + lipids + proteins) # Of the remaining non-moisture, non-ash, the rest is carbohydrates, kg/hr
+    
     
     feedstock = bst.Stream('feedstock',
                            Water=moisture, 
@@ -206,19 +215,14 @@ def combustion_calc(mass, waste_type, compositions=COMPOSITIONS, dry_mass=None):
     match waste_type:
         case "sludge":
             list_to_use = compositions['sludge']
-            mass = mass / list_to_use[0] # convert from dry to total
         case "food":
             list_to_use = compositions['food']
-            mass = mass / list_to_use[0] # convert from dry to total
         case "fog":
             list_to_use = compositions['fog']
-            mass = mass / list_to_use[0] # convert from dry to total
         case "green":
             list_to_use = compositions['green']
-            mass = mass / list_to_use[0] # convert from dry to total
         case "manure":
             list_to_use = compositions['manure']
-            mass = mass / list_to_use[0] # convert from dry to total
         case _:
             raise ValueError("waste_type must be one of 'sludge', 'food', 'fog', 'green', or 'manure'")
         
@@ -346,8 +350,53 @@ if __name__ == '__main__':
     print(combustion_calc_raw(1000))
     print(combustion_calc(1000, "sludge"))
     
-    print(combustion_county("Warren", "sludge"))
+    print("\nEverything Essex")
+    print(combustion_county("essex", "sludge"))
+    print(combustion_county("essex", "food"))
+    print(combustion_county("essex", "fog"))
+    print(combustion_county("essex", "green"))
+    print(combustion_county("essex", "manure"))
+    
+    print("\n Everything Warren")
+    print(combustion_county("warren", "sludge"))
+    print(combustion_county("warren", "food"))
+    print(combustion_county("warren", "fog"))
+    print(combustion_county("warren", "green"))
+    print(combustion_county("warren", "manure"))
+    
+    print("\n Everything Cape May")
+    print(combustion_county("cape may", "sludge"))
     print(combustion_county("cape may", "food"))
-    print(combustion_county("Bergen", "fog"))
-    print(combustion_county("mIddlesex", "green"))
+    print(combustion_county("cape may", "fog"))
+    print(combustion_county("cape may", "green"))
+    print(combustion_county("cape may", "manure"))    
+    
+    print("\n Everything Bergen")
+    print(combustion_county("bergen", "sludge"))
+    print(combustion_county("bergen", "food"))
+    print(combustion_county("bergen", "fog"))
+    print(combustion_county("bergen", "green"))
+    print(combustion_county("bergen", "manure"))
+    
+    print("\n Everything Middlesex")
+    print(combustion_county("middlesex", "sludge"))
+    print(combustion_county("middlesex", "food"))
+    print(combustion_county("middlesex", "fog"))
+    print(combustion_county("middlesex", "green"))
+    print(combustion_county("middlesex", "manure"))
+       
+    
+    print("\n Everything Hudson")
+    print(combustion_county("hudson", "sludge"))
+    print(combustion_county("hudson", "food"))
+    print(combustion_county("hudson", "fog"))
+    print(combustion_county("hudson", "green"))
+    print(combustion_county("hudson", "manure"))
+    
+    print("\n Everything Mercer")
+    print(combustion_county("mercer", "sludge"))
+    print(combustion_county("mercer", "food"))
+    print(combustion_county("mercer", "fog"))
+    print(combustion_county("mercer", "green"))
     print(combustion_county("mercer", "manure"))
+    

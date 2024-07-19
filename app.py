@@ -146,6 +146,15 @@ def htl_sludge_data(sludge):
             "error": str(e)
         })
 
+"""
+In all Combustion JSON data, there should be these 5 things
+    1. Mass of feedstock in kg/hr
+    2. Electricity produced in kWh
+    3. Greenhouse gas emissions in kg CO2e
+    4. Percent of total emissions
+    5. Waste type of the requested data
+"""
+
 # county and mass for combustion
 @app.route('/combustion-county/<string:countyname>')
 def combustion_county_data(countyname):
@@ -162,12 +171,12 @@ def combustion_county_data(countyname):
     else:
         name, waste_type2, mass, electricity, emissions, percent = result
         return jsonify({
-            "name": name,
-            "waste_type": waste_type2,
-            "mass": int(mass),
-            "electricity": electricity,
-            "emissions": emissions,
-            "percent": percent,
+            "name": name, # County name
+            "waste_type": waste_type2, # Waste type - sludge, food, fog, green and manure
+            "mass": int(mass), # In kg/hr
+            "electricity": electricity, # In kWh
+            "emissions": emissions, # In kg CO2e
+            "percent": percent, # In percentage
         })
 
 @app.route('/combustion-mass/<int:mass>')
