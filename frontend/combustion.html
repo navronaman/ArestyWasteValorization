@@ -28,7 +28,7 @@
     <div class="container">
         <div id="info" class="info-div">
             <p id="info">
-                <b><span id="countyName">County</span></b>
+                <b><span id="wastetype-name">Food Waste</span> in <span id="countyName"></span>County</b>
                 <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
     
                 <b><span id="wastetype-unit">Sludge:</span></b> <span id="wastetype"></span>
@@ -42,7 +42,7 @@
                 <select id="electricity-units" class="unit-select" onchange="updateUnits()">
                     <option value="mwh">megawatt</option>
                 </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="electricity-tool">Megawatts in an year this wastetype can produce</span></span><br>
+                <span class="info-icon">ℹ️<span class="tooltip" id="electricity-tool">Megawatt hours of electricity annually generated</span></span><br>
     
                 <b><span id="emissions-unit">Avoided Emissions:</span></b> <span id="emissions"></span>
                 <select id="emissions-units" class="unit-select" onchange="updateUnits()">
@@ -58,11 +58,11 @@
     </div>
 
     <div class="tab-container" id="wastetype-placeholder">
-        <input type="radio" id="sludge" name="wastetype" value="sludge" checked>
-        <label for="sludge" class="tab-label" onclick="selectWasteType('sludge')">Sludge</label>
-
-        <input type="radio" id="food" name="wastetype" value="food">
+        <input type="radio" id="food" name="wastetype" value="food" checked>
         <label for="food" class="tab-label" onclick="selectWasteType('food')">Food Waste</label>
+
+        <input type="radio" id="sludge" name="wastetype" value="sludge">
+        <label for="sludge" class="tab-label" onclick="selectWasteType('sludge')">Sludge</label>
 
         <input type="radio" id="fog" name="wastetype" value="fog">
         <label for="fog" class="tab-label" onclick="selectWasteType('fog')">Fats, Oils & Grease</label>
@@ -93,17 +93,26 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th id="r0-biomass">Annual Biomass (tons)</th>
+                        <th>Annual <span id="r0-wastetype">Food Waste </span> <span id="r0-wasteunit">(tons)</span> </th>
+                        <th id="r0-electricity">Annual Electricity (MWh)</th>
+                        <th id="r0-emissions">Avoided CO2 Emissions (tons)</th>
+                        <th id="r0-percent">Avoided Emissions Percentage (%)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="f-col" id="r1-name"> County 1</td>
                         <td id="r1-biomass">0</td>
+                        <td id="r1-electricity">0</td>
+                        <td id="r1-emissions">0</td>
+                        <td id="r1-percent">0</td>
                     </tr>
                     <tr>
                         <td class="f-col" id="r2-name">County 2</td>
                         <td id="r2-biomass">0</td>
+                        <td id="r2-electricity">0</td>
+                        <td id="r2-emissions">0</td>
+                        <td id="r2-percent">0</td>
                     </tr>
                 </tbody>
             </table>
@@ -114,8 +123,8 @@
     <!-- Manual Mass Input Calculator -->
     <div class="form-container">
 
-        <h3> Calculate the electricity of a County </h3>
-        <label for="manualInput">Enter annual dry mass produced in <span id="m-wastetype">sludge</span> to be processed:</label>
+        <h3> Calculate the electricity by manual input </h3>
+        <label for="manualInput">Enter annual dry mass produced in <span id="m-wastetype">food waste</span> to be processed:</label>
         <div id="form-container-input">
             <input type="number" id="manualInput" name="manualInput" placeholder="1000-1000000" min="1000" max="1000000" required>
             <select id="m-wastetype-units" class="unit-select" onchange="updateUnitsForManual()">
@@ -126,7 +135,7 @@
         <button class="btn-class" onclick="clickManual()" id="manualBox">Submit</button>
         <div id="manualInfoOutput">
             <b>Annual Electricity: </b><span id="m-ethanol">0</span>
-            <select id="m-ethanol-units" class="unit-select" onchange="updateUnitsForManual()">
+            <select id="m-electricity-units" class="unit-select" onchange="updateUnitsForManual()">
                 <option value="mwh">megawatt</option>
             </select>
             <br>
