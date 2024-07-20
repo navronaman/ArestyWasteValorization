@@ -1,5 +1,5 @@
 // when the unit buttons
-var wasteType = "sludge"; // changes when the user selects a waste type
+var wasteType = "food"; // changes when the user selects a waste type
 var wasteTypeUnit = "tons"; // drop down menu
 var electrictyUnit = "mwh";
 var emissionsUnit = "tons";
@@ -106,6 +106,8 @@ function updateUnitsEverywhere() {
 
     // update the units
     console.log(wasteTypeUnit, electrictyUnit, emissionsUnit);
+
+    updateValuesEverywhere();
     
 }
 
@@ -159,7 +161,23 @@ function updateWasteTypeEverywhere() {
             break;
     }
 
+    /*
+    very interesting part of code
+    first we're clearing all the values, so it doesn't automatically update the values when we switch the waste type
+    second, we're updating the values so when we go from manure to sludge the units are updated accross
+    */
+    clearValuesEcerywhere();
     updateUnits();
+    /*
+    selectWasteType("food");
+    updateWassteTypeEverywhere();
+    clearValuesEverywhere();
+    updateUnits();
+    updateValuesEverywhere();
+    displayInfoTop(data);
+    displayComparison(data);
+    displayManualInput(data);
+    */
 }
 
 function getDropDownText(no){
@@ -180,13 +198,48 @@ function getDropDownText(no){
     }
 }
 
+function clearValuesEcerywhere() {
+    // set the county datas to null
+    previousCountyData = null;
+    currentCountyData = null;
+    manualData = null;
 
+    // clear the values
+    previousCounty = null;
+    currentCounty = null;
+
+    // clear the values in the info top section
+    document.getElementById("countyName").innerHTML = "";
+    document.getElementById("wastetype").innerHTML = "";
+    document.getElementById("electricity").innerHTML = "";
+    document.getElementById("emissions").innerHTML = "";
+    document.getElementById("percent").innerHTML = "";
+
+    // clear the values in the comparison section
+    for (let i = 1; i <= 2; i++) {
+        document.getElementById(`r${i}-name`).innerHTML = `County ${i}`;
+        document.getElementById(`r${i}-waste`).innerHTML = 0;
+        document.getElementById(`r${i}-electricity`).innerHTML = 0;
+        document.getElementById(`r${i}-emissions`).innerHTML = 0;
+        document.getElementById(`r${i}-percent`).innerHTML = '0%';
+    }
+
+    // clear the values in the manual input section
+    document.getElementById("manualInput").value = null;
+    document.getElementById("m-electricity").innerHTML = 0;
+    document.getElementById("m-emissions").innerHTML = 0;
+    document.getElementById("m-percent").innerHTML = 0;
+}
+
+
+// internal function, used to get info about a county depending on the waste type
+// info here will be used on the info top section and comparison section
 async function getInfo(county) {
     const url = `http://localhost:5000/combustion-county/${county}`;
     console.log(wasteType);
     const options = {
         headers : {
-            'X-WasteType': wasteType,
+            'X-WasteType': wasteType, // the waste type - food, sludge, fog, green, manure
         }
     }
     try {
@@ -202,18 +255,145 @@ async function getInfo(county) {
     }
 }
 
+// populates the info top section
 function displayInfoTop(data){
-    let countyName = data.countyName;
-    let wasteType2 = data.wasteType;
-    let mass = data.mass;
-    let electricity = data.electricity;
-    let emissions = data.emissions;
-    let percent = data.percent;
+    let countyName = data.name; // name of the county
 
-    document.getElementById("countyName").innerHTML = `${countyName} County`;
-    document.getElementById("wastetype-unit").innerHTML = `${wasteType2}:`;
+    let {mass, electricity, emissions, percent} = reformDataPerUnits(data);
+
+    // fill the info top section
+    document.getElementById("countyName").innerHTML = countyName;
     document.getElementById("wastetype").innerHTML = mass;
     document.getElementById("electricity").innerHTML = electricity;
     document.getElementById("emissions").innerHTML = emissions;
     document.getElementById("percent").innerHTML = percent;
+
+    // highlight the county name
+    highlightElement("countyName");
+}
+
+
+// populates the comparison section
+function displayComparison(data1, data2){
+
+    if (data1 === null){
+        return; 
+    }
+
+    displayComparisonHelper(data1, 1);
+
+    if (data2 === null){
+        document.getElementById("r2-name").innerHTML = "County 2";
+        document.getElementById("r2-waste").innerHTML = 0;
+        document.getElementById("r2-electricity").innerHTML = 0;
+        document.getElementById("r2-emissions").innerHTML = 0;
+    }
+
+    else {
+        displayComparisonHelper(data2, 2);
+    }
+}
+
+// helper function for displayComparison
+function displayComparisonHelper(data, row){
+    let countyName = data.name; // name of the county
+
+    let {mass, electricity, emissions, percent} = reformDataPerUnits(data);
+
+    // fill the comparison section
+    document.getElementById(`r${row}-name`).innerHTML = countyName;
+    document.getElementById(`r${row}-waste`).innerHTML = mass;
+    document.getElementById(`r${row}-electricity`).innerHTML = electricity;
+    document.getElementById(`r${row}-emissions`).innerHTML = emissions;
+    document.getElementById(`r${row}-percent`).innerHTML = percent;
+
+}
+
+// function to get the manual info
+async function getManualInfo(manualInput){
+    const url = `http://localhost:5000/combustion-manual/${manualInput}`;
+    const options = {
+        headers : {
+            'X-WasteType': wasteType, // the waste type - food, sludge, fog, green, manure
+            'X-WasteTypeUnit': wasteTypeUnit, // the unit of the waste type - tons, tonnes, MGD, m3/d
+        }
+    };
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        console.log(data);
+        manualData = data;
+        return data;
+    }
+    catch (error) {
+        console.log("There was a problem with the fetch operation:", error);
+        return null;
+    }
+}
+
+// populates the manual input section
+function displayManualInfo(data){
+    let {mass, electricity, emissions, percent} = reformDataPerUnits(data);
+
+    // fill the manual input section
+    document.getElementById("manualInput").innerHTML = mass;
+    document.getElementById("m-electricity").innerHTML = electricity;
+    document.getElementById("m-emissions").innerHTML = emissions;
+    document.getElementById("m-percent").innerHTML = percent;
+
+}
+
+function reformDataPerUnits(data){
+    let mass = data.mass; // mass of waste in kg/hr
+    let electricity = data.electricity; // electricity generated in MWh
+    let emissions = data.emissions; // emissions in million metric tonnes
+    let percent = data.percent; // percentage of emissions avoided out of 1
+
+    // conversion factors
+    let shortTonsToKg = 907.185; // 1 short ton = 907.185 kg
+    let MGDtokg = 3785411.784; // 1 MGD = 3785411.784 kg
+    let galToM3 = 0.00378541 // 1 gallon = 0.00378541 m3
+
+    switch (wasteTypeUnit) {
+        case "tons":
+            mass = mass * (24*365) / shortTonsToKg; // convert to US short tons
+            mass = mass.toFixed(0); // since it is a big number, round it to 0 decimal places
+            break;
+        case "tonnes":
+            mass = mass * (24*365) / 1000; // convert to metric tonnes
+            mass = mass.toFixed(0); // since it is a big number, round it to 0 decimal places
+            break;
+        case "MGD":
+            mass = (mass * 24)/(MGDtokg); // convert to MGD
+            mass = mass.toFixed(3); // round to 3 decimal places
+            break;
+        case "m3/d":
+            mass = (mass * 24)/(MGDtokg); // convert to MGD
+            mass = mass * galToM3 * 1e6; // convert to m3/d
+            mass = mass.toFixed(0); // round to 0 decimal places
+            break;
+    }
+
+    switch (electrictyUnit) {
+        case "mwh":
+            electricity = electricity;
+            break;
+    }
+
+    switch (emissionsUnit) {
+        case "tons":
+            // convert from million metric tonnes to million short tons
+            emissions = emissions * 1.10231;
+            break;
+        case "tonnes":
+            emissions = emissions;
+            break;
+    }
+
+    percent = percent * 100; // convert to percentage
+    percent = percent.toFixed(2); // round to 2 decimal places
+    electricity = electricity.toFixed(3); // round to 3 decimal places
+    emissions = emissions.toFixed(3); // round to 3 decimal places
+
+    return {mass, electricity, emissions, percent}; // return the reformatted data
 }

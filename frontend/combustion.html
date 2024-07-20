@@ -31,7 +31,7 @@
                 <b><span id="wastetype-name">Food Waste</span> in <span id="countyName"></span>County</b>
                 <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
     
-                <b><span id="wastetype-unit">Sludge:</span></b> <span id="wastetype"></span>
+                <b><span id="wastetype-unit">Food:</span></b> <span id="wastetype"></span>
                 <select id="wastetype-units" class="unit-select" onchange="updateUnits()">
                     <option value="tons">short tons</option>
                     <option value="tonnes">metric tonnes</option>
@@ -102,17 +102,17 @@
                 <tbody>
                     <tr>
                         <td class="f-col" id="r1-name"> County 1</td>
-                        <td id="r1-biomass">0</td>
+                        <td id="r1-waste">0</td>
                         <td id="r1-electricity">0</td>
                         <td id="r1-emissions">0</td>
-                        <td id="r1-percent">0</td>
+                        <td id="r1-percent">0%</td>
                     </tr>
                     <tr>
                         <td class="f-col" id="r2-name">County 2</td>
-                        <td id="r2-biomass">0</td>
+                        <td id="r2-waste">0</td>
                         <td id="r2-electricity">0</td>
                         <td id="r2-emissions">0</td>
-                        <td id="r2-percent">0</td>
+                        <td id="r2-percent">0%</td>
                     </tr>
                 </tbody>
             </table>
@@ -134,7 +134,7 @@
         </div>
         <button class="btn-class" onclick="clickManual()" id="manualBox">Submit</button>
         <div id="manualInfoOutput">
-            <b>Annual Electricity: </b><span id="m-ethanol">0</span>
+            <b>Annual Electricity: </b><span id="m-electricity">0</span>
             <select id="m-electricity-units" class="unit-select" onchange="updateUnitsForManual()">
                 <option value="mwh">megawatt</option>
             </select>
@@ -145,6 +145,9 @@
                 <option value="tons">short tons</option>
                 <option value="tonnes">metric tonnes</option>
             </select>
+            <br>
+
+            <b>Avoided Emissions Percentage: </b><span id="m-percent">0</span> %
             <br>
         </div>
         <div id="errorMass">
