@@ -176,13 +176,7 @@ function displayInfoTop(data){
     document.getElementById('gwp').innerHTML = gwp;
 
     // highlight the county name
-    const countyNameSpan = document.getElementById('countyName');
-    countyNameSpan.classList.add('highlight');
-
-    setTimeout(() => {
-        countyNameSpan.classList.remove('highlight');
-    }, 2000);
-
+    highlightElement("countyName");
 }
 
 // this is for the comparison

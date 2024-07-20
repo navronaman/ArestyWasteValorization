@@ -205,3 +205,14 @@ function updateValuesEverywhere() {
         displayManualInfo(manualData);
     }
 }
+
+// this function is to highlight the county name given by element
+function highlightElement (element="countyName") {
+    // highlight the county name, defaults to countyName
+    const countyNameSpan = document.getElementById(`${element}`);
+    countyNameSpan.classList.add('highlight');
+
+    setTimeout(() => {
+        countyNameSpan.classList.remove('highlight');
+    }, 2000);
+}
