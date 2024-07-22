@@ -8,7 +8,7 @@ sludge_data = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
 
 county_names = green_data["County"].tolist()
 county_greens = green_data["Lignocellulose (dry tons)"].tolist()
-county_sludge = sludge_data["Flow MGD"].tolist() # Only because this sludge data does not have New Jersey
+county_sludge = sludge_data["Flow MGD"].tolist() 
 
 
 food_tons = []
@@ -56,9 +56,7 @@ for index, county_name in enumerate(county_names):
         fog_dry_tons.append(total_fog_dry_tons)
         
         manure_lbs.append(total_manure_lbs)
-        
-        county_sludge.append(total_sludge_mgd)
-        
+                
         print(f"County Name: {county_name} not found in the combustion data")
         continue
     
@@ -77,4 +75,5 @@ data = {
 df = pd.DataFrame(data)
 
 print(df.head())  # Display the first few rows of the DataFrame
+print(df.tail())  # Display the last few rows of the DataFrame
 df.to_csv(r"backend\combustion\combustion_data.csv", index=False)  # Save the DataFrame to a CSV file
