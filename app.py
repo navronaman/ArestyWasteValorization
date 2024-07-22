@@ -195,7 +195,7 @@ def combustion_mass_data(mass):
         waste_type = 'food' # default to 'food'
     
     if unit not in ['tons', 'tonnes', 'MGD', 'm3/d']:
-        waste_type = 'tons' # default to 'tons'
+        unit = 'tons' # default to 'tons'
         
     mass_kg_hr = 0
     match unit:
@@ -212,20 +212,29 @@ def combustion_mass_data(mass):
             # convert mass from m3/d into MGD first
             mass_kg_hr = mass / (GAL_TO_M3D_CONVERSION * 1e6 )
             # convert mass from MGD into kg/hr            
-            mass_kg_hr = (mass * MGD_TO_KG_CONVERSION) / 24
+            mass_kg_hr = (mass_kg_hr * MGD_TO_KG_CONVERSION) / 24
             
     result = combustion_calc(mass_kg_hr, waste_type)
-    
+    print(f"Result: {result}")
     try:
-        electricity, emissions, percent = result
-        
-        return jsonify({
-            "success": "true",
-            "mass": mass_kg_hr, # In kg/hr
-            "electricity": electricity, # In kWh
-            "emissions": emissions, # In kg CO2e
-            "percent": percent, # In percentage
-        })
+        if result is None:
+            return jsonify({
+                "success": "false",
+                "error": str(e)
+            })
+        else:
+            waste_type2, mass_kg_hr2, electricity, emissions, percent = result
+            
+            return jsonify({
+                "success": "true", 
+                "original_mass": mass, # In tons, tonnes, MGD or m3/d
+                "waste_type": waste_type2, # Waste type - sludge, food, fog, green and manure
+                "unit": unit, # Unit of the original mass
+                "mass": mass_kg_hr, # In kg/hr
+                "electricity": electricity, # In kWh
+                "emissions": emissions, # In kg CO2e
+                "percent": percent, # In percentage
+            })
     except Exception as e:
         return jsonify({
             "success": "false",

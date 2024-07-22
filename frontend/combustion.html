@@ -126,7 +126,7 @@
         <h3> Calculate the electricity by manual input </h3>
         <label for="manualInput">Enter annual dry mass produced in <span id="m-wastetype">food waste</span> to be processed:</label>
         <div id="form-container-input">
-            <input type="number" id="manualInput" name="manualInput" placeholder="1000-1000000" min="1000" max="1000000" required>
+            <input type="number" id="manualInput" name="manualInput" placeholder="1-1,000,000" min="1" max="1000000" required>
             <select id="m-wastetype-units" class="unit-select" onchange="updateUnitsForManual()">
                 <option value="tons">short tons</option>
                 <option value="tonnes">metric tonnes</option>
@@ -150,7 +150,7 @@
             <b>Avoided Emissions Percentage: </b><span id="m-percent">0</span> %
             <br>
         </div>
-        <div id="errorMass">
+        <div id="errorManual">
             <b> </b>
         </div>
 

@@ -66,23 +66,46 @@ function updateUnitsEverywhere() {
     document.getElementById("m-electricity-units").value = electrictyUnit;
     document.getElementById("m-emissions-units").value = emissionsUnit;
 
-    // update the tool tips and comparion headers
+    /*
+    Every unit updates 2 things
+    1 - the text in the tool tip
+    2 - the header in the comparison section
+    3* - the maximum and minimum values in the manual input section
+    4* - the placeholder text for the manual input section
+    */
     switch (wasteTypeUnit) {
         case "tons":
             document.getElementById("wastetype-tool").innerHTML = "US short tons (2000 lbs) of waste";
             document.getElementById("r0-wasteunit").innerHTML = "(tons)";
+
+            document.getElementById('manualInput').min = 1; // 1 short ton
+            document.getElementById('manualInput').max = 1e5; // 100,000 short tons
+            document.getElementById('manualInput').placeholder = "1-100,000";    
             break;
         case "tonnes":
             document.getElementById("wastetype-tool").innerHTML = "Metric tonnes (1000 kgs) of waste";
             document.getElementById("r0-wasteunit").innerHTML = "(tonnes)";
+
+            document.getElementById('manualInput').min = 1; // 1 tonne
+            document.getElementById('manualInput').max = 1e5; // 100,000 tonnes
+            document.getElementById('manualInput').placeholder = "1-100,000";    
             break;
         case "MGD":
             document.getElementById("wastetype-tool").innerHTML = "Million gallons per day of waste";
             document.getElementById("r0-wasteunit").innerHTML = "(MGD)";
+
+            document.getElementById('manualInput').min = 1; // 1 MGD
+            document.getElementById('manualInput').max = 2000; // 2000 MGD
+            document.getElementById('manualInput').placeholder = "1-2000";    
+
             break;
         case "m3/d":
             document.getElementById("wastetype-tool").innerHTML = "Cubic meters per day of waste";
             document.getElementById("r0-wasteunit").innerHTML = "(m3/d)";
+
+            document.getElementById('manualInput').min = 1; // 1 m3/d
+            document.getElementById('manualInput').max = 1e6; // 1 million m3/d
+            document.getElementById('manualInput').placeholder = "1-1,000,000";    
             break;
     }
 
@@ -311,7 +334,7 @@ function displayComparisonHelper(data, row){
 
 // function to get the manual info
 async function getManualInfo(manualInput){
-    const url = `http://localhost:5000/combustion-manual/${manualInput}`;
+    const url = `http://localhost:5000/combustion-mass/${manualInput}`;
     const options = {
         headers : {
             'X-WasteType': wasteType, // the waste type - food, sludge, fog, green, manure

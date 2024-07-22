@@ -177,6 +177,8 @@ function clickManual() {
         return;
     }
 
+    document.getElementById("errorManual").innerHTML = "<b></b>"; // clear the error message
+
     getManualInfo(manualInputInt).then(manualDataObtained => {
         manualData = manualDataObtained;
         console.log(manualData); // This should log the data returned by getManualInfo
