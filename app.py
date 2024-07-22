@@ -166,9 +166,7 @@ def combustion_county_data(countyname):
     
     if waste_type not in ['sludge', 'food', 'fog', 'green', 'manure']:
         waste_type = 'food' # default to 'food'
-    
-    print(waste_type)
-    
+        
     result = combustion_county(countyname, waste_type)
     if result is None:
         return jsonify({
@@ -215,7 +213,6 @@ def combustion_mass_data(mass):
             mass_kg_hr = (mass_kg_hr * MGD_TO_KG_CONVERSION) / 24
             
     result = combustion_calc(mass_kg_hr, waste_type)
-    print(f"Result: {result}")
     try:
         if result is None:
             return jsonify({
