@@ -285,14 +285,14 @@ function displayInfoTop(data){
     let {mass, electricity, emissions, percent} = reformDataPerUnits(data);
 
     // fill the info top section
-    document.getElementById("countyName").innerHTML = countyName;
+    document.getElementById("countyName").innerHTML = `${countyName} `;
     document.getElementById("wastetype").innerHTML = mass;
     document.getElementById("electricity").innerHTML = electricity;
     document.getElementById("emissions").innerHTML = emissions;
     document.getElementById("percent").innerHTML = percent;
 
     // highlight the county name
-    highlightElement("countyName");
+    highlightElement("completeCountySpan");
 }
 
 
