@@ -58,13 +58,13 @@ function selectWasteType(waste_type) {
 
 function updateUnitsEverywhere() {
     // update the drop down menus
-    document.getElementById("wastetype-unit").value = wasteTypeUnit;
-    document.getElementById("electricity-unit").value = electrictyUnit;
-    document.getElementById("emissions-unit").value = emissionsUnit;
+    document.getElementById("wastetype-units").value = wasteTypeUnit;
+    document.getElementById("electricity-units").value = electrictyUnit;
+    document.getElementById("emissions-units").value = emissionsUnit;
 
     document.getElementById("m-wastetype-units").value = wasteTypeUnit;
     document.getElementById("m-electricity-units").value = electrictyUnit;
-    document.getElementById("m-emissions-units").value = emissionsUnit;3
+    document.getElementById("m-emissions-units").value = emissionsUnit;
 
     // update the tool tips and comparion headers
     switch (wasteTypeUnit) {

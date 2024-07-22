@@ -26,6 +26,9 @@ KG_TO_LBS_CONVERSION = 2.20462
 
 GAL_TO_M3D_CONVERSION = 0.00378541
 GAL_TO_KG_CONVERSION = 0.838*3.78541
+MGD_TO_KG_CONVERSION = 3785411.784; # 1 MGD = 3785411.784 kg
+
+
 
 """
 In all Fermentation JSON data, there should be these 4 things     
@@ -161,6 +164,9 @@ def combustion_county_data(countyname):
     waste_type = request.headers.get('X-WasteType', 'sludge')
     countyname = countyname.replace("_", " ")
     
+    if waste_type not in ['sludge', 'food', 'fog', 'green', 'manure']:
+        waste_type = 'food' # default to 'food'
+    
     print(waste_type)
     
     result = combustion_county(countyname, waste_type)
@@ -181,10 +187,51 @@ def combustion_county_data(countyname):
 
 @app.route('/combustion-mass/<int:mass>')
 def combustion_mass_data(mass):
-    return jsonify({
-        "error": "Not implemented"
-    })
+    
+    waste_type = request.headers.get('X-WasteType', 'sludge')
+    unit = request.headers.get('X-WasteTypeUnit', 'tons')
+    
+    if waste_type not in ['sludge', 'food', 'fog', 'green', 'manure']:
+        waste_type = 'food' # default to 'food'
+    
+    if unit not in ['tons', 'tonnes', 'MGD', 'm3/d']:
+        waste_type = 'tons' # default to 'tons'
         
+    mass_kg_hr = 0
+    match unit:
+        case 'tons':
+            # convert mass from short tons into kg/hr
+            mass_kg_hr = mass * 907.185 / (365*24)
+        case 'tonnes':
+            # convert mass from metric tonnes into kg/hr
+            mass_kg_hr = mass * 1000 / (365*24)
+        case 'MGD':
+            # convert mass from MGD into kg/hr
+            mass_kg_hr = (mass * MGD_TO_KG_CONVERSION) / 24
+        case 'm3/d':
+            # convert mass from m3/d into MGD first
+            mass_kg_hr = mass / (GAL_TO_M3D_CONVERSION * 1e6 )
+            # convert mass from MGD into kg/hr            
+            mass_kg_hr = (mass * MGD_TO_KG_CONVERSION) / 24
+            
+    result = combustion_calc(mass_kg_hr, waste_type)
+    
+    try:
+        electricity, emissions, percent = result
+        
+        return jsonify({
+            "success": "true",
+            "mass": mass_kg_hr, # In kg/hr
+            "electricity": electricity, # In kWh
+            "emissions": emissions, # In kg CO2e
+            "percent": percent, # In percentage
+        })
+    except Exception as e:
+        return jsonify({
+            "success": "false",
+            "error": str(e)
+        })
+            
 @app.route('/csv')
 def export_csv():
     unit = request.headers.get('X-Unit', 'imperial')
