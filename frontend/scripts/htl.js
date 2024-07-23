@@ -4,13 +4,6 @@ var sludgeUnit = "MGD";
 var priceUnit = "$/gal";
 var gwpUnit = "lb CO2/gal";
 
-var galToM3 = 0.00378541;
-var kgToLbsConversion = 2.20462;
-var galToMMBTUConversion = 0.12845;
-var galToKg = 0.838*3.78541;
-var BTUToMJ = 0.00105506; // 1 MJ = 0.00105506 BTU
-
-
 function changeSettings(unit) {
     if (unit == "imperial") {
 
@@ -253,9 +246,17 @@ function reformDataPerUnits(data) {
     let price = data.price;
     let gwp = data.gwp;
 
+    // conversion factors
+    var galToM3 = 0.00378541;
+    var kgToLbsConversion = 2.20462;
+    var galToMMBTUConversion = 0.12845;
+    var galToKg = 0.838*3.78541;
+    var BTUToMJ = 0.00105506; // 1 MJ = 0.00105506 BTU    
+
     // change the units based on the units selected
     switch (sludgeUnit) {
         case "MGD":
+            sludge = sludge.toFixed(3); // round to 3 decimal places, since it is a smaller number
             break;
         case "m3/d":
             sludge = sludge * galToM3 * 1e6; // since the default is in MGD, we multiply by 1e6 to get m3/d
@@ -273,10 +274,10 @@ function reformDataPerUnits(data) {
             price = price / galToM3; // divide by 0.00378541 to get $/m3
             break;
         case "$/MMBTU":
-            price = price / (galToMMBTUConversion * galToKg); // divide by 0.12845 * 0.838 to get $/MMBTU
+            price = price / (galToMMBTUConversion * galToKg); // divide by 0.12845 * 0.838 * 3.78541 to get $/MMBTU
             break;
         case "$/MJ":
-            price = price / (galToMMBTUConversion * galToKg * BTUToMJ * 1e6); // divide by 0.12845 * 0.838 * 0.00105506 to get $/MJ
+            price = price / (galToMMBTUConversion * galToKg * BTUToMJ * 1e6); // divide by 0.12845 * 0.838 * 3.78541 * 0.00105506 to get $/MJ
             break;
     }
 
@@ -297,8 +298,8 @@ function reformDataPerUnits(data) {
             break;
     }
 
-    price = price.toFixed(3);
-    gwp = gwp.toFixed(3);    
+    price = price.toFixed(3); // round to 3 decimal places
+    gwp = gwp.toFixed(3); // round to 3 decimal places
 
     return {sludge, price, gwp}; // return the values in an object
 }

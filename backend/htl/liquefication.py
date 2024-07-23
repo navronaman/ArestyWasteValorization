@@ -33,6 +33,13 @@ def htl_calc(existing_flow):
     ----------
     existing_flow : float
         The existing flow in MGD.
+        
+    Returns
+    -------
+    MDSP : float
+        Minimum diesel selling price in $/gal diesel.
+    GWP : float
+        Global warming potential of diesel in lb CO2/gal diesel.
     """
     
     model = create_model(
@@ -89,6 +96,17 @@ def htl_county(county, state_data=STATE_DATA):
         The name of the county
     state_data : pandas.DataFrame
         Data for the state
+        
+    Returns
+    -------
+    name_final : str
+        The name of the county
+    sludge_mgd : float
+        The flow in MGD
+    price : float
+        The price in $/gal diesel
+    gwp : float
+        The global warming potential in lb CO2/gal diesel
     """
     
     name_final = None
@@ -105,7 +123,7 @@ def htl_county(county, state_data=STATE_DATA):
     
     price, gwp = htl_calc(sludge_mgd)
     
-    return name_final, round(sludge_mgd, 3), round(price, 3), round(gwp, 3)
+    return name_final, sludge_mgd, price, gwp
 
 
 if __name__ == '__main__':

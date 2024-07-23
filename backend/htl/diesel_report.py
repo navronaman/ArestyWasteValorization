@@ -105,6 +105,10 @@ def get_county_data(df):
     return county_data
 
 final_county_data = get_county_data(final_df)
+# I want to add a last row with the county name "New Jersey" and the total flow mgd
+new_row = pd.DataFrame({'County': 'New Jersey', 'Flow MGD': final_county_data['Flow MGD'].sum()}, index=[0])
+# Add the new row to the final county data
+final_county_data = pd.concat([final_county_data, new_row], ignore_index=True)
 print(final_county_data.shape)
 print(final_county_data.head())
 print(final_county_data.tail())
