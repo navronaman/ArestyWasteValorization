@@ -9,8 +9,7 @@ print(nj_counties.shape)
 
 # Load the biomass data
 biomass_data = pd.read_csv(r"backend\fermentation\biomass_imperial.csv")
-# Remove the last row from the biomass_data DataFrame
-biomass_data = biomass_data.drop(biomass_data.index[-1])
+biomass_data = biomass_data[biomass_data["County"] != "New Jersey"]
 biomass_data["COUNTY"] = biomass_data["County"].str.upper()
 print(biomass_data.head())
 print(biomass_data.shape)
