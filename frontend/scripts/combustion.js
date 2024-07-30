@@ -4,8 +4,6 @@ var wasteTypeUnit = "tons"; // drop down menu
 var electrictyUnit = "mwh";
 var emissionsUnit = "tons";
 
-// conversion factors
-
 function changeSettings(unit) {
     if (unit == "imperial") {
         wasteTypeUnit = "tons";
@@ -16,7 +14,7 @@ function changeSettings(unit) {
         emissionsUnit = "tonnes"; // TODO : get correct unit
     }
 
-    console.log(wasteTypeUnit, electrictyUnit, emissionsUnit, percentUnit);
+    console.log(wasteTypeUnit, electrictyUnit, emissionsUnit);
 
     // update drop down menus
     document.getElementById("wastetype-units").value = wasteTypeUnit;

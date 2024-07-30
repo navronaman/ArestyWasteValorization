@@ -350,6 +350,11 @@ if __name__ == '__main__':
     print(combustion_calc_raw(1000))
     print(combustion_calc(1000, "sludge"))
     
+    dmt_yr = 29286.4
+    dmt_hr = dmt_yr / (24*365)
+    kg_hr = dmt_hr * 1000
+    print(combustion_calc(kg_hr, "sludge"))
+    
     print("\nEverything Essex")
     print(combustion_county("essex", "sludge"))
     print(combustion_county("essex", "food"))

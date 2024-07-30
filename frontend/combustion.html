@@ -25,11 +25,12 @@
     <!-- imperial/metric button -->
     <div class="tab-container" id="unitbutton-placeholder"></div>
 
+    <!-- Info Top container -->
     <div class="container">
         <div id="info" class="info-div">
             <p id="info">
                 <b><span id="completeCountySpan"><span id="wastetype-name">Food Waste</span> in <span id="countyName"></span>County</span></b>
-                <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
+                <span class="info-icon">ℹ️<span class="tooltip">County name where the waste is processed</span></span><br>
     
                 <b><span id="wastetype-unit">Food:</span></b> <span id="wastetype"></span>
                 <select id="wastetype-units" class="unit-select" onchange="updateUnits()">
@@ -57,6 +58,7 @@
         </div>
     </div>
 
+    <!-- Waste type selector -->
     <div class="tab-container" id="wastetype-placeholder">
         <input type="radio" id="food" name="wastetype" value="food" checked>
         <label for="food" class="tab-label" onclick="selectWasteType('food')">Food Waste</label>
