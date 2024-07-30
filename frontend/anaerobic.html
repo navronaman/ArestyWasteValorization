@@ -25,51 +25,50 @@
     <!-- imperial/metric button -->
     <div class="tab-container" id="unitbutton-placeholder"></div>
 
+    <!-- Info Top container -->
     <div class="container">
         <div id="info" class="info-div">
             <p id="info">
-                <b><span id="countyName">County</span></b>
-                <span class="info-icon">ℹ️<span class="tooltip">County name where the biomass is processed</span></span><br>
+                <b><span id="completeCountySpan"><span id="wastetype-name">Food Waste</span> in <span id="countyName"></span>County</span></b>
+                <span class="info-icon">ℹ️<span class="tooltip">County name where the waste is processed</span></span><br>
     
-                <b><span id="biomass-unit">Lignocellulosic Biomass:</span></b> <span id="biomass"></span>
-                <select id="biomass-units" class="unit-select" onchange="updateUnits()">
+                <b><span id="wastetype-unit">Food:</span></b> <span id="wastetype"></span>
+                <select id="wastetype-units" class="unit-select" onchange="updateUnits()">
                     <option value="tons">short tons</option>
                     <option value="tonnes">metric tonnes</option>
                 </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="biomass-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
+                <span class="info-icon">ℹ️<span class="tooltip" id="wastetype-tool">US Short Tons (2000 lbs) used for measuring waste</span></span><br>
     
-                <b><span id="ethanol-unit">Annual Ethanol: </span></b> <span id="ethanol"></span>
-                <select id="ethanol-units" class="unit-select" onchange="updateUnits()">
-                    <option value="MM gal/year">MM gal/year</option>
-                    <option value="tonnes/year">tonnes/year</option>
-                    <option value="kilotonnes/year">kilotonnes/year</option>
-                    <option value="MMBTU/year">MMBTU/year</option>
-                    <option value="MJ/year">MJ/year</option>
+                <b><span id="electricity-unit">Annual Electricity:</span></b> <span id="electricity"></span>
+                <select id="electricity-units" class="unit-select" onchange="updateUnits()">
+                    <option value="mwh">megawatt</option>
                 </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="ethanol-tool">Annual production in million gallons</span></span><br>
-    
-                <b><span id="price-unit">Price: </span></b> <span id="price"></span>
-                <select id="price-units" class="unit-select" onchange="updateUnits()">
-                    <option value="$/gal">$/gal</option>
-                    <option value="$/kg">$/kg</option>
-                    <option value="$/MMBTU">$/MMBTU</option>
-                    <option value="$/MJ">$/MJ</option>
+                <span class="info-icon">ℹ️<span class="tooltip" id="electricity-tool">Megawatt hours of electricity annually generated</span></span><br>
+
+                <b><span id="emissions-unit">Avoided Emissions:</span></b> <span id="emissions"></span>
+                <select id="emissions-units" class="unit-select" onchange="updateUnits()">
+                    <option value="tons">short tons</option>
+                    <option value="tonnes">metric tonnes</option>
                 </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="price-tool">Cost of ethanol per gallon (Minimum Selling Price)</span></span><br>
-    
-                <b><span id="gwp-unit">GWP: </span></b> <span id="gwp"></span>
-                <select id="gwp-units" class="unit-select" onchange="updateUnits()">
-                    <option value="lb CO2/gal">lb CO2/gal</option>
-                    <option value="kg CO2/kg">kg CO2/kg</option>
-                    <option value="kg CO2/MMBTU">kg CO2/MMBTU</option>
-                    <option value="kg CO2/MJ">kg CO2/MJ</option>
-                </select>
-                <span class="info-icon">ℹ️<span class="tooltip" id="gwp-tool">Every gallon of ethanol saves this much CO2 in pounds</span></span><br>
+                <span class="info-icon">ℹ️<span class="tooltip" id="emissions-tool">US Short Tons (2000 lbs) are used for measuring the annual lignocellulose</span></span><br>
 
             </p>
         </div>
     </div>
-        
+
+    <!-- Waste type selector -->
+    <div class="tab-container" id="wastetype-placeholder">
+        <input type="radio" id="food" name="wastetype" value="food" checked>
+        <label for="food" class="tab-label" onclick="selectWasteType('food')">Food Waste</label>
+
+        <input type="radio" id="animal" name="wastetype" value="animal">
+        <label for="animal" class="tab-label" onclick="selectWasteType('animal')">Animal Waste</label>
+
+        <input type="radio" id="water" name="wastetype" value="waster">
+        <label for="water" class="tab-label" onclick="selectWasteType('water')">Composite Wastewater</label>
+
+    </div>
+
     
     <!-- Map -->
     <div id="mapContainer"></div>
@@ -88,26 +87,24 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th id="r0-biomass">Annual Biomass (tons)</th>
-                        <th id="r0-ethanol">Annual Ethanol (MM gal/year)</th>
-                        <th id="r0-price">Price ($/gal)</th>
-                        <th id="r0-gwp">GWP (lb CO2 eq/gal)</th>
+                        <th>Annual <span id="r0-wastetype">Food Waste </span> <span id="r0-wasteunit">(tons)</span> </th>
+                        <th id="r0-electricity">Annual Electricity (MWh/hr)</th>
+                        <th id="r0-emissions">Avoided CO2 Emissions (tons)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="f-col" id="r1-name"> County 1</td>
-                        <td id="r1-biomass">0</td>
-                        <td id="r1-ethanol">0</td>
-                        <td id="r1-price">0</td>
-                        <td id="r1-gwp">0</td>
+                        <td id="r1-waste">0</td>
+                        <td id="r1-electricity">0</td>
+                        <td id="r1-emissions">0</td>
                     </tr>
                     <tr>
                         <td class="f-col" id="r2-name">County 2</td>
-                        <td id="r2-biomass">0</td>
-                        <td id="r2-ethanol">0</td>
-                        <td id="r2-price">0</td>
-                        <td id="r2-gwp">0</td>
+                        <td id="r2-waste">0</td>
+                        <td id="r2-electricity">0</td>
+                        <td id="r2-emissions">0</td>
+                        <td id="r2-percent">0%</td>
                     </tr>
                 </tbody>
             </table>
@@ -118,42 +115,27 @@
     <!-- Manual Mass Input Calculator -->
     <div class="form-container">
 
-        <h3> Calculate the Ethanol Production, Price, and GWP of a County by Mass </h3>
-        <label for="manualInput">Enter annual biomass produced in <span id="m-biomass">tons</span> to be processed:</label>
+        <h3> Calculate the electricity by manual input </h3>
+        <label for="manualInput">Enter annual waste produced in <span id="m-wastetype">food waste</span> to be processed:</label>
         <div id="form-container-input">
-            <input type="number" id="manualInput" name="manualInput" placeholder="1000-1000000" min="1000" max="1000000" required>
-            <select id="m-biomass-units" class="unit-select" onchange="updateUnitsForManual()">
+            <input type="number" id="manualInput" name="manualInput" placeholder="1-1,000,000" min="1" max="1000000" required>
+            <select id="m-wastetype-units" class="unit-select" onchange="updateUnitsForManual()">
                 <option value="tons">short tons</option>
                 <option value="tonnes">metric tonnes</option>
             </select>
         </div>
         <button class="btn-class" onclick="clickManual()" id="manualBox">Submit</button>
         <div id="manualInfoOutput">
-            <b>Annual Ethanol: </b><span id="m-ethanol">0</span>
-            <select id="m-ethanol-units" class="unit-select" onchange="updateUnitsForManual()">
-                <option value="MM gal/year">MM gal/year</option>
-                <option value="tonnes/year">tonnes/year</option>
-                <option value="kilotonnes/year">kilotonnes/year</option>
-                <option value="MMBTU/year">MMBTU/year</option>
-                <option value="MJ/year">MJ/year</option>
+            <b>Annual Electricity: </b><span id="m-electricity">0</span>
+            <select id="m-electricity-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="mwh">megawatt</option>
             </select>
             <br>
 
-            <b>Price: </b><span id="m-price">0</span>
-            <select id="m-price-units" class="unit-select" onchange="updateUnitsForManual()">
-                <option value="$/gal">$/gal</option>
-                <option value="$/kg">$/kg</option>
-                <option value="$/MMBTU">$/MMBTU</option>
-                <option value="$/MJ">$/MJ</option>
-            </select>
-            <br>
-
-            <b>GWP: </b> <span id="m-gwp">0</span>
-            <select id="m-gwp-units" class="unit-select" onchange="updateUnitsForManual()">
-                <option value="lb CO2/gal">lb CO2/gal</option>
-                <option value="kg CO2/kg">kg CO2/kg</option>
-                <option value="kg CO2/MMBTU">kg CO2/MMBTU</option>
-                <option value="kg CO2/MJ">kg CO2/MJ</option>
+            <b>Avoided Emissions: </b><span id="m-emissions">0</span>
+            <select id="m-emissions-units" class="unit-select" onchange="updateUnitsForManual()">
+                <option value="tons">short tons</option>
+                <option value="tonnes">metric tonnes</option>
             </select>
             <br>
 
@@ -165,7 +147,7 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="scripts/fermentation.js"></script>
+    <script src="scripts/anaerobic.js"></script>
     
 </body>
 </html>
