@@ -2,6 +2,7 @@
 from backend.fermentation.lignocellulose import lignocellulose_county, lignocellulose_calc
 from backend.htl.liquefication import htl_county, htl_calc
 from backend.combustion.combustion import combustion_county, combustion_calc
+from backend.digestion.anaerobic_digestion import ad_county, ad_calc
 
 # Imports from flask
 from flask import Flask, jsonify, make_response, request
@@ -155,7 +156,7 @@ In all Combustion JSON data, there should be these 5 things
     2. Electricity produced in kWh
     3. Greenhouse gas emissions in kg CO2e
     4. Percent of total emissions
-    5. Waste type of the requested data
+    5. Waste type of the requested data [food, sludge, fog, green, manure]
 """
 
 # county and mass for combustion
@@ -217,7 +218,6 @@ def combustion_mass_data(mass):
         if result is None:
             return jsonify({
                 "success": "false",
-                "error": str(e)
             })
         else:
             waste_type2, mass_kg_hr2, electricity, emissions, percent = result
@@ -237,7 +237,100 @@ def combustion_mass_data(mass):
             "success": "false",
             "error": str(e)
         })
+
+"""
+In all Anaerobic Digestion JSON data, there should be these 4 things
+    1. Mass of the feedstock in kg/hr
+    2. Electricity produced in kWh 
+    3. Greenhouse gas emissions in kg CO2e (metric tonnes)
+    4. Waste type of the requested data [food, animal, composite wastewater]
+"""
+
+# county and mass for anaerobic digestion
+@app.route('/anaerobic-digestion-county/<string:countyname>')
+def ad_county_data(countyname):
+    waste_type = request.headers.get('X-WasteType', 'sludge')
+    countyname = countyname.replace("_", " ")
+    
+    if waste_type not in ['food', 'animal', 'water']:
+        waste_type = 'food' # default to 'food' waste
+        
+    result = ad_county(countyname, waste_type)
+    try:
+        if result is None:
+            return jsonify({
+                "error": "County not found"
+            })
+        else:
+            name, waste_type2, mass, electricity, emissions, percent = result
+            return jsonify({
+                "name": name, # County name
+                "waste_type": waste_type2, # Waste type - food, animal, composite wastewater
+                "mass": int(mass), # In kg/hr
+                "electricity": electricity, # In kWh
+                "emissions": emissions, # In kg CO2e
+                "percent": percent, # In percentage
+            })
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        })
+
+@app.route('/anaerobic-digestion-mass/<int:mass>')
+def ad_mass_data(mass):
+    
+    waste_type = request.headers.get('X-WasteType', 'food')
+    unit = request.headers.get('X-WasteTypeUnit', 'tons')
+    
+    if waste_type not in ['food', 'animal', 'water']:
+        waste_type = 'food' # default to 'food'
+        
+    if unit not in ['tons', 'tonnes', 'MGD', 'm3/d']:
+        unit = 'tons'
+    
+    mass_kg_hr = 0
+    match unit:
+        case 'tons':
+            # convert mass from short tons into kg/hr
+            mass_kg_hr = mass * 907.185 / (365*24)
+        case 'tonnes':
+            # convert mass from metric tonnes into kg/hr
+            mass_kg_hr = mass * 1000 / (365*24)
+        case 'MGD':
+            # convert mass from MGD into kg/hr
+            mass_kg_hr = (mass * MGD_TO_KG_CONVERSION) / 24
+        case 'm3/d':
+            # convert mass from m3/d into MGD first
+            mass_kg_hr = mass / (GAL_TO_M3D_CONVERSION * 1e6 )
+            # convert mass from MGD into kg/hr
+            mass_kg_hr = (mass_kg_hr * MGD_TO_KG_CONVERSION) / 24
             
+    result = ad_calc(mass_kg_hr, waste_type)
+    try:
+        if result is None:
+            return jsonify({
+                "success": "false",
+            })
+        else:
+            waste_type2, mass_kg_hr2, electricity, emissions, percent = result
+            return jsonify({
+                "success": "true", 
+                "original_mass": mass, # In tons, tonnes, MGD or m3/d
+                "waste_type": waste_type2, # Waste type - food, animal, composite wastewater
+                "unit": unit, # Unit of the original mass
+                "mass": mass_kg_hr, # In kg/hr
+                "electricity": electricity, # In kWh
+                "emissions": emissions, # In kg CO2e
+                "percent": percent, # In percentage
+            })
+    except Exception as e:
+        return jsonify({
+            "success": "false",
+            "error": str(e)
+        })
+            
+    
+
 @app.route('/csv')
 def export_csv():
     unit = request.headers.get('X-Unit', 'imperial')
