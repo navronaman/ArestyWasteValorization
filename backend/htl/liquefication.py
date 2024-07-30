@@ -71,9 +71,14 @@ def htl_calc(existing_flow):
     for p in model.parameters:
         if p.name == 'Ww 2 dry sludge': break
     ww_2_dry_sludge = p.baseline # metric tonne/d/MGD (million gallon per day)
+    
+    print("WW 2 dry sludge")
+    print(ww_2_dry_sludge)
 
     # Assume 1 million metric tonnes of dry sludge per day
     plant_size.baseline = existing_flow*1e6*3.78541/24 # number from report, x MGD to kg/hr
+    
+    
     df = model.metrics_at_baseline()
     
     # Want MDSP (minimum diesel selling price) and GWP diesel (global warming potential of diesel)
