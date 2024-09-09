@@ -4,6 +4,7 @@ var wasteTypeUnit = "tons"; // drop down menu
 var electrictyUnit = "mwh";
 var emissionsUnit = "tons";
 
+// this is for the imperial and metric button
 function changeSettings(unit) {
     if (unit == "imperial") {
         wasteTypeUnit = "tons";
@@ -24,6 +25,7 @@ function changeSettings(unit) {
     updateUnitsEverywhere();
 }
 
+// anytime the user clicks on the drop down menus next to the info top section
 function updateUnits() {
     wasteTypeUnit = document.getElementById("wastetype-units").value;
     electrictyUnit = document.getElementById("electricity-units").value;
@@ -35,6 +37,7 @@ function updateUnits() {
 
 }
 
+//anytime the user clicks on the drop down menus next to the manual input section
 function updateUnitsForManual() {
     wasteTypeUnit = document.getElementById("m-wastetype-units").value;
     electrictyUnit = document.getElementById("m-electricity-units").value;
@@ -45,6 +48,7 @@ function updateUnitsForManual() {
     updateUnitsEverywhere();
 }
 
+// anytime the user selects a waste type 
 function selectWasteType(waste_type) {
     wasteType = waste_type;
 
@@ -53,7 +57,12 @@ function selectWasteType(waste_type) {
     updateWasteTypeEverywhere();
 }
 
-
+/*
+units can be changes in three ways
+1. changing metric or imperial
+2. clicking on drop down menus in the info top section
+3. clicking on drop down menus in the manual input section
+*/
 function updateUnitsEverywhere() {
     // update the drop down menus
     document.getElementById("wastetype-units").value = wasteTypeUnit;
