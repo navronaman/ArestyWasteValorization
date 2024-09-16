@@ -1,5 +1,5 @@
 import pandas as pd
-from liquefication import htl_calc
+from backend.htl.old.old_liquefication import htl_calc
 
 df = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
 

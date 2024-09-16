@@ -1,6 +1,6 @@
 # Imports from backend file
 from backend.fermentation.lignocellulose import lignocellulose_county, lignocellulose_calc
-from backend.htl.liquefication import htl_county, htl_calc
+from backend.htl.liquefaction import htl_county, htl_calc
 from backend.combustion.combustion import combustion_county, combustion_calc
 from backend.digestion.anaerobic_digestion import ad_county, ad_calc
 
