@@ -1,7 +1,7 @@
 import pandas as pd
-from backend.htl.old.old_liquefication import htl_calc
+from old_liquefication import htl_calc
 
-df = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
+df = pd.read_csv(r"backend\htl\old\old_sludge_production_county_data.csv")
 
 # New Columns to be added
 df["Flow m3/d"] = 0 # For daily sludge supply in an alternative unit
@@ -54,7 +54,7 @@ for index, row in df.iterrows():
 
 print(df.head())
 print(df.tail())    
-df.to_csv(r"backend\htl\sludge_data_final.csv", index=False)
+df.to_csv(r"backend\htl\old\old_sludge_data_final.csv", index=False)
 
     
     

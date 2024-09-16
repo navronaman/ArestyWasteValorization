@@ -23,7 +23,7 @@ warnings.filterwarnings('ignore')
 from chaospy import distributions as shape
 from exposan.htl import create_model
 
-STATE_DATA = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
+STATE_DATA = pd.read_csv(r"backend\htl\old\old_sludge_production_county_data.csv")
 
 def htl_calc(existing_flow):
     """
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     print(f'MDSP: ${MDSP:.2f} [$/gal diesel]')
     print(f'GWP: {GWP:.2f} [lb CO2/gal diesel]')
         
-    state_data = pd.read_csv(r"backend\htl\sludge_production_county_data.csv")
+    state_data = pd.read_csv(r"backend\htl\old\old_sludge_production_county_data.csv")
     print(state_data.head())
     print(state_data.tail())
         
