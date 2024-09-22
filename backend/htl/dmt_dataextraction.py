@@ -51,7 +51,7 @@ print(rows) # This is the list of strings
 print("\n")
 print(rows[0]) # This is the first element of the list
 
-filename = "backend\htl\sludge_data_dmt.csv" # The name of the file that we want to write to
+filename = "backend\\htl\\sludge_data_dmt.csv" # The name of the file that we want to write to
 
 with open(filename, mode='w', newline='') as file:
     writer = csv.writer(file)
@@ -60,3 +60,14 @@ with open(filename, mode='w', newline='') as file:
         column = row.split(", ")
         writer.writerow(column)
         
+# Now let's add a final row to the CSV file for the county total
+# We will sum the values of all the columns for each county
+df = pd.read_csv(filename)
+
+totals = df.select_dtypes(include="number").sum()
+totals_row = pd.DataFrame([["New Jersey"] + totals.tolist()], columns=df.columns)
+
+df_with_totals = pd.concat([df, totals_row], ignore_index=True)
+print(df_with_totals)
+
+df_with_totals.to_csv(filename, index=False) # Save the file without the index column

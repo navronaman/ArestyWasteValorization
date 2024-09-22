@@ -1,6 +1,6 @@
 # Imports from backend file
 from backend.fermentation.lignocellulose import lignocellulose_county, lignocellulose_calc
-from backend.htl.liquefaction import htl_county, htl_calc
+from backend.htl.liquefaction import htl_county, htl_calc, htl_convert_sludge_mass_kg_hr
 from backend.combustion.combustion import combustion_county, combustion_calc
 from backend.digestion.anaerobic_digestion import ad_county, ad_calc
 
@@ -96,35 +96,90 @@ def fermentation_biomass_data(mass):
         })
         
 """
-In all HTL JSON data, there should be these 4 things     
-    1. Sludge of feedstock in MGD (Million Gallons per Day)     
-    3. Price of ethanol in $/gallon                               
-    4. Greenhouse gas emissions in lb CO2e/gallon                 
+In all HTL County JSON data, there should be these 4 things which are returned as a JSON object  
+    1. Name of the county
+    2. Sludge of feedstock in dry metric tonnes in that county
+    3. Price of diesel in $/gallon
+    4. Global warming potential of diesel in lb CO2/gallon
 """
 
-# county and mass for htl
-@app.route('/htl-county/<string:countyname>')
+# county for htl
+@app.route('/htl-county/<string:countyname>', methods=['GET'])
 def htl_county_data(countyname):
-    countyname = countyname.replace("_", " ")
-    result = htl_county(countyname)
-    if result is None:
-        return jsonify({
-            "error": "County not found"
-        })
-    else :
+    """
+    Takes a county name from the fetch request and returns the data for that county.
+    
+    Parameters
+    ----------
+    countyname : str
+        The name of the county.
+    
+    Returns
+    -------
+    JSON
+        A JSON object with the name of the county, the sludge in dry metric tonnes, the price of diesel in $/gallon, and the global warming potential of diesel in lb CO2/gallon.
+    
+    """
+    
+    countyname = countyname.replace("_", " ") # For Cape May county
+    
+    try:
+        result = htl_county(countyname)
+    except ValueError:
+        return make_response(
+            jsonify({"error": "County not found"}), 404 # County not found error
+        )
+    except TypeError as e:
+        return make_response(
+            jsonify({"error": str(e)}), 400 # Bad request, non-string county
+        )
+    
+    if result:
         name, sludge, price, gwp = result
-        return jsonify({
+        response_data = {
             "name": name,
-            "sludge": sludge, # In MGD
+            "sludge": sludge, # In DMT
             "price": price, # In $/gallon
-            "gwp": gwp # In lb CO2e/gallon
-        })
+            "gwp": gwp # In lb CO2e/gallon            
+        }
+        return make_response(
+            jsonify(response_data), 200 # Returns a success status code
+        )
         
-@app.route('/htl-sludge/<int:sludge>')
+    return make_response(
+        jsonify({"error": "Unexpected error"}), 500 # Unknown error
+    )
+    
+    
+# mass for htl       
+@app.route('/htl-sludge/<int:sludge>', methods=['GET'])
 def htl_sludge_data(sludge):
+    """
+    Take mass of a feedstock in dry metric tonnes and returns the data containing price of diesel in $/gallon and the global warming potential of diesel in lb CO2/gallon.
+    If the unit is in a different unit, convert it into kg/hr and then pass it through the function.
+    
+    Parameters
+    ----------
+    sludge : int
+        The mass of the feedstock in kg/hr.
+    unit : str
+        The unit of the mass of the feedstock. Default is 'kg/hr'.
+    
+    
+    Returns
+    -------
+    JSON
+        All JSON data contains
+        1. Sludge of feedstock in dry metric tonnes
+        2. Price of diesel in $/gallon
+        3. Global warming potential of diesel in lb CO2/gallon
+    
+    """
     unit = request.headers.get('X-Unit', 'MGD')
     if unit not in ['MGD', 'm3/d']: # in case the header has something other than 'MGD' or 'm3/d'
         unit = 'MGD' # default to 'MGD'
+        
+    kg_hr = htl_convert_sludge_mass_kg_hr(sludge, unit)
     
     try:
         # case switch statements
