@@ -104,24 +104,45 @@ In all HTL County JSON data, there should be these 4 things which are returned a
 """
 
 # county for htl
-@app.route('/htl-county/<string:countyname>', methods=['GET'])
-def htl_county_data(countyname):
+@app.route('/htl-county/', methods=['GET'])
+def htl_county_data():
     """
     Takes a county name from the fetch request and returns the data for that county.
     
-    Parameters
+    URL Format - GET /htl-county?countyname=Cape+May
+    
+    Query Parameters
     ----------
-    countyname : str
+    countyname : str (required)
         The name of the county.
     
     Returns
     -------
     JSON
-        A JSON object with the name of the county, the sludge in dry metric tonnes, the price of diesel in $/gallon, and the global warming potential of diesel in lb CO2/gallon.
+        A JSON object that contains:
+        1. Name of the county
+        2. Sludge of feedstock in dry metric tonnes
+        3. Price of diesel in $/gallon
+        4. Global warming potential of diesel in lb CO2/gallon
     
+    Example
+    -------
+    /htl-county?countyname=Cape+May
+    >>> {
+        "gwp": 476.7758239771914,
+        "name": "Cape May",
+        "price": 457.70631665901186,
+        "sludge": 3172.7
+    }
+    
+        
     """
+    countyname = request.args.get('countyname', None)
     
-    countyname = countyname.replace("_", " ") # For Cape May county
+    if not countyname:
+        return make_response(
+            jsonify({"error": "County name not provided"}), 400 # Bad request, no county name
+        )
     
     try:
         result = htl_county(countyname)
@@ -152,20 +173,22 @@ def htl_county_data(countyname):
     
     
 # mass for htl       
-@app.route('/htl-sludge/<int:sludge>', methods=['GET'])
-def htl_sludge_data(sludge):
+@app.route('/htl-sludge/', methods=['GET'])
+def htl_sludge_data():
     """
     Take mass of a feedstock in dry metric tonnes and returns the data containing price of diesel in $/gallon and the global warming potential of diesel in lb CO2/gallon.
     If the unit is in a different unit, convert it into kg/hr and then pass it through the function.
     
-    Parameters
+    URL Format - GET /htl-sludge?sludge=500&unit=MGD
+    
+    Query Parameters
     ----------
-    sludge : int
-        The mass of the feedstock in kg/hr.
-    unit : str
-        The unit of the mass of the feedstock. Default is 'kg/hr'.
-    
-    
+    sludge : int (required)
+        The mass of the feedstock - Depending on the unit
+    unit : str (optional)
+        The unit of the mass of the feedstock. Default is 'kghr'. 
+        Options - 'kghr', 'tons', 'tonnes', 'mgd', 'm3d' [kg/hr, short tons per year, metric tonnes per year, million gallons per day, metric cubes per day]
+        
     Returns
     -------
     JSON
@@ -173,37 +196,63 @@ def htl_sludge_data(sludge):
         1. Sludge of feedstock in dry metric tonnes
         2. Price of diesel in $/gallon
         3. Global warming potential of diesel in lb CO2/gallon
+        
+    Examples
+    --------
+    /htl-sludge?sludge=500&unit=tons
+    >>> {
+        "gwp": 1183425.480983743,
+        "price": 1152386.6057882837,
+        "sludge": 51.779965753424655
+    }
+    /htl-sludge?sludge=500
+    >>> {
+        "gwp": 122566.64886470242,
+        "price": 119410.96966104512,
+        "sludge": 500.0
+    }
     
     """
-    unit = request.headers.get('X-Unit', 'MGD')
-    if unit not in ['MGD', 'm3/d']: # in case the header has something other than 'MGD' or 'm3/d'
-        unit = 'MGD' # default to 'MGD'
-        
+    
+    sludge = request.args.get('sludge', None)
+    
+    if sludge is None:
+        return make_response(
+            jsonify({"error": "Sludge not provided"}), 400 # Bad request, no sludge
+        )
+    
+    unit = request.args.get('unit', 'kghr')
+    
+    try:
+        sludge = float(sludge)
+    except ValueError:
+        return make_response(
+            jsonify({"error": "Sludge should be a number"}), 400 # Bad request, non-float sludge
+        )
+    
     kg_hr = htl_convert_sludge_mass_kg_hr(sludge, unit)
     
     try:
-        # case switch statements
-        match unit:
-            case 'm3/d':
-                # convert from m3/d to MGD
-                sludge = sludge / (GAL_TO_M3D_CONVERSION*1e6)
-            case 'MGD':
-                None
-    
         result = htl_calc(sludge)
-        price, gwp = result
-                
-        return jsonify({
-            "success": "true",
-            "sludge": sludge, # In MGD
+    except TypeError as e:
+        return make_response(
+            jsonify({"error": str(e)}), 400 # Bad request, non-float sludge
+        )
+        
+    if result:
+        price, gwp = htl_calc(kg_hr)
+        response_data = {
+            "sludge": kg_hr, # In kg/hr
             "price": price, # In $/gallon
             "gwp": gwp # In lb CO2e/gallon
-        })
-    except Exception as e:
-        return jsonify({
-            "success": "false",
-            "error": str(e)
-        })
+        }
+        return make_response(
+            jsonify(response_data), 200 # Returns a success status code
+        )
+    
+    return make_response(
+        jsonify({"error": "Unexpected error"}), 500 # Unknown error
+    )
 
 """
 In all Combustion JSON data, there should be these 5 things

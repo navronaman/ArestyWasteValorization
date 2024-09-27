@@ -27,6 +27,60 @@ from exposan.htl import create_model
 
 STATE_DATA = pd.read_csv("backend\\htl\\sludge_data_dmt.csv")
 
+def htl_convert_sludge_mass_kg_hr(sludge, unit):
+    """
+    Take the sludge in the unit specified and convert it to kg/hr.
+    
+    Parameters
+    ----------
+    sludge : float
+        The sludge in the unit specified.
+    unit : str
+        The unit of the sludge.
+        Available units - 'kghr', 'tons', 'tonnes', 'mgd', 'm3d' [kg/hr, short tons/yr, metric tonnes/yr, million gallons/day, cubic meters/day].
+        
+    Returns
+    -------
+    sludge_kg_hr : float
+        The sludge in kg/hr.
+        
+    Raises
+    ------
+    ValueError
+        If the unit is not found.
+    TypeError
+        If the sludge is not a float.
+    TypeError
+        If the unit is not a string.
+        
+    Example
+    -------
+    htl_convert_sludge_mass_kg_hr(150, 'tons')
+    >>> 15.56  # Example of converting 150 tons/year to kg/hr
+    """
+    
+    # Type checks
+    if not isinstance(sludge, (int, float)):
+        raise TypeError("Sludge should be a float or an int.")
+    
+    if not isinstance(unit, str):
+        raise TypeError("Unit should be a string.")
+    
+    # Unit conversion logic
+    if unit.lower() == 'kghr':
+        return sludge  # No conversion needed
+    elif unit.lower() == 'tons':  # short tons/year to kg/hr
+        return sludge * 907.185 / 8760  # 1 ton = 907.185 kg, convert yearly to hourly
+    elif unit.lower() == 'tonnes':  # metric tonnes/year to kg/hr
+        return sludge * 1000 / 8760  # 1 tonne = 1000 kg, convert yearly to hourly
+    elif unit.lower() == 'mgd':  # million gallons/day to kg/hr
+        return sludge * 3.78541 * 1e6 / 24  # Convert MGD to liters/hr (1 liter = 1 kg for water)
+    elif unit.lower() == 'm3d':  # cubic meters/day to kg/hr
+        return sludge * 1000 / 24  # 1 m³ = 1000 kg, convert daily to hourly
+    else:
+        raise ValueError(f"Unit '{unit}' not found.")
+
+
 def htl_calc(kg_hr, mmbtu_to_gal=0.12845, kg_to_lb=2.20462):
     """
     Take the existing dry metric tonnes of sludge and return the minimum diesel selling price and global warming potential of diesel.
@@ -79,6 +133,7 @@ def htl_calc(kg_hr, mmbtu_to_gal=0.12845, kg_to_lb=2.20462):
     if not isinstance(kg_to_lb, (int, float)): # Type check
         raise TypeError("KG to lb should be a float.")
     
+    # Create the model
     model = create_model(
         plant_size=True,
         feedstock='sludge',
@@ -87,6 +142,7 @@ def htl_calc(kg_hr, mmbtu_to_gal=0.12845, kg_to_lb=2.20462):
         include_other_CFs_as_metrics=False,
     )
     
+    # Set the plant size
     param = model.parameter
     sys = model.system
     stream = sys.flowsheet.stream
@@ -184,31 +240,59 @@ def htl_county(county, state_data=STATE_DATA):
 
 # Let's write some test cases
 if __name__ == "__main__":
+    
     # Test 1
-    print(htl_calc(150)) # (397878.8243590509, 408526.3837657836)
+    print(htl_convert_sludge_mass_kg_hr(150, 'tons')) # Expected: 15.56
     
     # Test 2
+    try: 
+        print(htl_convert_sludge_mass_kg_hr("150", 'tons')) # Expected: TypeError
+    except TypeError as e:
+        print(e)
+        
+    # Test 3
+    try: 
+        print(htl_convert_sludge_mass_kg_hr(150, 123)) # Expected: TypeError
+    except TypeError as e:
+        print(e)
+        
+    # Test 4
+    try:
+        print(htl_convert_sludge_mass_kg_hr(150, 'xyz')) # Expected: ValueError
+    except ValueError as e:
+        print(e) 
+        
+    # Test 5
+    print(htl_convert_sludge_mass_kg_hr(150, 'kghr')) # 150
+    
+    # Test 6
+    print(htl_convert_sludge_mass_kg_hr(150, 'tonnes')) 
+    
+    # Test 7
+    print(htl_calc(150)) # (397878.8243590509, 408526.3837657836)
+    
+    # Test 8
     try:
         print(htl_calc("150")) # Expected: TypeError
     except TypeError as e:
         print(e)
     
-    # Test 2
+    # Test 9
     print(htl_county("Atlantic")) # Expected: ('Atlantic', 8991.7, 162.62884976030858, 176.06916214025898)
     
-    # Test 3
+    # Test 10
     try:
         print(htl_county("XYZ")) # Expected: ValueError
     except ValueError as e:
         print(e)
     
-    # Test 4
+    # Test 11
     try:
         print(htl_county(123)) # Expected: TypeError
     except TypeError as e:
         print(e)
     
-    # Test 5
+    # Test 12
     try:
         print(htl_county("Atlantic", "XYZ")) # Expected: TypeError
     except TypeError as e:

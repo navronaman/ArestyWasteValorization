@@ -136,7 +136,7 @@ function updateUnitsEverywhere() {
 // get info for county
 async function getInfo(county) {
     console.log(unit);
-    const url = `http://localhost:5000/htl-county/${county}`;
+    const url = `http://localhost:5000/htl-county?countyname=${county}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
