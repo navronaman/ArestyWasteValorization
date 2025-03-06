@@ -247,15 +247,16 @@ function clearValuesEcerywhere() {
 // internal function, used to get info about a county depending on the waste type
 // info here will be used on the info top section and comparison section
 async function getInfo(county) {
-    const url = `http://localhost:5000/combustion-county/${county}`;
+    // http://localhost:5000/api/v1/combustion/county?county_name=mercer&waste_type=sludge
+    const url = `http://localhost:5000/api/v1/combustion/county?county_name=${county}&waste_type=${wasteType}`;
     console.log(wasteType);
-    const options = {
-        headers : {
-            'X-WasteType': wasteType, // the waste type - food, animal, water
-        }
-    }
+    // const options = {
+    //     headers : {
+    //         'X-WasteType': wasteType, // the waste type - food, animal, water
+    //     }
+    // }
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url);
         const data = await response.json();
         console.log(data);
         currentCountyData = data;
@@ -321,15 +322,10 @@ function displayComparisonHelper(data, row){
 
 // function to get the manual info
 async function getManualInfo(manualInput){
-    const url = `http://localhost:5000/combustion-mass/${manualInput}`;
-    const options = {
-        headers : {
-            'X-WasteType': wasteType, // the waste type - food, sludge, fog, green, manure
-            'X-WasteTypeUnit': wasteTypeUnit, // the unit of the waste type - tons, tonnes, MGD, m3/d
-        }
-    };
+    // http://localhost:5000/api/v1/combustion/calc?mass=100&unit=kghr&waste_type=sludge
+    const url = `http://localhost:5000/api/v1/combustion/calc?mass=${manualInput}&unit=${wasteTypeUnit}&waste_type=${wasteType}`;
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url);
         const data = await response.json();
         console.log(data);
         manualData = data;

@@ -156,7 +156,8 @@ function updateUnitsEverywhere() {
 // this info will be set to current county data, and then used to update info and comparison
 async function getInfo(county) {
     console.log(unit);
-    const url = `http://localhost:5000/fermentation-county/${county}`;
+    // http://localhost:5000/api/v1/fermentation/county?county_name=mercer
+    const url = `http://localhost:5000/api/v1/fermentation/county?county_name=${county}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -176,7 +177,14 @@ async function getInfo(county) {
 
 // this displays the current county data on the top
 function displayInfoTop(data){
-    let countyname = data.name;
+    /*
+    county_name - "Sussex"
+    ethanol - 86.60816293602124 (in MM gal/yr)
+    gwp - 5.039313894974568 (in lbCO2e/gal)
+    mass - 151081  (in kg/hr)
+    price - 5.4198048787318305 (in $/gal)
+    */
+    let countyname = data.county_name;
 
     document.getElementById('countyName').innerHTML = `${countyname} County`;
 
@@ -218,7 +226,7 @@ function displayComparison(data1, data2){
 
 // this function is used to display the data in the comparison table
 function displayComparisonHelper(data, row){
-    let countyname = data.name;
+    let countyname = data.county_name;
 
     let {tons, ethanol, price, gwp} = reformDataPerUnits(data);
     
@@ -232,16 +240,10 @@ function displayComparisonHelper(data, row){
 
 // this function is used to get the manual input data
 async function getManualInfo(mass) {
-    const url = `http://localhost:5000/fermentation-biomass/${mass}`;
-    const options = {
-        headers: {
-            'X-Unit': biomassUnit // this is the unit that we're using
-            // it could be in tonnes or tons
-            // implying short tons or metric tonnes
-        }
-    };
+    // http://localhost:5000/api/v1/fermentation/calc?mass=100&unit=tons
+    const url = `http://localhost:5000/api/v1/fermentation/calc?mass=${mass}&unit=${biomassUnit}`;
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -269,7 +271,14 @@ function displayManualInfo(data){
 
 // Reforming data according to units
 function reformDataPerUnits(data) {
-    let tons = data.tons;
+    /*
+    county_name - "Sussex"
+    ethanol - 86.60816293602124 (in MM gal/yr)
+    gwp - 5.039313894974568 (in lbCO2e/gal)
+    mass - 151081  (in kg/hr)
+    price - 5.4198048787318305 (in $/gal)
+    */
+    let mass = data.mass;
     let ethanol = data.ethanol;
     let price = data.price;
     let gwp = data.gwp;
@@ -277,9 +286,11 @@ function reformDataPerUnits(data) {
     // change the units based on the unit selected
     switch (biomassUnit) {
         case "tons":
+            tons = mass * (365 * 24) / (907.2); // since we're converting from kg/hr into short tons/yr
             break;
         case "tonnes":
-            tons = tons * tonToTonne; // since we're converting from short tons into metric tonnes
+            tons = mass * (365 * 24)/ (1000); // since we're converting from kg into metric tonnes
+            // tons = tons * tonToTonne; // since we're converting from short tons into metric tonnes
     }
 
     switch (ethanolUnit) {

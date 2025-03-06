@@ -136,7 +136,7 @@ function updateUnitsEverywhere() {
 // get info for county
 async function getInfo(county) {
     console.log(unit);
-    const url = `http://localhost:5000/htl-county?countyname=${county}`;
+    const url = `http://localhost:5000/api/v1/htl/county?county_name=${county}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -156,7 +156,14 @@ async function getInfo(county) {
 
 // this displays the current county data on the top
 function displayInfoTop(data){
-    let countyname = data.name;
+    /*
+    county_name - "Morris"
+    gwp - 125.3302254919193 (in lb CO2/gal)
+    price - 119.3145623249685 (in $/gal)
+    sludge - 12257.6 (in kg/hr)
+    */
+
+    let countyname = data.county_name;
 
     document.getElementById('countyName').innerHTML = `${countyname} County`;
 
@@ -195,7 +202,16 @@ function displayComparison(data1, data2){
 
 // this is a helper function for the comparison
 function displayComparisonHelper(data, row){
-    let countyname = data.name;
+
+    /*
+    county_name - "Morris"
+    gwp - 125.3302254919193 (in lb CO2/gal)
+    price - 119.3145623249685 (in $/gal)
+    sludge - 12257.6 (in kg/hr)
+    */
+
+
+    let countyname = data.county_name;
 
     let {sludge, price, gwp} = reformDataPerUnits(data);
     document.getElementById(`r${row}-name`).innerHTML = `${countyname} County`
@@ -207,15 +223,11 @@ function displayComparisonHelper(data, row){
 
 // this function is used to get manual sludge data
 async function getManualInfo(sludge) {
-    const url = `http://localhost:5000/htl-sludge/${sludge}`;
-    const options = {
-        headers: {
-            'X-Unit': sludgeUnit // we use the sludge unit here
-            // could be in MGD or m3/d
-        }
-    };
+    // http://localhost:5000/api/v1/htl/calc?sludge=100&unit=mgd
+    const url = `http://localhost:5000/api/v1/htl/calc?sludge=${sludge}&unit=${sludgeUnit}`;
+
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -232,6 +244,7 @@ async function getManualInfo(sludge) {
 }
 
 function displayManualInfo(data) {
+
     let {sludge, price, gwp} = reformDataPerUnits(data);
 
     document.getElementById('manualInput').value = sludge;
@@ -242,6 +255,16 @@ function displayManualInfo(data) {
 
 // Reforming data according to units
 function reformDataPerUnits(data) {
+    /*
+    {
+        county_name: 'Sussex', 
+        gwp: 1149.285948065567, (in lb CO2/gal)
+        price: 1123.5193734237218,  (in $/gal)
+        sludge: 1285.9 (in kg/hr)
+    }
+    */
+
+
     let sludge = data.sludge;
     let price = data.price;
     let gwp = data.gwp;
@@ -256,10 +279,12 @@ function reformDataPerUnits(data) {
     // change the units based on the units selected
     switch (sludgeUnit) {
         case "MGD":
+            // million gallons per day
+            sludge = sludge * 24 / (3.78541 * 1e6); // convert to kg/hr
             sludge = sludge.toFixed(3); // round to 3 decimal places, since it is a smaller number
             break;
         case "m3/d":
-            sludge = sludge * galToM3 * 1e6; // since the default is in MGD, we multiply by 1e6 to get m3/d
+            sludge = sludge * 24 / 1000; // 1 m³ = 1000 kg, convert hourly to daily
             sludge = sludge.toFixed(0);
             break;
     }

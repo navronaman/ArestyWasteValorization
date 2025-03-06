@@ -144,7 +144,6 @@ function updateUnitsEverywhere() {
 function updateWasteTypeEverywhere() {
 
     // update the info top section
-    // change the options in the drop down menus
     // update the comparison section
     // update the manual input section
 
@@ -265,15 +264,11 @@ function clearValuesEcerywhere() {
 // internal function, used to get info about a county depending on the waste type
 // info here will be used on the info top section and comparison section
 async function getInfo(county) {
-    const url = `http://localhost:5000/combustion-county/${county}`;
+    // combustion/county?county_name=county_name&waste_type=waste_type
+    const url = `http://localhost:5000/api/v1/combustion/county?county_name=${county}&waste_type=${wasteType}`;
     console.log(wasteType);
-    const options = {
-        headers : {
-            'X-WasteType': wasteType, // the waste type - food, sludge, fog, green, manure
-        }
-    }
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url);
         const data = await response.json();
         console.log(data);
         currentCountyData = data;
@@ -287,7 +282,17 @@ async function getInfo(county) {
 
 // populates the info top section
 function displayInfoTop(data){
-    let countyName = data.name; // name of the county
+
+    /*
+    "county_name": "Mercer",
+    "electricity": 115576741968.87698, (MWh)
+    "emissions": 25511.42472586155, (million metric tonnes)
+    "mass": 6891212.724666667, (kg/hr)
+    "percent": 261.3875484207126, (percentage)
+    "waste_type": "sludge"
+    */
+
+    let countyName = data.county_name; // name of the county
 
     let {mass, electricity, emissions, percent} = reformDataPerUnits(data);
 
@@ -326,7 +331,7 @@ function displayComparison(data1, data2){
 
 // helper function for displayComparison
 function displayComparisonHelper(data, row){
-    let countyName = data.name; // name of the county
+    let countyName = data.county_name; // name of the county
 
     let {mass, electricity, emissions, percent} = reformDataPerUnits(data);
 
@@ -341,15 +346,11 @@ function displayComparisonHelper(data, row){
 
 // function to get the manual info
 async function getManualInfo(manualInput){
-    const url = `http://localhost:5000/combustion-mass/${manualInput}`;
-    const options = {
-        headers : {
-            'X-WasteType': wasteType, // the waste type - food, sludge, fog, green, manure
-            'X-WasteTypeUnit': wasteTypeUnit, // the unit of the waste type - tons, tonnes, MGD, m3/d
-        }
-    };
+    // combustion/calc?mass=mass&unit=unit&waste_type=waste_type
+    const url = `http://localhost:5000/api/v1/combustion/calc?mass=${manualInput}&unit=${wasteTypeUnit}&waste_type=${wasteType}`;
+
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url);
         const data = await response.json();
         console.log(data);
         manualData = data;
@@ -374,6 +375,17 @@ function displayManualInfo(data){
 }
 
 function reformDataPerUnits(data){
+
+    /*
+    "county_name": "Mercer",
+    "electricity": 115576741968.87698, (MWh)
+    "emissions": 25511.42472586155, (million metric tonnes)
+    "mass": 6891212.724666667, (kg/hr)
+    "percent": 261.3875484207126, (percentage)
+    "waste_type": "sludge"
+    */
+
+
     let mass = data.mass; // mass of waste in kg/hr
     let electricity = data.electricity; // electricity generated in MWh
     let emissions = data.emissions; // emissions in million metric tonnes
