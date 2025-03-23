@@ -1,3 +1,5 @@
+const API_BASE_URL = ENV.API_BASE_URL;
+
 // when the unit button is clicked
 
 var sludgeUnit = "MGD";
@@ -136,7 +138,7 @@ function updateUnitsEverywhere() {
 // get info for county
 async function getInfo(county) {
     console.log(unit);
-    const url = `http://localhost:5000/api/v1/htl/county?county_name=${county}`;
+    const url = `${API_BASE_URL}/api/v1/htl/county?county_name=${county}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -223,8 +225,8 @@ function displayComparisonHelper(data, row){
 
 // this function is used to get manual sludge data
 async function getManualInfo(sludge) {
-    // http://localhost:5000/api/v1/htl/calc?sludge=100&unit=mgd
-    const url = `http://localhost:5000/api/v1/htl/calc?sludge=${sludge}&unit=${sludgeUnit}`;
+    // ${API_BASE_URL}/api/v1/htl/calc?sludge=100&unit=mgd
+    const url = `${API_BASE_URL}/api/v1/htl/calc?sludge=${sludge}&unit=${sludgeUnit}`;
 
     try {
         const response = await fetch(url);
@@ -337,7 +339,7 @@ async function exportToCsvMain() {
                 'X-Unit': unit
             }
         };
-        const response = await fetch('http://localhost:5000/csv', options);
+        const response = await fetch('${API_BASE_URL}/csv', options);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -366,7 +368,7 @@ async function exportToCsvCounty() {
                 'X-Unit': unit
             }
         };
-        const response = await fetch(`http://localhost:5000/csv/${currentCounty}`, options);
+        const response = await fetch(`${API_BASE_URL}/csv/${currentCounty}`, options);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }

@@ -1,3 +1,5 @@
+const API_BASE_URL = ENV.API_BASE_URL;
+
 
 // this function is called when the page is loaded, and used to change the settings once the unit is clicked
 
@@ -156,8 +158,8 @@ function updateUnitsEverywhere() {
 // this info will be set to current county data, and then used to update info and comparison
 async function getInfo(county) {
     console.log(unit);
-    // http://localhost:5000/api/v1/fermentation/county?county_name=mercer
-    const url = `http://localhost:5000/api/v1/fermentation/county?county_name=${county}`;
+    // ${API_BASE_URL}/api/v1/fermentation/county?county_name=mercer
+    const url = `${API_BASE_URL}/api/v1/fermentation/county?county_name=${county}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -240,8 +242,8 @@ function displayComparisonHelper(data, row){
 
 // this function is used to get the manual input data
 async function getManualInfo(mass) {
-    // http://localhost:5000/api/v1/fermentation/calc?mass=100&unit=tons
-    const url = `http://localhost:5000/api/v1/fermentation/calc?mass=${mass}&unit=${biomassUnit}`;
+    // ${API_BASE_URL}/api/v1/fermentation/calc?mass=100&unit=tons
+    const url = `${API_BASE_URL}/api/v1/fermentation/calc?mass=${mass}&unit=${biomassUnit}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -350,7 +352,7 @@ async function exportToCsvMain() {
                 'X-Unit': unit
             }
         };
-        const response = await fetch('http://localhost:5000/csv', options);
+        const response = await fetch('${API_BASE_URL}/csv', options);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -379,7 +381,7 @@ async function exportToCsvCounty() {
                 'X-Unit': unit
             }
         };
-        const response = await fetch(`http://localhost:5000/csv/${currentCounty}`, options);
+        const response = await fetch(`${API_BASE_URL}/csv/${currentCounty}`, options);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }

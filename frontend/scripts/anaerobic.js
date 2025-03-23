@@ -1,4 +1,6 @@
-// default values
+const API_BASE_URL = ENV.API_BASE_URL;
+
+    // default values
 var wasteType = "food"; // changes when the user selects a waste type
 var wasteTypeUnit = "tons"; // drop down menu
 var electrictyUnit = "mwh";
@@ -247,8 +249,8 @@ function clearValuesEcerywhere() {
 // internal function, used to get info about a county depending on the waste type
 // info here will be used on the info top section and comparison section
 async function getInfo(county) {
-    // http://localhost:5000/api/v1/combustion/county?county_name=mercer&waste_type=sludge
-    const url = `http://localhost:5000/api/v1/combustion/county?county_name=${county}&waste_type=${wasteType}`;
+    // ${API_BASE_URL}/api/v1/combustion/county?county_name=mercer&waste_type=sludge
+    const url = `${API_BASE_URL}/api/v1/combustion/county?county_name=${county}&waste_type=${wasteType}`;
     console.log(wasteType);
     // const options = {
     //     headers : {
@@ -322,8 +324,8 @@ function displayComparisonHelper(data, row){
 
 // function to get the manual info
 async function getManualInfo(manualInput){
-    // http://localhost:5000/api/v1/combustion/calc?mass=100&unit=kghr&waste_type=sludge
-    const url = `http://localhost:5000/api/v1/combustion/calc?mass=${manualInput}&unit=${wasteTypeUnit}&waste_type=${wasteType}`;
+    // ${API_BASE_URL}/api/v1/combustion/calc?mass=100&unit=kghr&waste_type=sludge
+    const url = `${API_BASE_URL}/api/v1/combustion/calc?mass=${manualInput}&unit=${wasteTypeUnit}&waste_type=${wasteType}`;
     try {
         const response = await fetch(url);
         const data = await response.json();
